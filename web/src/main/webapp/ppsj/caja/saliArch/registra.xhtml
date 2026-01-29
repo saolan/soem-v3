@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="saliArchId" value='#{saliArchControl.id}' />
+		<f:viewParam name="cajaDocuEgreId" value='#{saliArchControl.cajaDocuEgreId}' />
+		<f:viewParam name="paginaRuta" value='#{saliArchControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{saliArchControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Salida Archivo - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="salidaList" value="Salida" />
+					<p:selectOneMenu id="salidaList" value="#{saliArchControl.saliArch.salida}">
+						<f:selectItems value="#{saliArchControl.salidas}" var="parametro" 
+							itemLabel="#{parametro.descri}" itemValue="#{parametro.descri}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel for="formato" value="Formato" />
+					<p:inputText id="formato" value="#{saliArchControl.saliArch.format}" styleClass="cajaTextoDescri" 
+						required="true" requiredMessage="Ingrese Formato" />
+
+					<p:outputLabel for="impresora" value="Impresora" />
+					<p:inputText id="impresora" value="#{saliArchControl.saliArch.impres}" styleClass="cajaTextoDescri" />
+
+					<p:outputLabel for="predet" value="Predeterminado" />
+					<p:selectBooleanCheckbox id="predet" value="#{saliArchControl.saliArch.predet}" />
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{saliArchControl.grabar}" 
+					rendered="#{(saliArchControl.id != null and saliArchControl.rolPermiso.get(1001)) or 
+					(saliArchControl.id == null and saliArchControl.rolPermiso.get(1000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{saliArchControl.eliminar}" 
+					rendered="#{saliArchControl.id != null and saliArchControl.rolPermiso.get(1002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{saliArchControl.cancelar}"	/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

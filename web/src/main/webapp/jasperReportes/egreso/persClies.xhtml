@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte Clientes - Definición">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieApelliDesd" value="Apellido Desde" />
+							<p:inputText id="persClieApelliDesd"
+								value="#{persClieReportControl.persClieDesd.persona.apelli}"
+								required="false">
+								<f:validateBean for="persClieApelliDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieApelliHast" value="Apellido Hasta" />
+							<p:inputText id="persClieApelliHast"
+								value="#{persClieReportControl.persClieHast.persona.apelli}"
+								required="false">
+								<f:validateBean for="persClieApelliHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieCedulaDesd" value="Cédula Desde" />
+							<p:inputText id="persClieCedulaDesd"
+								value="#{persClieReportControl.persClieDesd.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persClieCedulaDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieCedulaHast" value="Cédula Hasta" />
+							<p:inputText id="persClieCedulaHast"
+								value="#{persClieReportControl.persClieHast.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persClieCedulaHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="clieGrupList" value="Grupo" />
+							<p:selectManyMenu id="clieGrupList"
+								value="#{persClieReportControl.clieGrupIds}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" style="width:98%">
+
+								<f:selectItems value="#{persClieReportControl.clieGrups}"
+									var="clieGrup" itemLabel="#{clieGrup.descri}"
+									itemValue="#{clieGrup.clieGrupId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Estado"  />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{persClieReportControl.persClieEstado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio value="#{persClieReportControl.formatoReporte}">
+								<f:selectItems value="#{persClieReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{persClieReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="persClies"
+					includeViewParams="false" styleClass="boton" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

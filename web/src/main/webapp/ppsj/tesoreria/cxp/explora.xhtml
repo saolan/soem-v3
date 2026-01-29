@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cxpId" value='#{cxpControl.id}' />
+		<f:event type="preRenderView" listener="#{cxpControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="explora" header="Cuentas Por Pagar - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-12">
+							<p:outputLabel
+								value="#{cxpControl.cxp.ingreso.persProv.persona.apelli} #{cxpControl.cxp.ingreso.persProv.persona.nombre}" />
+						</div>
+						
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Doc.Número" />
+							<p:inputText value="#{cxpControl.cxp.ingreso.serie1}-#{cxpControl.cxp.ingreso.serie2}-#{cxpControl.cxp.ingreso.numero}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Fecha Emisión" />
+							<p:calendar readonly="true"
+								value="#{cxpControl.cxp.ingreso.fechaEmis}" pattern="dd-MM-yyyy">
+							</p:calendar>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Fecha Vencimiento" />
+							<p:calendar readonly="true" value="#{cxpControl.cxp.fechaVenc}"
+								pattern="dd-MM-yyyy">
+							</p:calendar>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Total" />
+							<p:inputText value="#{cxpControl.cxp.total}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Abono" />
+							<p:inputText value="#{cxpControl.cxp.abono}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Saldo" />
+							<p:inputText value="#{cxpControl.cxp.saldo}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:selectBooleanCheckbox value="#{cxpControl.cxp.estado}"
+								itemLabel="Estado" disabled="true"/>
+						</div>
+
+					</div>
+				</div>
+
+			</p:panel>
+		</h:form>
+
+		<div class="card product">
+
+			<p:dataView id="pagoDetaList" emptyMessage="No se encontro datos"
+				value="#{cxpControl.pagoDetas}" var="_pagoDeta"
+				rendered="#{cxpControl.pagoDetas.size() != null and cxpControl.rolPermiso.get(8003)}">
+
+				<f:facet name="header">
+					<h:outputText value="Detalle Pagos" />
+				</f:facet>
+
+				<p:dataViewListItem>
+					<div class="product-list-item">
+
+						<div class="product-list-detail">
+							<p:outputLabel value="Número" style="margin-right:5px"></p:outputLabel>
+							<h:outputText id="numeroPago"
+								value="#{_pagoDeta.formPagoMoviIngr.numero}" />
+						</div>
+
+						<div class="product-list-detail">
+							<h:outputText value="#{_pagoDeta.formPagoMoviIngr.fecha}">
+								<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+							</h:outputText>
+						</div>
+
+						<div class="product-list-detail">
+							<h:outputText id="total" value="#{_pagoDeta.total}">
+								<f:convertNumber pattern="$0.00" locale="en-US"/>
+							</h:outputText>
+						</div>
+
+						<div class="product-list-detail">
+							<h:selectBooleanCheckbox id="cxpEstado"
+								value="#{_pagoDeta.cxp.estado}" />
+						</div>
+
+					</div>
+				</p:dataViewListItem>
+			</p:dataView>
+		</div>
+	</ui:define>
+</ui:composition>

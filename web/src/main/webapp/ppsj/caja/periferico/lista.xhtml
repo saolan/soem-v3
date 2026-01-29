@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{perifericoControl.pagina}' />
+		<f:event type="preRenderView" listener='#{perifericoControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Periferico - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="descri" value="Descripcion" />
+					<p:inputText id="descri" value="#{perifericoControl.periferico.descri}" required="false">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{perifericoControl.rolPermiso.get(1000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{perifericoControl.iniciarPagina}" 
+					ajax="true" update="perifericoList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="perifericoList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{perifericoControl.perifericos}" var="_periferico">
+
+				<f:facet name="header">
+					<h:outputText value="Perifericos" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{perifericoControl.modificar}">
+							<f:setPropertyActionListener value="#{_periferico.perifericoId}"
+								target="#{perifericoControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{perifericoControl.explorar}">
+							<f:setPropertyActionListener value="#{_periferico.perifericoId}"
+								target="#{perifericoControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Descripción">
+					<h:outputText id="descri" value="#{_periferico.descri}" />
+				</p:column>
+
+				<p:column headerText="Puerto">
+					<h:outputText id="puerto" value="#{_periferico.puerto}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{perifericoControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+
+		<f:viewParam name="sucuCertEmisId" value='#{sucuCertEmisControl.id}' />
+		<f:viewParam name="sucursalId"
+			value='#{sucuCertEmisControl.sucursalId}' />
+		<f:event type="preRenderView"
+			listener="#{sucuCertEmisControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar"
+				header="Sucursal-Certificado - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar" />
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="sucursalList" value="Sucursal" />
+					<p:selectOneMenu id="sucursalList"
+						value="#{sucuCertEmisControl.sucuCertEmis.sucursal}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{sucuCertEmisControl.sucursales}"
+							var="sucursal" itemLabel="#{sucursal.descri}"
+							itemValue="#{sucursal}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="certEmisList" value="Certificado" />
+					<p:selectOneMenu id="certEmisList"
+						value="#{sucuCertEmisControl.sucuCertEmis.certEmis}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{sucuCertEmisControl.certEmiss}"
+							var="certEmis" itemLabel="#{certEmis.descri}"
+							itemValue="#{certEmis}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="ruta" value="Ruta" />
+					<p:inputText id="ruta"
+						value="#{sucuCertEmisControl.sucuCertEmis.ruta}"
+						styleClass="cajaTextoDescri" required="true"
+						requiredMessage="Ingrese Ruta" />
+
+					<p:outputLabel for="descripcion" value="Descripción" />
+					<p:inputText id="descripcion"
+						value="#{sucuCertEmisControl.sucuCertEmis.descri}"
+						styleClass="cajaTextoDescri" required="true"
+						requiredMessage="Ingrese Descripción" />
+
+					<p:outputLabel for="clave" value="Clave" />
+					<p:password id="clave"
+						value="#{sucuCertEmisControl.sucuCertEmis.clave}" required="true"
+						requiredMessage="Ingrese Clave" />
+
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{sucuCertEmisControl.grabar}"
+					rendered="#{(sucuCertEmisControl.id != null and sucuCertEmisControl.rolPermiso.get(6001)) or 
+					(sucuCertEmisControl.id == null and sucuCertEmisControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{sucuCertEmisControl.eliminar}"
+					rendered="#{sucuCertEmisControl.id != null and sucuCertEmisControl.rolPermiso.get(6002)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{sucuCertEmisControl.cancelar}" />
+
+				<p:defaultCommand target="grabar" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

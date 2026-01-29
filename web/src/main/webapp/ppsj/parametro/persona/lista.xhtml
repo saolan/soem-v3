@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{personaControl.pagina}' />
+		<f:event type="preRenderView" listener='#{personaControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panelBuscar" />
+			<p:defaultCommand target="buscar" />
+
+			<div class="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{personaControl.rolPermiso.get(6000)}" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+					action="#{personaControl.iniciarPagina}" ajax="true"
+					update="personaList" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="panelBuscar" header="Persona - Panel Busqueda">
+
+				<div class="card">
+					<div class="grid ui-fluid">
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="cedula"
+								value="#{personaControl.persona.cedulaRuc}" required="false"
+								placeholder="Cédula o Ruc">
+								<f:validateBean for="cedula" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="apelli" value="#{personaControl.persona.apelli}"
+								required="false" placeholder="Apellido">
+								<f:validateBean for="apelli" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="nombre" value="#{personaControl.persona.nombre}"
+								required="false" placeholder="Nombre">
+								<f:validateBean for="nombre" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+								value="#{personaControl.persona.estado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="card product">
+
+				<p:dataView id="personaList" emptyMessage="No se encontro datos"
+					value="#{personaControl.personas}" var="_persona">
+
+					<f:facet name="header">
+						<h:outputText value="Personas" />
+					</f:facet>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+
+							<div class="product-list-detail">#{_persona.cedulaRuc}</div>
+
+							<div class="product-list-detail">#{_persona.apelli}
+								#{_persona.nombre}</div>
+
+							<div class="product-list-detail">#{_persona.correo}</div>
+
+							<div class="product-list-detail">
+								<h:selectBooleanCheckbox id="estado" value="#{_persona.estado}"
+									disabled="true" />
+							</div>
+
+							<div class="product-list-action">
+								<div class="link-container">
+									<p:commandLink styleClass="ui-icon ui-icon-pencil"
+										title="Modificar" action="#{personaControl.modificar}">
+										<f:setPropertyActionListener value="#{_persona.personaId}"
+											target="#{personaControl.id}" />
+									</p:commandLink>
+
+									<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+										title="Explorar" action="#{personaControl.explorar}">
+										<f:setPropertyActionListener value="#{_persona.personaId}"
+											target="#{personaControl.id}" />
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{personaControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

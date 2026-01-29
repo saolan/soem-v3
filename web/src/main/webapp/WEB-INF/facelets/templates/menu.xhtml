@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form >
+			
+    	<p:menubar model="#{menuDinamico.model}" autoDisplay="false">
+				
+			<f:facet name="options">
+						
+				<p:commandButton value="Salir" icon="ui-icon-extlink" actionListener="#{iniciarSesionControl.cerrarSesion}" 
+					action="/iniciarSesion.xhtml?faces-redirect=true"/>
+
+			</f:facet>
+
+		</p:menubar>    		
+
+	</h:form>
+	
+</ui:composition>

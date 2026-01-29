@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{docuElecControl.pagina}' />
+		<f:event type="preRenderView" listener='#{docuElecControl.buscar}' />
+
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:5px"
+				header="Documentos Electrónicos Reprocesar - Panel Busqueda">
+
+				<p:focus context="panelBuscar" />
+
+				<h:panelGrid columns="6">
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero" value="#{docuElecControl.egreso.numero}"
+						required="false">
+						<f:validateBean for="numero" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="fechaDesde" value="Fecha&#160;Desde" />
+					<p:calendar id="fechaDesde" pattern="dd-MM-yyyy HH:mm"
+						value="#{docuElecControl.fechaHoraDesde}" required="false">
+						<f:validateBean for="fecha" disabled="true" />
+					</p:calendar>
+
+					<p:outputLabel for="fechaHasta" value="Fecha&#160;Hasta" />
+					<p:calendar id="fechaHasta" pattern="dd-MM-yyyy HH:mm"
+						value="#{docuElecControl.fechaHoraHasta}" required="false">
+						<f:validateBean for="fecha" disabled="true" />
+					</p:calendar>
+
+					<p:outputLabel for="reenviarEgresos" value="Reenviar&#160;Ventas" />
+					<p:selectBooleanCheckbox id="reenviarEgresos"
+						value="#{docuElecControl.reenviarEgresosRecibida}" />
+
+					<p:outputLabel for="reenviarIngresos" value="Reenviar&#160;Compras" />
+					<p:selectBooleanCheckbox id="reenviarIngresos"
+						value="#{docuElecControl.reenviarIngresosRecibida}" />
+
+					<p:outputLabel for="reenviarRetenciones"
+						value="Reenviar&#160;Retenciones" />
+					<p:selectBooleanCheckbox id="reenviarRetenciones"
+						value="#{docuElecControl.reenviarRetencionesRecibida}" />
+
+					<p:outputLabel for="enviarCorreo" value="Enviar&#160;Correo" />
+					<p:selectBooleanCheckbox id="enviarCorreo"
+						value="#{docuElecControl.enviarCorreo}" />
+
+					<p:outputLabel for="sucursalSesion" value="Sucursal&#160;Actual" />
+					<p:selectBooleanCheckbox id="sucursalSesion"
+						value="#{docuElecControl.buscarSucursalSesion}">
+				
+						<p:ajax listener="#{docuElecControl.seleccionarSucursalSesion}"
+							event="change"/>
+					</p:selectBooleanCheckbox>
+				</h:panelGrid>
+
+			</p:panel>
+
+
+			<p:commandLink id="buscar" ajax="false" value="Buscar"
+				styleClass="boton" action="#{docuElecControl.iniciarPagina}" />
+
+			<p:spacer height="2" />
+
+			<p:commandLink id="procesarTodos" ajax="false" value="Procesar Todos"
+				styleClass="boton" action="#{docuElecControl.procesarTodos}" />
+
+			<p:spacer height="2" />
+
+			<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+				styleClass="boton" />
+
+			<p:defaultCommand target="buscar" />
+
+			<p:tabView style="margin-top:5px;">
+
+				<p:tab title="Ventas">
+
+					<p:dataTable id="egresoList" emptyMessage="No se encontro datos"
+						value="#{docuElecControl.egresos}" var="_egreso">
+
+						<p:column headerText="Sucursal" style="width:60px;">
+							<h:outputText id="sucursal" value="#{_egreso.sucursal.descri}" />
+						</p:column>
+
+						<p:column headerText="Documento" style="width:100px;">
+							<h:outputText id="docuEgre"
+								value="#{_egreso.docuEgre.documento.descri}" />
+						</p:column>
+
+						<p:column headerText="Cliente">
+							<h:outputText id="apelli"
+								value="#{_egreso.persClie.persona.apelli} #{_egreso.persClie.persona.nombre}" />
+						</p:column>
+
+						<p:column headerText="Fecha" style="width:100px;">
+							<h:outputText id="fecha" value="#{_egreso.fechaHoraEmis}">
+								<f:convertDateTime type="localDate" pattern="dd-MM-yyyy HH:mm" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Serie1" style="width:60px;">
+							<h:outputText id="serie1" value="#{_egreso.serie1}" />
+						</p:column>
+
+						<p:column headerText="Serie2" style="width:60px;">
+							<h:outputText id="serie2" value="#{_egreso.serie2}" />
+						</p:column>
+
+						<p:column headerText="Número" style="width:60px;">
+							<h:outputText id="numero" value="#{_egreso.numero}" />
+						</p:column>
+
+						<p:column headerText="Estado Docu.Elec" style="width:110px;">
+							<h:outputText id="estadoDe" value="#{_egreso.estadoDocuElec}" />
+						</p:column>
+
+						<p:column headerText="Motivo">
+							<h:outputText id="motivoRechazo" value="#{_egreso.motivoRech}" />
+						</p:column>
+
+					</p:dataTable>
+
+				</p:tab>
+
+				<p:tab title="Compras">
+
+					<p:dataTable id="ingresoList" emptyMessage="No se encontro datos"
+						value="#{docuElecControl.ingresos}" var="_ingreso">
+
+						<p:column headerText="Documento" style="width:100px;">
+							<h:outputText id="docuIngr"
+								value="#{_ingreso.docuIngr.documento.descri}" />
+						</p:column>
+
+						<p:column headerText="Proveedor">
+							<h:outputText id="apelli"
+								value="#{_ingreso.persProv.persona.apelli} #{_ingreso.persProv.persona.nombre}" />
+						</p:column>
+
+						<p:column headerText="Fecha" style="width:80px;">
+							<h:outputText id="fecha" value="#{_ingreso.fechaHoraEmis}">
+								<f:convertDateTime type="localDate" pattern="dd-MM-yyyy HH:mm" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Sucursal" style="width:60px;">
+							<h:outputText id="sucursal" value="#{_ingreso.serie1}" />
+						</p:column>
+
+						<p:column headerText="Caja" style="width:60px;">
+							<h:outputText id="caja" value="#{_ingreso.serie2}" />
+						</p:column>
+
+						<p:column headerText="Número" style="width:60px;">
+							<h:outputText id="numero" value="#{_ingreso.numero}" />
+						</p:column>
+
+						<p:column headerText="Estado Docu.Elec" style="width:110px;">
+							<h:outputText id="estadoDe" value="#{_ingreso.estadoDocuElec}" />
+						</p:column>
+
+						<p:column headerText="Motivo">
+							<h:outputText id="motivoRechazo" value="#{_ingreso.motivoRech}" />
+						</p:column>
+
+					</p:dataTable>
+
+				</p:tab>
+
+				<p:tab title="Retenciones">
+
+					<p:dataTable id="retencionList" emptyMessage="No se encontro datos"
+						value="#{docuElecControl.retencions}" var="_retencion">
+
+						<p:column headerText="Proveedor">
+							<h:outputText id="apelliProv"
+								value="#{_retencion.ingreso.persProv.persona.apelli} #{_retencion.ingreso.persProv.persona.nombre}" />
+						</p:column>
+
+						<p:column headerText="Fecha" style="width:80px;">
+							<h:outputText id="fechaRete" value="#{_retencion.fechaHoraEmis}">
+								<f:convertDateTime type="localDate" pattern="dd-MM-yyyy HH:mm" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Sucursal" style="width:60px;">
+							<h:outputText id="sucursalRete" value="#{_retencion.serie1}" />
+						</p:column>
+
+						<p:column headerText="Caja" style="width:60px;">
+							<h:outputText id="cajaRete" value="#{_retencion.serie2}" />
+						</p:column>
+
+						<p:column headerText="Número" style="width:60px;">
+							<h:outputText id="numeroRete" value="#{_retencion.numero}" />
+						</p:column>
+
+						<p:column headerText="Estado Docu.Elec" style="width:110px;">
+							<h:outputText id="estadoDocuElecRete"
+								value="#{_retencion.estadoDocuElec}" />
+						</p:column>
+
+						<p:column headerText="Motivo">
+							<h:outputText id="motivoRechazoRete"
+								value="#{_retencion.motivoRech}" />
+						</p:column>
+
+					</p:dataTable>
+
+				</p:tab>
+
+			</p:tabView>
+
+		</h:form>
+	</ui:define>
+
+
+
+</ui:composition>

@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="persUsuaId" value='#{persUsuaControl.id}' />
+		<f:event type="preRenderView" listener="#{persUsuaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Usuario - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Cédula" />
+					<p:inputText value="#{persUsuaControl.persUsua.persona.cedulaRuc}" />
+
+					<p:outputLabel value="Apellido" />
+					<p:inputText value="#{persUsuaControl.persUsua.persona.apelli}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Nombre" />
+					<p:inputText value="#{persUsuaControl.persUsua.persona.nombre}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Usuario" />
+					<p:inputText value="#{persUsuaControl.persUsua.usuari}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{persUsuaControl.persUsua.estado}" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+
+		<p:tabView rendered="#{persUsuaControl.rolPermiso.get(7003)}">
+
+			<p:tab title="Roles">
+
+				<h:form>
+
+					<p:dataTable id="rolPersUsuaList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos"
+						value="#{persUsuaControl.rolPersUsuas}" var="_rolPersUsua">
+
+						<f:facet name="header">
+							<h:outputText value="Roles" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{rolPersUsuaControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_rolPersUsua.rolPersUsuaId}"
+										target="#{rolPersUsuaControl.id}" />
+									<f:setPropertyActionListener
+										value="#{persUsuaControl.persUsua.personaId}"
+										target="#{rolPersUsuaControl.personaId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/seguridad/persUsua/explora"
+										target="#{rolPersUsuaControl.paginaRuta}" />
+									</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Usuario">
+							<h:outputText id="usuario"
+								value="#{_rolPersUsua.persUsua.usuari}" />
+						</p:column>
+
+						<p:column headerText="Rol">
+							<h:outputText id="rol" value="#{_rolPersUsua.rol.descri}" />
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{rolPersUsuaControl.nuevo}" rendered="#{rolPersUsuaControl.rolPermiso.get(7000)}">
+							<f:setPropertyActionListener
+								value="#{persUsuaControl.persUsua.personaId}"
+								target="#{rolPersUsuaControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/persUsua/explora"
+								target="#{rolPersUsuaControl.paginaRuta}" />								
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>
+
+	</ui:define>
+</ui:composition>

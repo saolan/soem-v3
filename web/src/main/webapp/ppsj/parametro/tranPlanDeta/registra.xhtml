@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="paginaPlanCuen" value='#{tranPlanDetaControl.paginaPlanCuen}' />
+		
+		<f:viewParam name="tranPlanDetaId" value='#{tranPlanDetaControl.id}' />
+		<f:viewParam name="tranPlanId" value='#{tranPlanDetaControl.tranPlanId}' />
+		<f:viewParam name="paginaRuta" value='#{tranPlanDetaControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{tranPlanDetaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form id="tranPlanDetaRegis">
+
+			<p:defaultCommand target="buscarPlanCuen"/>
+
+			<p:panel id="panelRegistrar" header="Transacción Plantilla Detalle - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="3">
+
+					<p:outputLabel for="tranPlanList" value="Transacción Plantilla" />
+					<p:selectOneMenu id="tranPlanList" value="#{tranPlanDetaControl.tranPlanDeta.tranPlan}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{tranPlanDetaControl.tranPlans}" var="tranPlan" 
+							itemLabel="#{tranPlan.descri}" itemValue="#{tranPlan}"/>
+					</p:selectOneMenu>					
+					<p:column/>
+
+					<p:outputLabel for="cuentaDescri" value="Descripción" />
+					<h:inputText id="cuentaDescri" value="#{tranPlanDetaControl.tranPlanDeta.planCuen.descri}" styleClass="cajaTextoDescri"
+						disabled="true"/>
+
+					<p:commandLink id="abrirDialogo" style=" font-size: 130%; font-weight: bold; color: blue; text-decoration: underline;"  
+						onclick="PF('seleccionCuenta').show();" 
+						update="panelBuscarCuenta,planCuenList" >
+						<h:graphicImage library="img" name="lupa1.png" width="14px" />	
+					</p:commandLink>
+
+					<p:outputLabel for="cuentaCodigo" value="Cuenta" />
+					<h:inputText id="cuentaCodigo" value="#{tranPlanDetaControl.tranPlanDeta.planCuen.codigo}"
+						disabled="true"/>
+					<p:column/>
+					
+					<p:outputLabel for="factor" value="Factor" />
+					<p:inputText id="factor" value="#{tranPlanDetaControl.tranPlanDeta.factor}" required="true"
+						requiredMessage="Ingrese factor" />
+
+				</h:panelGrid>
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{tranPlanDetaControl.grabar}"
+					rendered="#{(tranPlanDetaControl.id != null and tranPlanDetaControl.rolPermiso.get(6001)) or 
+					(tranPlanDetaControl.id == null and tranPlanDetaControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{tranPlanDetaControl.eliminar}"  
+					rendered="#{tranPlanDetaControl.id != null and tranPlanDetaControl.rolPermiso.get(6002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{tranPlanDetaControl.cancelar}"	/>
+
+			</div>
+			
+			<p:dialog id="seleccionCuenta" widgetVar="seleccionCuenta" width="60%"
+				header="Buscar y Seleccionar Cuenta" modal="true" resizable="false"
+				focus="codigo">
+
+ 				<p:focus context="panelBuscarCuenta" />
+			
+				<p:panel id="panelBuscarCuenta" style="margin-bottom:5px;" >
+
+					<h:panelGrid columns="2">
+
+						<h:panelGrid columns="1">
+							<p:outputLabel for="codigo" value="Código" />
+							<p:inputText id="codigo" value="#{tranPlanDetaControl.planCuenBuscar.codigo}" required="false">
+								<f:validateBean for="codigo" disabled="true" />
+							</p:inputText>
+						</h:panelGrid>
+									
+						<h:panelGrid columns="1">
+							<p:outputLabel for="descri" value="Descripción" />
+							<p:inputText id="descri" value="#{tranPlanDetaControl.planCuenBuscar.descri}" required="false"
+								styleClass="cajaTextoDescri">
+								<f:validateBean for="descri" disabled="true" />
+							</p:inputText>
+						</h:panelGrid>
+				
+					</h:panelGrid>
+			</p:panel>
+			
+			<p:commandLink id="buscarPlanCuen" value="Buscar" 
+					styleClass="boton" action="#{tranPlanDetaControl.buscarPlanCuens(0)}" 
+					update="planCuenList,panelBuscarCuenta,paginadorPlanCuens" />
+			
+			<p:dataTable id="planCuenList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				selectionMode="single" rowKey="#{_planCuen.planCuenId}"
+				value="#{tranPlanDetaControl.planCuens}" var="_planCuen">
+
+        		<p:ajax event="rowSelect" listener="#{tranPlanDetaControl.onRowSelect}"  
+        			update="tranPlanDetaRegis:cuentaCodigo,tranPlanDetaRegis:cuentaDescri" />
+
+				<f:facet name="header">
+					<h:outputText value="Plan Cuenta" />
+				</f:facet>
+
+				<p:column headerText="Codigo" style="width:80px; text-align:left">
+					<h:outputText id="codigo" value="#{_planCuen.codigo}" />
+				</p:column>
+
+				<p:column headerText="Descripción" style="text-align:left">
+					<h:outputText id="descri" value="#{_planCuen.descri}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<div align="center" >
+			
+				<h:panelGroup id="paginadorPlanCuens">
+			
+					<p:commandButton value="Anterior" ajax="true" update="tranPlanDetaRegis:planCuenList,panelBuscarCuenta,paginadorPlanCuens"
+						rendered="#{tranPlanDetaControl.paginaPlanCuen gt 0}" 
+						action="#{tranPlanDetaControl.buscarPlanCuens(1)}">
+						<f:param name="paginaPlanCuen" value="#{tranPlanDetaControl.paginaPlanCuen - 1}"/>
+					</p:commandButton>
+			
+					<p:commandButton value="Siguiente" ajax="true" update="tranPlanDetaRegis:planCuenList,panelBuscarCuenta,paginadorPlanCuens" 
+						rendered="#{(tranPlanDetaControl.paginaPlanCuen + 1) * tranPlanDetaControl.filasPagina lt tranPlanDetaControl.contadorRegPlanCuen}"
+						action="#{tranPlanDetaControl.buscarPlanCuens(1)}">
+						<f:param name="paginaPlanCuen" value="#{tranPlanDetaControl.paginaPlanCuen + 1}"/>
+					</p:commandButton>
+					
+				</h:panelGroup>
+									
+			</div>
+			</p:dialog>
+			
+		</h:form>
+	</ui:define>
+</ui:composition>

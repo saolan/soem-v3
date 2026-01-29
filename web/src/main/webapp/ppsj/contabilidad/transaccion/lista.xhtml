@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{transaccionControl.pagina}' />
+		<f:event type="preRenderView"
+			listener='#{transaccionControl.buscarTransaccions}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="buscar" />
+			<p:focus context="panelBuscar" />
+
+			<div class="barraBotones">
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{transaccionControl.rolPermiso.get(2100)}" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+					action="#{transaccionControl.iniciarPagina}" ajax="false" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="panelBuscar" header="Transacción - Panel Busqueda">
+
+				<div class="card">
+
+					<div class="grid ui-fluid">
+
+						<div class="col-12 md:col-2">
+							<p:selectOneMenu id="documentoList"
+								value="#{transaccionControl.transaccion.docuTran}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{transaccionControl.docuTrans}"
+									var="docuTran" itemLabel="#{docuTran.documento.descri}"
+									itemValue="#{docuTran}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:calendar id="fechaEmis" pattern="dd-MM-yyyy"
+								value="#{transaccionControl.transaccion.fechaEmis}"
+								required="false" placeholder="Fecha">
+								<f:validateBean for="fecha" disabled="true" />
+							</p:calendar>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="numero"
+								value="#{transaccionControl.transaccion.numero}"
+								required="false" placeholder="Número">
+								<f:validateBean for="descri" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:selectOneRadio id="estado" label="Estado"
+								value="#{transaccionControl.transaccion.estado}">
+								<f:selectItems value="#{transaccionControl.parametroEstados}"
+									var="parametro" itemLabel="#{parametro.descri}"
+									itemValue="#{parametro.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+
+			<div class="card product">
+
+				<p:dataView id="transaccionList" emptyMessage="No se encontro datos"
+					value="#{transaccionControl.transaccions}" var="_transaccion">
+
+					<f:facet name="header">
+						<h:outputText value="Transacciones" />
+					</f:facet>
+
+					<p:dataViewListItem>
+
+						<div class="product-list-item">
+
+
+							<div class="product-list-detail">
+								<span class="product-name">#{_transaccion.docuTran.documento.descri} #{_transaccion.numero}</span>
+								<div>#{_transaccion.nota}</div>
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Emisión:" style="margin-right:10px"></p:outputLabel>
+								<h:outputText id="fechaEmis" value="#{_transaccion.fechaEmis}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+								</h:outputText>
+								<div></div>
+								<p:outputLabel value="Registro:" style="margin-right:7px"></p:outputLabel>
+								<h:outputText id="fechaRegis" value="#{_transaccion.fechaHoraRegi}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy HH:mm" />
+								</h:outputText>							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Total:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText id="totalDebe" value="#{_transaccion.totalDebe}">
+									<f:convertNumber pattern="$0.00" locale="en-US" />
+								</h:outputText>
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Dif:" style="margin-right:19px"></p:outputLabel>
+								<h:outputText id="difere" value="#{_transaccion.difere}">
+									<f:convertNumber pattern="$0.00" locale="en-US" />
+								</h:outputText>
+							</div>
+
+							<div class="product-list-action">
+
+								<h:outputText id="estado" value="#{_transaccion.estado}" />
+
+								<div class="link-container">
+									<p:commandLink styleClass="ui-icon ui-icon-pencil"
+										title="Modificar" action="#{transaccionControl.modificar}">
+										<f:setPropertyActionListener
+											value="#{_transaccion.transaccionId}"
+											target="#{transaccionControl.id}" />
+									</p:commandLink>
+
+									<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+										title="Explorar" action="#{transaccionControl.explorar}">
+										<f:setPropertyActionListener
+											value="#{_transaccion.transaccionId}"
+											target="#{transaccionControl.id}" />
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{transaccionControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

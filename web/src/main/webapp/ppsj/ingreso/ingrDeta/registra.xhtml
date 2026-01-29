@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="ingrDetaId" value='#{ingrDetaControl.id}' />
+		<f:viewParam name="ingresoId" value='#{ingrDetaControl.ingresoId}' />
+		<f:event type="preRenderView" listener="#{ingrDetaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Documento Ingreso Productos - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid columns="2" >
+										
+					<p:outputLabel value="Producto" />				
+					<p:selectOneMenu id="productoList" value="#{ingrDetaControl.producto}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{ingrDetaControl.productos}" var="producto" 
+							itemLabel="#{producto.descri}" itemValue="#{producto}"/>
+					</p:selectOneMenu>						
+					
+					<p:outputLabel value="Cantidad" />
+					<p:inputText id="cantidad" value="#{ingrDetaControl.ingrDeta.cantid}" 
+						required="true" requiredMessage="Ingrese Número" />
+					
+					<p:outputLabel value="Costo" />
+					<p:inputText id="costo" value="#{ingrDetaControl.ingrDeta.costo}" 
+						required="true" requiredMessage="Ingrese serie" />
+						
+					<p:outputLabel value="Promoción" />
+					<p:inputText id="promocion" value="#{ingrDetaControl.ingrDeta.promoc}" 
+						required="true" requiredMessage="Ingrese serie" />
+					
+					<p:outputLabel value="Descuento" />
+					<p:inputText id="descuento" value="#{ingrDetaControl.ingrDeta.descue}" 
+						required="true" requiredMessage="Ingrese autorización" />
+				
+					<h:column/>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{ingrDetaControl.grabar}" 
+					rendered="#{(ingrDetaControl.id != null and ingrDetaControl.rolPermiso.get(4101)) or 
+					(ingrDetaControl.id == null and ingrDetaControl.rolPermiso.get(4100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{ingrDetaControl.eliminar}" 
+					rendered="#{ingrDetaControl.id != null and ingrDetaControl.rolPermiso.get(4102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,517 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="productoId" value='#{productoControl.id}' />
+		<f:event type="preRenderView" listener="#{productoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Soem - Producto Explorar" />
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<div class="barraBotones">
+			<p:link id="aceptar" value="Aceptar" outcome="lista"
+				styleClass="boton" />
+		</div>
+
+		<div class="card">
+			<div class="grid ui-fluid">
+				<div class="col-12 md:col-8">
+
+					<p:panel id="explora" header="Producto - Explorar">
+
+						<div class="card ui-fluid">
+							<div class="formgrid grid">
+
+								<div class="field col-12 md:col-2">
+									<p:outputLabel value="Codigo:" for="@next" />
+									<p:inputText value="#{productoControl.producto.codigoBarra}"
+										readonly="true" />
+								</div>
+
+								<div class="field col-12 md:col-6">
+									<p:outputLabel value="Descripción:" />
+									<p:inputText value="#{productoControl.producto.descri}"
+										readonly="true" />
+								</div>
+
+
+								<div class="field col-12 md:col-4">
+									<p:outputLabel value="Grupo:" />
+									<p:inputText
+										value="#{productoControl.producto.prodGrup.descri}"
+										readonly="true" />
+								</div>
+
+								<div class="col-12 md:col-4">
+									<p:selectBooleanCheckbox itemLabel="Estado"
+										value="#{productoControl.producto.estado}" disabled="true" />
+								</div>
+							</div>
+						</div>
+					</p:panel>
+
+				</div>
+
+				<div class="col-12 md:col-4">
+
+					<div style="float: left">
+						<p:graphicImage id="imagen" title="Imagen producto"
+							value="#{cargarImagenes.imagen}" height="108px" width="108px">
+							<f:param name="productoId"
+								value="#{productoControl.producto.productoId}" />
+						</p:graphicImage>
+					</div>
+
+					<div style="float: left">
+						<h:form enctype="multipart/form-data">
+							<div style="margin-top: 10px; margin-bottom: 10px;">
+								<p:fileUpload value="#{productoControl.uploadedFile}"
+									mode="simple" skinSimple="true" label="Seleccionar Archivo" />
+							</div>
+							<div>
+								<p:commandLink value="Subir Archivo" ajax="false"
+									styleClass="boton" action="#{productoControl.subirImagen}" />
+							</div>
+						</h:form>
+					</div>
+				</div>
+
+				<div class="col-12 md:col-6">
+
+					<h:form>
+
+						<div class="card product">
+
+							<p:dataView id="prodPrecList" emptyMessage="No se encontro datos"
+								rows="4" paginator="true" paginatorAlwaysVisible="false"
+								rendered="#{productoControl.rolPermiso.get(5003)}"
+								value="#{productoControl.prodPrecs}" var="_prodPrec">
+
+								<f:facet name="header">
+									<p:commandLink value="+ Precios" ajax="false"
+										action="#{prodPrecControl.nuevo}">
+										<f:setPropertyActionListener
+											value="#{productoControl.producto.productoId}"
+											target="#{prodPrecControl.productoId}" />
+										<f:setPropertyActionListener
+											value="/ppsj/inventario/producto/explora"
+											target="#{prodPrecControl.paginaRuta}" />
+									</p:commandLink>
+
+								</f:facet>
+
+								<p:dataViewListItem>
+									<div class="product-list-item">
+
+										<div class="product-list-detail">
+											<span><i class="pi pi-building" />#{_prodPrec.sucursal.descri}</span>
+											<div></div>
+											<p:outputLabel value="Precio: " class="product-name"></p:outputLabel>
+											<p:outputLabel value="#{_prodPrec.precio.descri}"
+												class="product-name"></p:outputLabel>
+											<div></div>
+											<p:outputLabel value="Factor: "></p:outputLabel>
+											<p:outputLabel value="#{_prodPrec.factor}">
+												<f:convertNumber pattern="#0.0000" locale="en-US" />
+											</p:outputLabel>
+										</div>
+
+										<div class="product-list-detail">
+
+											<p:outputLabel value="Utilidad" style="margin-right:7px"></p:outputLabel>
+											<p:outputLabel value="#{_prodPrec.utilid}">
+												<f:convertNumber pattern="#0.00" locale="en-US" />
+											</p:outputLabel>
+											<p:outputLabel value="%"></p:outputLabel>
+											<div></div>
+											<p:outputLabel value="Pvp sin Iva" style="margin-right:7px"></p:outputLabel>
+											<p:outputLabel value="#{_prodPrec.precioSinImpu}"
+												class="product-name">
+												<f:convertNumber pattern="$0.0000" locale="en-US" />
+											</p:outputLabel>
+										</div>
+
+										<div class="product-list-action">
+
+											<h:outputText value="#{_prodPrec.precioConImpu}"
+												styleClass="product-price">
+												<f:convertNumber pattern="$0.0000" locale="en-US" />
+											</h:outputText>
+
+											<div class="link-container">
+												<p:commandLink styleClass="ui-icon ui-icon-pencil"
+													title="Modificar" action="#{prodPrecControl.modificar}">
+													<f:setPropertyActionListener
+														value="#{_prodPrec.prodPrecId}"
+														target="#{prodPrecControl.id}" />
+													<f:setPropertyActionListener
+														value="#{productoControl.producto.productoId}"
+														target="#{prodPrecControl.productoId}" />
+													<f:setPropertyActionListener
+														value="/ppsj/inventario/producto/explora"
+														target="#{prodPrecControl.paginaRuta}" />
+												</p:commandLink>
+											</div>
+										</div>
+									</div>
+								</p:dataViewListItem>
+							</p:dataView>
+						</div>
+
+					</h:form>
+
+					<h:form>
+						<div class="card product">
+
+							<p:dataView id="prodSubpList" emptyMessage="No se encontro datos"
+								rows="8" paginator="true" paginatorAlwaysVisible="false"
+								rendered="#{prodSubpControl.rolPermiso.get(5003)}"
+								value="#{productoControl.prodSubps}" var="_prodSubp">
+
+								<f:facet name="header">
+									<p:commandLink value="+ SubProductos" ajax="false"
+										action="#{prodSubpControl.nuevo}">
+										<f:setPropertyActionListener
+											value="#{productoControl.producto.productoId}"
+											target="#{prodSubpControl.productoId}" />
+										<f:setPropertyActionListener
+											value="/ppsj/inventario/producto/explora"
+											target="#{prodSubpControl.paginaRuta}" />
+									</p:commandLink>
+								</f:facet>
+
+								<p:dataViewListItem>
+									<div class="product-list-item">
+
+										<div class="product-list-detail">
+											<span>#{_prodSubp.subProducto.descri}</span>
+										</div>
+
+										<div class="product-list-detail">
+											<p:outputLabel value="Cant: "></p:outputLabel>
+											<p:outputLabel value="#{_prodSubp.cantid}"
+												class="product-name">
+												<f:convertNumber pattern="$0.0000" locale="en-US" />
+											</p:outputLabel>
+										</div>
+
+										<div class="product-list-action">
+
+
+											<div class="link-container">
+												<p:commandLink styleClass="ui-icon ui-icon-pencil"
+													title="Modificar" action="#{prodSubpControl.modificar}">
+
+													<f:setPropertyActionListener
+														value="#{_prodSubp.prodSubpId}"
+														target="#{prodSubpControl.id}" />
+													<f:setPropertyActionListener
+														value="#{productoControl.producto.productoId}"
+														target="#{prodSubpControl.productoId}" />
+													<f:setPropertyActionListener
+														value="/ppsj/inventario/producto/explora"
+														target="#{prodSubpControl.paginaRuta}" />
+												</p:commandLink>
+											</div>
+										</div>
+									</div>
+								</p:dataViewListItem>
+							</p:dataView>
+						</div>
+					</h:form>
+				</div>
+
+				<div class="col-12 md:col-6">
+
+					<h:form>
+						<div class="card product">
+
+							<p:dataView id="prodDimmImpuestoList"
+								emptyMessage="No se encontro datos"
+								rendered="#{productoControl.rolPermiso.get(5003)}"
+								value="#{productoControl.prodDimmIvas}" var="_prodDimm">
+
+
+								<f:facet name="header">
+									<p:commandLink value="+ Impuestos Iva / Ice " ajax="false"
+										action="#{prodDimmControl.nuevo}">
+										<f:setPropertyActionListener
+											value="#{productoControl.producto.productoId}"
+											target="#{prodDimmControl.productoId}" />
+										<f:setPropertyActionListener
+											value="/ppsj/inventario/producto/explora"
+											target="#{prodDimmControl.paginaRuta}" />
+										<f:setPropertyActionListener value="iva"
+											target="#{prodDimmControl.listarIvaRete}" />
+									</p:commandLink>
+								</f:facet>
+
+								<p:dataViewListItem>
+									<div class="product-list-item">
+
+										<div class="product-list-detail">
+											<div class="product-list-detail">
+												<div>#{_prodDimm.dimm.descri}</div>
+											</div>
+										</div>
+
+										<div class="product-list-action">
+
+											<div class="link-container">
+												<p:commandLink styleClass="ui-icon ui-icon-pencil"
+													title="Modificar" action="#{prodDimmControl.modificar}">
+
+													<f:setPropertyActionListener
+														value="#{_prodDimm.prodDimmId}"
+														target="#{prodDimmControl.id}" />
+													<f:setPropertyActionListener
+														value="#{productoControl.producto.productoId}"
+														target="#{prodDimmControl.productoId}" />
+													<f:setPropertyActionListener
+														value="/ppsj/inventario/producto/explora"
+														target="#{prodDimmControl.paginaRuta}" />
+													<f:setPropertyActionListener value="iva"
+														target="#{prodDimmControl.listarIvaRete}" />
+												</p:commandLink>
+											</div>
+										</div>
+									</div>
+								</p:dataViewListItem>
+							</p:dataView>
+						</div>
+					</h:form>
+
+					<h:form>
+
+						<div class="card product">
+
+							<p:dataView id="prodCostList" emptyMessage="No se encontro datos"
+								rows="4" paginator="true" paginatorAlwaysVisible="false"
+								rendered="#{productoControl.rolPermiso.get(5003)}"
+								value="#{productoControl.prodCosts}" var="_prodCost">
+
+								<f:facet name="header">
+									<p:commandLink value="+ Costos" ajax="false"
+										action="#{prodCostControl.nuevo}">
+										<f:setPropertyActionListener
+											value="#{productoControl.producto.productoId}"
+											target="#{prodCostControl.productoId}" />
+										<f:setPropertyActionListener
+											value="/ppsj/inventario/producto/explora"
+											target="#{prodCostControl.paginaRuta}" />
+									</p:commandLink>
+								</f:facet>
+
+								<p:dataViewListItem>
+									<div class="product-list-item">
+
+										<div class="product-list-detail">
+											<span><i class="pi pi-building" />#{_prodCost.sucursal.descri}</span>
+										</div>
+
+										<div class="product-list-detail">
+											<p:outputLabel value="Ultimo" style="margin-right:29px"></p:outputLabel>
+											<p:outputLabel value="#{_prodCost.costoUlti}"
+												class="product-name">
+												<f:convertNumber pattern="$0.0000" locale="en-US" />
+											</p:outputLabel>
+
+											<div></div>
+
+											<p:outputLabel value="Promedio" style="margin-right:7px"></p:outputLabel>
+											<p:outputLabel value="#{_prodCost.costoActu}"
+												class="product-name">
+												<f:convertNumber pattern="$0.0000" locale="en-US" />
+											</p:outputLabel>
+										</div>
+
+										<div class="product-list-action">
+
+
+											<div class="link-container">
+												<p:commandLink styleClass="ui-icon ui-icon-pencil"
+													title="Modificar" action="#{prodCostControl.modificar}">
+													<f:setPropertyActionListener
+														value="#{_prodCost.prodCostId}"
+														target="#{prodCostControl.id}" />
+													<f:setPropertyActionListener
+														value="#{productoControl.producto.productoId}"
+														target="#{prodCostControl.productoId}" />
+													<f:setPropertyActionListener
+														value="/ppsj/inventario/producto/explora"
+														target="#{prodCostControl.paginaRuta}" />
+												</p:commandLink>
+											</div>
+										</div>
+									</div>
+								</p:dataViewListItem>
+							</p:dataView>
+						</div>
+					</h:form>
+
+					<h:form>
+
+						<div class="card product">
+
+							<p:dataView id="prodBodeList" emptyMessage="No se encontro datos"
+								rows="4" paginator="true" paginatorAlwaysVisible="false"
+								rendered="#{productoControl.rolPermiso.get(5003)}"
+								value="#{productoControl.prodBodes}" var="_prodBode">
+
+								<f:facet name="header">
+									<p:commandLink value="+ Bodegas" ajax="false"
+										action="#{prodBodeControl.nuevo}">
+										<f:setPropertyActionListener
+											value="#{productoControl.producto.productoId}"
+											target="#{prodBodeControl.productoId}" />
+										<f:setPropertyActionListener
+											value="/ppsj/inventario/producto/explora"
+											target="#{prodBodeControl.paginaRuta}" />
+									</p:commandLink>
+								</f:facet>
+
+								<p:dataViewListItem>
+									<div class="product-list-item">
+
+										<div class="product-list-detail">
+											<span><i class="pi pi-building" />#{_prodBode.sucursal.descri}</span>
+											<div></div>
+											<p:outputLabel value="Ubicación" style="margin-right:7px"></p:outputLabel>
+											<p:outputLabel value="#{_prodBode.ubicac}"
+												class="product-name">
+											</p:outputLabel>
+										</div>
+
+										<div class="product-list-detail">
+											<p:outputLabel value="Max" style="margin-right:7px"></p:outputLabel>
+											<p:outputLabel value="#{_prodBode.maximo}"
+												class="product-name">
+												<f:convertNumber pattern="#0.0000" locale="en-US" />
+											</p:outputLabel>
+											<div></div>
+											<p:outputLabel value="Min" style="margin-right:12px"></p:outputLabel>
+											<p:outputLabel value="#{_prodBode.minimo}"
+												class="product-name">
+												<f:convertNumber pattern="#0.0000" locale="en-US" />
+											</p:outputLabel>
+										</div>
+
+										<div class="product-list-action">
+
+											<div class="link-container">
+												<p:commandLink styleClass="ui-icon ui-icon-pencil"
+													title="Modificar" action="#{prodBodeControl.modificar}">
+													<f:setPropertyActionListener
+														value="#{_prodBode.prodBodeId}"
+														target="#{prodBodeControl.id}" />
+													<f:setPropertyActionListener
+														value="#{productoControl.producto.productoId}"
+														target="#{prodBodeControl.productoId}" />
+													<f:setPropertyActionListener
+														value="/ppsj/inventario/producto/explora"
+														target="#{prodBodeControl.paginaRuta}" />
+												</p:commandLink>
+											</div>
+										</div>
+									</div>
+								</p:dataViewListItem>
+							</p:dataView>
+						</div>
+					</h:form>
+
+				</div>
+
+				<div class="col-12 md:col-12">
+
+					<div class="card">
+						<p:dataTable id="prodCompList" emptyMessage="No se encontro datos"
+							rendered="#{productoControl.rolPermiso.get(5003)}"
+							value="#{productoControl.prodComps}" var="_prodComp"
+							reflow="true">
+
+							<f:facet name="header">
+								<p:row>
+									<p:column>Compras</p:column>
+								</p:row>
+							</f:facet>
+
+							<p:column headerText="RUC" style="text-align:left">
+								<h:outputText id="cedula" value="#{_prodComp.cedula}" />
+							</p:column>
+
+							<p:column headerText="Proveedor">
+								<h:outputText id="proveedor" value="#{_prodComp.proveedor}" />
+							</p:column>
+
+							<p:column headerText="Fecha" style="text-align:left">
+								<h:outputText id="fechaEmis" value="#{_prodComp.fechaEmis}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+								</h:outputText>
+
+							</p:column>
+
+							<p:column headerText="Num.Doc." style="text-align:right">
+								<h:outputText id="numeroFact" value="#{_prodComp.numeroFact}" />
+							</p:column>
+
+							<p:column headerText="Cant." style="text-align:right">
+								<h:outputText id="cantidad" value="#{_prodComp.cantidad}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Costo" style="text-align:right">
+								<h:outputText id="costo" value="#{_prodComp.costo}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Desc." style="text-align:right">
+								<h:outputText id="descue" value="#{_prodComp.descue}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Costo Neto" style="text-align:right">
+								<h:outputText id="costoNeto" value="#{_prodComp.costoNeto}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Utilidad" style="text-align:right">
+								<h:outputText id="utilidad" value="#{_prodComp.utilidad}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Pvp Sin Imp" style="text-align:right">
+								<h:outputText id="precioSinImpuesto"
+									value="#{_prodComp.precioSinImpuesto}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Pvp Con Imp" style="text-align:right">
+								<h:outputText id="precioConImpuesto"
+									value="#{_prodComp.precioConImpuesto}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</p:column>
+
+						</p:dataTable>
+					</div>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

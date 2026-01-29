@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:event type="preRenderView"
+			listener='#{ventaProdMMVendReportControl.buscarRolSucus}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte - Ventas Productos Mas Vendidos">
+
+
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="sucursalList" value="Sucursal"
+								 />
+							<p:selectManyMenu id="sucursalList"
+								value="#{ventaProdMMVendReportControl.sucursalIds}"
+								showCheckbox="true" converter="omnifaces.SelectItemsConverter"
+								required="true" requiredMessage="Seleccione Sucursal">
+
+								<f:selectItems value="#{ventaProdMMVendReportControl.sucursals}"
+									var="sucursal" itemLabel="#{sucursal.descri}"
+									itemValue="#{sucursal.sucursalId}" />
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="docuEgreList" value="Documento"
+								 />
+							<p:selectManyMenu id="docuEgreList"
+								value="#{ventaProdMMVendReportControl.docuEgreIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								>
+
+								<f:selectItems value="#{ventaProdMMVendReportControl.docuEgres}"
+									var="docuEgre" itemLabel="#{docuEgre.documento.descri}"
+									itemValue="#{docuEgre.documentoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaDesd" value="Fecha Desde" />
+							<p:calendar id="egresoFechaDesd"
+								value="#{ventaProdMMVendReportControl.egresoDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaHast" value="Fecha Hasta" />
+							<p:calendar id="egresoFechaHast"
+								value="#{ventaProdMMVendReportControl.egresoHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="producLimi" value="Número Productos" />
+							<p:inputText id="producLimi"
+								value="#{ventaProdMMVendReportControl.producLimi}"
+								required="true" requiredMessage="Ingrese número de productos">
+								<f:validateBean for="producLimi" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="orden" value="Tipo Reporte" />
+							<p:selectOneMenu id="orden"
+								value="#{ventaProdMMVendReportControl.orden}">
+								<f:selectItem itemLabel="Mas Vendidos" itemValue="desc" />
+								<f:selectItem itemLabel="Menos Vendidos" itemValue="asc" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="tipo" value="Referecia" />
+							<p:selectOneMenu id="tipo"
+								value="#{ventaProdMMVendReportControl.refere}">
+								<f:selectItem itemLabel="Cantidad" itemValue="cantidad" />
+								<f:selectItem itemLabel="Valor" itemValue="valor" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio
+								value="#{ventaProdMMVendReportControl.formatoReporte}">
+								<f:selectItems
+									value="#{ventaProdMMVendReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar"
+					action="#{ventaProdMMVendReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="ventasProdMMVend"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

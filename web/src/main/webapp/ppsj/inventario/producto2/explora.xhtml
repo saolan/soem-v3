@@ -1,0 +1,522 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="productoId" value='#{productoControl.id}' />
+		<f:event type="preRenderView" listener="#{productoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Soem - Productos Explora" />
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<div style="float: right; margin-top: 10px;">
+
+			<div style="float: left">
+				<p:graphicImage id="imagen" title="Imagen producto"
+					value="#{cargarImagenes.imagen}" height="108px" width="108px">
+					<f:param name="productoId"
+						value="#{productoControl.producto.productoId}" />
+				</p:graphicImage>
+			</div>
+
+			<div style="float: right">
+				<h:form enctype="multipart/form-data">
+					<div style="margin-top: 10px; margin-bottom: 10px;">
+						<p:fileUpload value="#{productoControl.uploadedFile}"
+							mode="simple" skinSimple="true" label="Seleccionar Archivo" />
+					</div>
+					<div>
+						<p:commandLink value="Subir Archivo" ajax="false"
+							styleClass="boton" action="#{productoControl.subirImagen}" />
+					</div>
+				</h:form>
+			</div>
+
+		</div>
+
+		<h:form id="exploraForm">
+
+			<div style="float: left; width: 70%;">
+
+				<p:panel id="explora" header="Producto - Panel Explorar"
+					style="margin-bottom:3px">
+
+					<h:panelGrid columns="6">
+
+						<p:outputLabel value="Código&#160;Barra" />
+						<p:inputText value="#{productoControl.producto.codigoBarra}" />
+
+						<p:outputLabel value="Descripción" />
+						<p:inputText value="#{productoControl.producto.descri}"
+							styleClass="cajaTextoDescri" />
+
+						<p:column />
+						<p:column />
+
+						<p:outputLabel value="Control&#160;Stock" />
+						<p:inputText value="#{productoControl.producto.controStoc}" />
+
+						<p:outputLabel value="Grupo" />
+						<p:inputText value="#{productoControl.producto.prodGrup.descri}"
+							styleClass="cajaTextoDescri" />
+
+						<p:outputLabel value="Estado" />
+						<p:selectBooleanCheckbox
+							value="#{productoControl.producto.estado}" />
+
+					</h:panelGrid>
+
+				</p:panel>
+
+			</div>
+
+			<div style="float: left; width: 100%; margin-bottom: 3px">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+
+			<div style="float: left; width: 50%;">
+
+				<p:dataTable id="prodPrecList" emptyMessage="No se encontro datos"
+					scrollHeight="200" scrollable="true"
+					rendered="#{productoControl.rolPermiso.get(5003)}"
+					value="#{productoControl.prodPrecs}" var="_prodPrec">
+
+					<f:facet name="header">
+
+						<p:row>
+							<p:column>
+								<p:commandLink value="+ Precios" ajax="false"
+									action="#{prodPrecControl.nuevo}">
+									<f:setPropertyActionListener
+										value="#{productoControl.producto.productoId}"
+										target="#{prodPrecControl.productoId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/inventario/producto/explora"
+										target="#{prodPrecControl.paginaRuta}" />
+								</p:commandLink>
+
+							</p:column>
+						</p:row>
+					</f:facet>
+
+					<p:column style="width:20px;text-align: center" headerText="Op.">
+
+						<p:panelGrid styleClass="ui-noborder">
+
+							<p:commandLink styleClass="ui-icon ui-icon-pencil"
+								title="Modificar" action="#{prodPrecControl.modificar}">
+								<f:setPropertyActionListener value="#{_prodPrec.prodPrecId}"
+									target="#{prodPrecControl.id}" />
+								<f:setPropertyActionListener
+									value="#{productoControl.producto.productoId}"
+									target="#{prodPrecControl.productoId}" />
+								<f:setPropertyActionListener
+									value="/ppsj/inventario/producto/explora"
+									target="#{prodPrecControl.paginaRuta}" />
+							</p:commandLink>
+
+
+						</p:panelGrid>
+
+					</p:column>
+
+					<p:column headerText="Sucursal">
+						<h:outputText id="sucursal" value="#{_prodPrec.sucursal.descri}" />
+					</p:column>
+
+					<p:column headerText="Lista Precio"
+						style="text-align: left;width:80px">
+						<h:outputText id="precioDescri" value="#{_prodPrec.precio.descri}" />
+					</p:column>
+
+					<p:column headerText="Factor" style="text-align: right;width:60px">
+						<h:outputText id="factor" value="#{_prodPrec.factor}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Utilidad"
+						style="text-align: right;width:60px">
+						<h:outputText id="utili" value="#{_prodPrec.utilid}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Pvp Sin Imp"
+						style="text-align: right;width:80px">
+						<h:outputText id="precioSinImpu"
+							value="#{_prodPrec.precioSinImpu}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Pvp Con Imp"
+						style="text-align: right;width:80px">
+						<h:outputText id="precioConImpu"
+							value="#{_prodPrec.precioConImpu}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+				<p:dataTable id="prodSubpList" emptyMessage="No se encontro datos"
+					rendered="#{prodSubpControl.rolPermiso.get(5003)}"
+					value="#{productoControl.prodSubps}" var="_prodSubp">
+
+					<f:facet name="header">
+						<p:row>
+							<p:column>
+								<p:commandLink value="+ SubProductos" ajax="false"
+									action="#{prodSubpControl.nuevo}">
+									<f:setPropertyActionListener
+										value="#{productoControl.producto.productoId}"
+										target="#{prodSubpControl.productoId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/inventario/producto/explora"
+										target="#{prodSubpControl.paginaRuta}" />
+								</p:commandLink>
+							</p:column>
+						</p:row>
+					</f:facet>
+
+					<p:column style="width:20px;text-align: center" headerText="Op.">
+
+						<p:panelGrid styleClass="ui-noborder">
+
+							<p:commandLink styleClass="ui-icon ui-icon-pencil"
+								title="Modificar" action="#{prodSubpControl.modificar}">
+
+								<f:setPropertyActionListener value="#{_prodSubp.prodSubpId}"
+									target="#{prodSubpControl.id}" />
+								<f:setPropertyActionListener
+									value="#{productoControl.producto.productoId}"
+									target="#{prodSubpControl.productoId}" />
+								<f:setPropertyActionListener
+									value="/ppsj/inventario/producto/explora"
+									target="#{prodSubpControl.paginaRuta}" />
+							</p:commandLink>
+
+						</p:panelGrid>
+
+					</p:column>
+
+					<p:column headerText="SubProducto">
+						<h:outputText id="podSubpDescri"
+							value="#{_prodSubp.subProducto.descri}" />
+					</p:column>
+
+					<p:column headerText="Cantidad"
+						style="text-align: right;width:100px">
+						<h:outputText id="prodSubpCantid" value="#{_prodSubp.cantid}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+			<div style="float: right; width: 50%;">
+
+				<p:dataTable id="prodDimmImpuestoList"
+					emptyMessage="No se encontro datos"
+					rendered="#{productoControl.rolPermiso.get(5003)}"
+					value="#{productoControl.prodDimmIvas}" var="_prodDimm">
+
+					<f:facet name="header">
+						<p:row>
+							<p:column>
+								<p:commandLink value="+ Impuestos Iva / Ice " ajax="false"
+									action="#{prodDimmControl.nuevo}">
+									<f:setPropertyActionListener
+										value="#{productoControl.producto.productoId}"
+										target="#{prodDimmControl.productoId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/inventario/producto/explora"
+										target="#{prodDimmControl.paginaRuta}" />
+									<f:setPropertyActionListener value="iva"
+										target="#{prodDimmControl.listarIvaRete}" />
+								</p:commandLink>
+							</p:column>
+						</p:row>
+					</f:facet>
+
+					<p:column style="width:20px;text-align: center" headerText="Op.">
+
+						<p:panelGrid styleClass="ui-noborder">
+
+							<p:commandLink styleClass="ui-icon ui-icon-pencil"
+								title="Modificar" action="#{prodDimmControl.modificar}">
+
+								<f:setPropertyActionListener value="#{_prodDimm.prodDimmId}"
+									target="#{prodDimmControl.id}" />
+								<f:setPropertyActionListener
+									value="#{productoControl.producto.productoId}"
+									target="#{prodDimmControl.productoId}" />
+								<f:setPropertyActionListener
+									value="/ppsj/inventario/producto/explora"
+									target="#{prodDimmControl.paginaRuta}" />
+								<f:setPropertyActionListener value="iva"
+									target="#{prodDimmControl.listarIvaRete}" />
+							</p:commandLink>
+
+						</p:panelGrid>
+
+					</p:column>
+
+					<p:column headerText="Descripción">
+						<h:outputText id="dimmDescri" value="#{_prodDimm.dimm.descri}" />
+					</p:column>
+
+					<p:column headerText="Porcentaje"
+						style="text-align: right;width:100px">
+						<h:outputText id="dimmPorcen" value="#{_prodDimm.dimm.porcen}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+				<p:dataTable id="prodCostList" emptyMessage="No se encontro datos"
+					rendered="#{productoControl.rolPermiso.get(5003)}"
+					value="#{productoControl.prodCosts}" var="_prodCost">
+
+					<f:facet name="header">
+						<p:row>
+							<p:column>
+								<p:commandLink value="+ Costos" ajax="false"
+									action="#{prodCostControl.nuevo}">
+									<f:setPropertyActionListener
+										value="#{productoControl.producto.productoId}"
+										target="#{prodCostControl.productoId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/inventario/producto/explora"
+										target="#{prodCostControl.paginaRuta}" />
+								</p:commandLink>
+							</p:column>
+						</p:row>
+					</f:facet>
+
+					<p:column style="width:20px;text-align: center" headerText="Op.">
+
+						<p:panelGrid styleClass="ui-noborder">
+
+							<p:commandLink styleClass="ui-icon ui-icon-pencil"
+								title="Modificar" action="#{prodCostControl.modificar}">
+								<f:setPropertyActionListener value="#{_prodCost.prodCostId}"
+									target="#{prodCostControl.id}" />
+								<f:setPropertyActionListener
+									value="#{productoControl.producto.productoId}"
+									target="#{prodCostControl.productoId}" />
+								<f:setPropertyActionListener
+									value="/ppsj/inventario/producto/explora"
+									target="#{prodCostControl.paginaRuta}" />
+							</p:commandLink>
+
+						</p:panelGrid>
+
+					</p:column>
+
+					<p:column headerText="Sucursal">
+						<h:outputText id="sucursal" value="#{_prodCost.sucursal.descri}" />
+					</p:column>
+
+					<p:column headerText="Costo Conteo"
+						style="text-align: right;width:100px">
+						<h:outputText id="costoCont" value="#{_prodCost.costoCont}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Costo Ultimo"
+						style="text-align: right;width:100px">
+						<h:outputText id="costoUlti" value="#{_prodCost.costoUlti}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Costo Promedio"
+						style="text-align: right;width:100px">
+						<h:outputText id="costoActu" value="#{_prodCost.costoActu}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+				<p:dataTable id="prodBodeList" emptyMessage="No se encontro datos"
+					rendered="#{productoControl.rolPermiso.get(5003)}"
+					value="#{productoControl.prodBodes}" var="_prodBode">
+
+					<f:facet name="header">
+						<p:row>
+							<p:column>
+								<p:commandLink value="+ Bodegas" ajax="false"
+									action="#{prodBodeControl.nuevo}">
+									<f:setPropertyActionListener
+										value="#{productoControl.producto.productoId}"
+										target="#{prodBodeControl.productoId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/inventario/producto/explora"
+										target="#{prodBodeControl.paginaRuta}" />
+								</p:commandLink>
+							</p:column>
+						</p:row>
+					</f:facet>
+
+
+					<p:column style="width:20px;text-align: center" headerText="Op.">
+
+						<p:panelGrid styleClass="ui-noborder">
+
+							<p:commandLink styleClass="ui-icon ui-icon-pencil"
+								title="Modificar" action="#{prodBodeControl.modificar}">
+								<f:setPropertyActionListener value="#{_prodBode.prodBodeId}"
+									target="#{prodBodeControl.id}" />
+								<f:setPropertyActionListener
+									value="#{productoControl.producto.productoId}"
+									target="#{prodBodeControl.productoId}" />
+								<f:setPropertyActionListener
+									value="/ppsj/inventario/producto/explora"
+									target="#{prodBodeControl.paginaRuta}" />
+							</p:commandLink>
+
+						</p:panelGrid>
+
+					</p:column>
+
+					<p:column headerText="Sucursal">
+						<h:outputText id="sucursal" value="#{_prodBode.sucursal.descri}" />
+					</p:column>
+
+					<p:column headerText="Bodega" style="width:80px">
+						<h:outputText id="bodega" value="#{_prodBode.bodega.descri}" />
+					</p:column>
+
+					<p:column headerText="Can.Conteo"
+						style="text-align:right;width:60px">
+						<h:outputText id="cantidCont" value="#{_prodBode.cantidCont}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Ubicación"
+						style="text-align: right;width:60px">
+						<h:outputText id="ubicac" value="#{_prodBode.ubicac}" />
+					</p:column>
+
+					<p:column headerText="Máximo" style="text-align:right;width:80px">
+						<h:outputText id="maximo" value="#{_prodBode.maximo}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Mínimo" style="text-align:right;width:80px">
+						<h:outputText id="minimo" value="#{_prodBode.minimo}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+
+		</h:form>
+
+		<div style="float: left; width: 100%;">
+
+			<p:dataTable id="prodCompList" emptyMessage="No se encontro datos"
+				rendered="#{productoControl.rolPermiso.get(5003)}"
+				value="#{productoControl.prodComps}" var="_prodComp">
+
+				<f:facet name="header">
+					<p:row>
+						<p:column>Compras</p:column>
+					</p:row>
+				</f:facet>
+
+				<p:column headerText="RUC" style="width:80px; text-align:right">
+					<h:outputText id="cedula" value="#{_prodComp.cedula}" />
+				</p:column>
+
+				<p:column headerText="Proveedor">
+					<h:outputText id="proveedor" value="#{_prodComp.proveedor}" />
+				</p:column>
+
+				<p:column headerText="Fecha" style="width:80px; text-align:center">
+					<h:outputText id="fechaEmis" value="#{_prodComp.fechaEmis}">
+						<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+					</h:outputText>
+
+				</p:column>
+
+				<p:column headerText="Num.Factura"
+					style="width:80px; text-align:right">
+					<h:outputText id="numeroFact" value="#{_prodComp.numeroFact}" />
+				</p:column>
+
+				<p:column headerText="Cantidad" style="width:70px; text-align:right">
+					<h:outputText id="cantidad" value="#{_prodComp.cantidad}">
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Costo" style="width:80px; text-align:right">
+					<h:outputText id="costo" value="#{_prodComp.costo}">
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Descuento"
+					style="width:60px; text-align:right">
+					<h:outputText id="descue" value="#{_prodComp.descue}">
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Costo Neto"
+					style="width:80px; text-align:right">
+					<h:outputText id="costoNeto" value="#{_prodComp.costoNeto}">
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Utilidad" style="width:60px; text-align:right">
+					<h:outputText id="utilidad" value="#{_prodComp.utilidad}">
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Pvp Sin Imp"
+					style="width:90px; text-align:right">
+					<h:outputText id="precioSinImpuesto"
+						value="#{_prodComp.precioSinImpuesto}">
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Pvp Con Imp"
+					style="width:90px; text-align:right">
+					<h:outputText id="precioConImpuesto"
+						value="#{_prodComp.precioConImpuesto}">
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+			</p:dataTable>
+		</div>
+
+	</ui:define>
+</ui:composition>

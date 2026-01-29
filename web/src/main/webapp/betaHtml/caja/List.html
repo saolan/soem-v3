@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Soem - Caja Movimientos Lista</title>
+
+</head>
+<body>
+    
+    <h1>Caja Movimientos Lista</h1>
+    <form>
+        <fieldset>
+            <legend>Busqueda</legend>
+        Documento: <input id="cajaMoviDocumento" name="cajaMoviDocumento">
+		Caja: <input id="cajaMoviCaja" name="cajaMoviCaja" type="text">
+        Fecha: <input id="cajaMoviFecha"  name="cajaMoviFecha" type="date">
+        Estado: <input id="cajaMoviEstado" name="cajaMoviEstasdo" type="checkbox">
+        <input id="idBuscar"  type="submit" value="Buscar">
+        </fieldset>
+
+        <a id="idLinkOcultar" href="#">Ocultar parrafo</a>
+
+        <a id="idLinkMostrar" href="#">Mostrar parrafo</a>
+
+    </form>
+
+    <h1 id="mensaje">Mensaje</h1>
+    <h2 id="cajaListH2">Notas: </h2>
+
+    <div id="idDiv">
+        <p>Esto es un parrafo que va a desaparecer</p>
+
+    </div>
+    
+    <input id="idTry"  type="submit" value="Try Catch" onclick="manejoError();">
+</body>
+
+    <script src="caja.js"></script> 
+    <script src="caja2.js"></script> 
+</html>

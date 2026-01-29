@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="prodGrupNiveId" value='#{prodGrupNiveControl.id}' />
+		<f:event type="preRenderView"
+			listener="#{prodGrupNiveControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="explora" header="Producto Grupo Nivel - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Descripción" />
+							<p:inputText value="#{prodGrupNiveControl.prodGrupNive.descri}"
+								styleClass="prodGrupNiveTextoDescri" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Nivel" />
+							<p:inputText value="#{prodGrupNiveControl.prodGrupNive.nivel}" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

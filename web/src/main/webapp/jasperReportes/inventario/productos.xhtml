@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte Inventario - Productos">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+						<div class="field col-12 md:col-6">
+
+							<p:outputLabel for="productoCodigoBarraDesd"
+								value="Código Barra Desde" />
+							<p:inputText id="productoCodigoBarraDesd"
+								value="#{productoReportControl.productoDesd.codigoBarra}"
+								required="false" >
+								<f:validateBean for="productoCodigoBarraDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoBarraHast"
+								value="Código Barra Hasta" />
+							<p:inputText id="productoCodigoBarraHast"
+								value="#{productoReportControl.productoHast.codigoBarra}"
+								required="false" >
+								<f:validateBean for="productoCodigoBarraHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoDesd" value="Código Desde" />
+							<p:inputText id="productoCodigoDesd"
+								value="#{productoReportControl.productoDesd.codigo}"
+								required="false" >
+								<f:validateBean for="productoCodigoDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoHast" value="Código Hasta" />
+							<p:inputText id="productoCodigoHast"
+								value="#{productoReportControl.productoHast.codigo}"
+								required="false" >
+								<f:validateBean for="productoCodigoHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoDescriDesd" value="Descripción Desde" />
+							<p:inputText id="productoDescriDesd"
+								value="#{productoReportControl.productoDesd.descri}"
+								required="false" >
+								<f:validateBean for="productoDescriDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoDescriHast" value="Descripción Hasta" />
+							<p:inputText id="productoDescriHast"
+								value="#{productoReportControl.productoHast.descri}"
+								required="false" >
+								<f:validateBean for="productoDescriHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="prodGrupList" value="Grupo" />
+							<p:selectManyMenu id="prodGrupList"
+								value="#{productoReportControl.prodGrupIds}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" style="width:98%">
+
+								<f:selectItems value="#{productoReportControl.prodGrups}"
+									var="prodGrup" itemLabel="#{prodGrup.descri}"
+									itemValue="#{prodGrup.prodGrupId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Estado" />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{productoReportControl.prodEstado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato" />
+							<p:selectOneRadio value="#{productoReportControl.formatoReporte}">
+								<f:selectItems value="#{productoReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{productoReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="productos"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

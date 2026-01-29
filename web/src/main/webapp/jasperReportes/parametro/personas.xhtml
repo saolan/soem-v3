@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panel" header="Reporte Personas - Definición">
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="personaCedulaDesd" value="Cédula Desde" />
+							<p:inputText id="personaCedulaDesd"
+								value="#{personaReportControl.personaDesd.cedulaRuc}"
+								required="false" >
+								<f:validateBean for="personaCedulaDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="personaCedulaHast" value="Cédula Hasta" />
+							<p:inputText id="personaCedulaHast"
+								value="#{personaReportControl.personaHast.cedulaRuc}"
+								required="false" >
+								<f:validateBean for="personaCedulaHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="personaApelliDesd" value="Apellido Desde" />
+							<p:inputText id="personaApelliDesd"
+								value="#{personaReportControl.personaDesd.apelli}"
+								required="false" >
+								<f:validateBean for="personaApelliDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="personaApelliHast" value="Apellido Hasta" />
+							<p:inputText id="personaApelliHast"
+								value="#{personaReportControl.personaHast.apelli}"
+								required="false" >
+								<f:validateBean for="personaApelliHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="personaNombreDesd" value="Nombre Desde" />
+							<p:inputText id="personaNombreDesd"
+								value="#{personaReportControl.personaDesd.nombre}"
+								required="false" >
+								<f:validateBean for="personaApelliDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="personaNombreHast" value="Nombre Hasta" />
+							<p:inputText id="personaNombreHast"
+								value="#{personaReportControl.personaHast.nombre}"
+								required="false" >
+								<f:validateBean for="personaNombreHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio value="#{personaReportControl.formatoReporte}">
+								<f:selectItems value="#{personaReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{personaReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="personas"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

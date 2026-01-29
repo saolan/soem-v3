@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{saliArchControl.pagina}' />
+		<f:event type="preRenderView" listener='#{saliArchControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Salida Archivo - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{saliArchControl.rolPermiso.get(1000)}" />
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"  
+					ajax="true" action="#{saliArchControl.iniciarPagina}" update="saliArchList"/>
+				<p:spacer height="2" />
+				
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+				<p:spacer height="2" />
+									    							
+				<p:defaultCommand target="buscar"/>
+																
+			</div>
+			
+			<p:dataTable id="saliArchList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{saliArchControl.saliArchs}" var="_saliArch">
+
+				<f:facet name="header">
+					<h:outputText value="Salida Archivo" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{saliArchControl.modificar}">
+							<f:setPropertyActionListener value="#{_saliArch.saliArchId}"
+								target="#{saliArchControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{saliArchControl.explorar}">
+							<f:setPropertyActionListener value="#{_saliArch.saliArchId}"
+								target="#{saliArchControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Salida">
+					<h:outputText id="salida" value="#{_saliArch.salida}" />
+				</p:column>
+
+				<p:column headerText="Formato">
+					<h:outputText id="formato" value="#{_saliArch.format}" />
+				</p:column>
+
+				<p:column headerText="Impresora">
+					<h:outputText id="impresora" value="#{_saliArch.impres}" />
+				</p:column>
+
+				<p:column headerText="Predeterminado">
+					<h:selectBooleanCheckbox id="predet" value="#{_saliArch.predet}" disabled="true" />
+				</p:column>
+
+
+			</p:dataTable>
+						
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{saliArchControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

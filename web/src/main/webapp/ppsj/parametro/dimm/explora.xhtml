@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="dimmId" value='#{dimmControl.id}' />
+		<f:event type="preRenderView" listener="#{dimmControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Dimm - Panel Explorar"
+				style="margin-bottom:5px">
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Dimm Id" />
+					<p:inputText value="#{dimmControl.dimm.dimmId}"  />
+				
+					<p:outputLabel value="Tabla Referencia" />
+					<p:inputText value="#{dimmControl.dimm.tablaRefe}" styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Tabla descripción" />
+					<p:inputText value="#{dimmControl.dimm.tablaDesc}" styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Código" />
+					<p:inputText value="#{dimmControl.dimm.codigo}" styleClass="cajaTextoCodigo" />
+				
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{dimmControl.dimm.descri}" styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Porcentaje" />
+					<p:inputText value="#{dimmControl.dimm.porcen}" />
+
+					<p:outputLabel value="Factor" />
+					<p:inputText value="#{dimmControl.dimm.factor}" />
+														
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{dimmControl.dimm.estado}" />
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+		
+		<p:tabView rendered="#{dimmControl.rolPermiso.get(6003)}">
+
+			<p:tab title="Asignación de cuentas contables">
+
+				<h:form>
+
+			<p:dataTable id="dimmPlanCuenList" emptyMessage="No se encontro datos"
+				value="#{dimmControl.dimmPlanCuens}" var="_dimmPlanCuen"
+				style="margin-bottom:3px">
+
+				<p:column style="width:50px;text-align: center" headerText="Operación">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{dimmPlanCuenControl.modificar}">
+							<f:setPropertyActionListener value="#{_dimmPlanCuen.dimmPlanCuenId}"
+								target="#{dimmPlanCuenControl.id}" />
+							<f:setPropertyActionListener value="#{dimmControl.dimm.dimmId}"
+								target="#{dimmPlanCuenControl.dimmId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/dimm/explora"
+								target="#{dimmPlanCuenControl.paginaRuta}" />
+																
+						</p:commandLink>
+
+				</p:column>
+
+				<p:column headerText="Dimm">
+					<h:outputText id="dimm" value="#{_dimmPlanCuen.dimm.descri}" />
+				</p:column>
+
+				<p:column headerText="Cuenta Código">
+					<h:outputText id="planCuenCodigo" value="#{_dimmPlanCuen.planCuen.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Cuenta Descripción">
+					<h:outputText id="planCuenDescri" value="#{_dimmPlanCuen.planCuen.descri}" />
+				</p:column>
+
+				<p:column headerText="Tipo Transacción">
+					<h:outputText id="tipoTran" value="#{_dimmPlanCuen.tipoTran}" />
+				</p:column>
+
+			</p:dataTable>
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{dimmPlanCuenControl.nuevo}">
+							<f:setPropertyActionListener value="#{dimmControl.dimm.dimmId}"
+								target="#{dimmPlanCuenControl.dimmId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/dimm/explora"
+								target="#{dimmPlanCuenControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>		
+	</ui:define>
+</ui:composition>

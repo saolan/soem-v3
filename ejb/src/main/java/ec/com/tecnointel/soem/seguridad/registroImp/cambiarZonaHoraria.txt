@@ -1,0 +1,5 @@
+# cambiar zona horaria
+sudo timedatectl set-timezone America/Guayaquil
+
+# verificar cambio
+timedatectl

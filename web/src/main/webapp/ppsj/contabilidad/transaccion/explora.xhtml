@@ -1,0 +1,361 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="transaccionId" value='#{transaccionControl.id}' />
+		<f:event type="preRenderView"
+			listener="#{transaccionControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{transaccionControl.descargar}"
+					rendered="#{transaccionControl.rolPermiso.get(2101) and transaccionControl.id != null}" />
+
+			</div>
+			<p:panel id="explora" header="Transaccion - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Documento" />
+							<p:inputText
+								value="#{transaccionControl.transaccion.docuTran.documento.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Número" />
+							<p:inputText value="#{transaccionControl.transaccion.numero}" />
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="fechaEmis" value="Fecha" />
+							<p:calendar id="fechaEmis" pattern="dd-MM-yyyy"
+								value="#{transaccionControl.transaccion.fechaEmis}">
+							</p:calendar>
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Total Debe" />
+							<p:inputText value="#{transaccionControl.transaccion.totalDebe}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Total Haber" />
+							<p:inputText value="#{transaccionControl.transaccion.totalHabe}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Diferencia" />
+							<p:inputText value="#{transaccionControl.transaccion.difere}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Estado" />
+							<p:inputText value="#{transaccionControl.transaccion.estado}" />
+
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="card product">
+
+				<p:dataView id="ingresoList" emptyMessage="No se encontro datos"
+					value="#{transaccionControl.ingresos}" var="_ingreso"
+					rendered="#{transaccionControl.ingresos.size() != 0}">
+
+					<f:facet name="header">
+						<h:outputText value="Compras" />
+					</f:facet>
+
+					<p:dataViewListItem>
+
+						<div class="product-list-item">
+							<div class="product-list-detail">
+								<span><i class="pi pi-building" />#{_ingreso.sucursal.descri}</span>
+								<div>#{_ingreso.docuIngr.documento.descri}
+									#{_ingreso.serie1}-#{_ingreso.serie2}-#{_ingreso.numero}</div>
+							</div>
+
+							<div class="product-list-detail">
+								<div>#{_ingreso.persProv.persona.apelli}
+									#{_ingreso.persProv.persona.nombre}</div>
+								<div></div>
+								<div>Sec #{_ingreso.ingresoId}</div>
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Emisión:" style="margin-right:7px"></p:outputLabel>
+								<h:outputText id="fechaEmis" value="#{_ingreso.fechaEmis}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+								</h:outputText>
+								<div></div>
+								<p:outputLabel value="Registro:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText id="fechaRegis" value="#{_ingreso.fechaHoraRegi}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy HH:mm" />
+								</h:outputText>
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Estado:" style="margin-right:11px"></p:outputLabel>
+								<h:outputText id="estado" value="#{_ingreso.estado}" />
+								<div></div>
+								<p:outputLabel value="Doc.Ele:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText id="estadoDe" value="#{_ingreso.estadoDocuElec}" />
+							</div>
+
+							<div class="product-list-detail">
+								<h:outputText id="total" value="#{_ingreso.total}">
+									<f:convertNumber pattern="$0.00" locale="en-US" />
+								</h:outputText>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<div class="card product">
+
+				<p:dataView id="formPagoMoviIngrList"
+					emptyMessage="No se encontro datos"
+					value="#{transaccionControl.formPagoMoviIngrs}"
+					var="_formPagoMoviIngr"
+					rendered="#{transaccionControl.formPagoMoviIngrs.size() != 0}">
+
+					<f:facet name="header">
+						<h:outputText value="Pagos" />
+					</f:facet>
+
+					<p:dataViewListItem>
+
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<div class="product-name">#{_formPagoMoviIngr.docuMoviIngr.documento.descri}
+									- #{_formPagoMoviIngr.numero}</div>
+								<span>#{_formPagoMoviIngr.persona.apelli}
+									#{_formPagoMoviIngr.persona.nombre}</span>
+							</div>
+
+							<div class="product-list-detail">
+								<h:outputText value="#{_formPagoMoviIngr.fecha}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+								</h:outputText>
+								<div></div>
+								<div>#{_formPagoMoviIngr.formPago.descri}</div>
+							</div>
+
+							<div class="product-list-detail">
+								<h:outputText value="#{_formPagoMoviIngr.total}">
+									<f:convertNumber pattern="$0.00" locale="en-US" />
+								</h:outputText>
+							</div>
+
+							<div class="product-list-detail">
+								<h:outputText id="estado" value="#{_formPagoMoviIngr.estado}" />
+							</div>
+
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<div class="card product">
+
+				<p:dataView id="egreTranList" emptyMessage="No se encontro datos"
+					value="#{transaccionControl.egreTrans}" var="_egreTran"
+					rendered="#{transaccionControl.egreTrans.size() != 0}">
+
+
+					<f:facet name="header">
+						<h:outputText value="Ventas" />
+					</f:facet>
+
+					<p:dataViewListItem>
+
+						<div class="product-list-item">
+							<div class="product-list-detail">
+								<span><i class="pi pi-building" />#{_egreTran.egreso.sucursal.descri}</span>
+								<div>#{_egreTran.egreso.docuEgre.documento.descri}
+									#{_egreTran.egreso.serie1}-#{_egreTran.egreso.serie2}-#{_egreTran.egreso.numero}</div>
+							</div>
+
+							<div class="product-list-detail">
+								<div>#{_egreTran.egreso.persClie.persona.apelli}
+									#{_egreTran.egreso.persClie.persona.nombre}</div>
+								<div></div>
+
+							</div>
+
+							<div class="product-list-detail ml-2">
+								<p:outputLabel value="Inicio:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText id="cajaMoviId"
+									value="#{_egreTran.egreso.cajaMovi.cajaMoviId}">
+								</h:outputText>
+								<div></div>
+								<h:outputText id="Mesa" value="#{_egreTran.egreso.mesa.descri}"
+									rendered="#{egresoControl.activarMesa}" />
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Emisión:" style="margin-right:7px"></p:outputLabel>
+								<h:outputText id="fechaEmis"
+									value="#{_egreTran.egreso.fechaEmis}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+								</h:outputText>
+								<div></div>
+								<p:outputLabel value="Registro:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText id="fechaRegis"
+									value="#{_egreTran.egreso.fechaHoraRegi}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy HH:mm" />
+								</h:outputText>
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Estado:" style="margin-right:11px"></p:outputLabel>
+								<h:outputText id="estado" value="#{_egreTran.egreso.estado}" />
+								<div></div>
+								<p:outputLabel value="Doc.Ele:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText id="estadoDe"
+									value="#{_egreTran.egreso.estadoDocuElec}" />
+							</div>
+
+							<div class="product-list-detail">
+								<h:outputText id="total" value="#{_egreTran.egreso.total}">
+									<f:convertNumber pattern="$0.00" locale="en-US" />
+								</h:outputText>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<div class="card product">
+
+				<p:dataView id="formPagoMoviEgreList"
+					emptyMessage="No se encontro datos"
+					value="#{transaccionControl.formPagoMoviEgres}"
+					var="_formPagoMoviEgre"
+					rendered="#{transaccionControl.formPagoMoviEgres.size() != 0}">
+
+					<f:facet name="header">
+						<h:outputText value="Cobros" />
+					</f:facet>
+
+					<p:dataViewListItem>
+
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<div class="product-name">#{_formPagoMoviEgre.docuMoviEgre.documento.descri}
+									- #{_formPagoMoviEgre.numero}</div>
+								<span>#{_formPagoMoviEgre.persona.apelli}
+									#{_formPagoMoviEgre.persona.nombre}</span>
+							</div>
+
+							<div class="product-list-detail">
+								<h:outputText value="#{_formPagoMoviEgre.fecha}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+								</h:outputText>
+							</div>
+
+							<div class="product-list-detail">
+								<h:outputText id="total" value="#{_formPagoMoviEgre.total}">
+									<f:convertNumber pattern="$0.00" locale="en-US" />
+								</h:outputText>
+							</div>
+
+							<div class="product-list-detail">
+								<h:outputText id="estado" value="#{_formPagoMoviEgre.estado}" />
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<div class="card product">
+
+				<p:dataView id="cajaMoviList" emptyMessage="No se encontro datos"
+					value="#{transaccionControl.cajaMoviTrans}" var="_cajaMoviTran"
+					rendered="#{transaccionControl.cajaMoviTrans.size() != 0}">
+
+					<f:facet name="header">
+						<h:outputText value="Movimientos Caja" />
+					</f:facet>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<span class="product-name">#{_cajaMoviTran.cajaMovi.docuCaja.documento.descri}
+									#{_cajaMoviTran.cajaMovi.cajaMoviId} </span>
+								<div>#{_cajaMoviTran.cajaMovi.caja.descri}</div>
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Cajero: "></p:outputLabel>
+								<p:outputLabel>#{_cajaMoviTran.cajaMovi.persCaje.persona.apelli}
+									#{_cajaMoviTran.cajaMovi.persCaje.persona.nombre}</p:outputLabel>
+								<div></div>
+								<p:outputLabel value="Referen: "></p:outputLabel>
+								<p:outputLabel class="product-name">#{_cajaMoviTran.cajaMovi.cajaMovi.cajaMoviId}</p:outputLabel>
+
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Emisión:" style="margin-right:7px"></p:outputLabel>
+								<h:outputText id="fecha1"
+									value="#{_cajaMoviTran.cajaMovi.fecha}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+								</h:outputText>
+								<div></div>
+								<p:outputLabel value="Registro:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText id="fechaHoraRegi1"
+									value="#{_cajaMoviTran.cajaMovi.fechaHoraRegi}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy HH:mm" />
+								</h:outputText>
+							</div>
+
+							<div class="product-list-detail">
+								<p:selectBooleanCheckbox id="estado"
+									value="#{_cajaMoviTran.cajaMovi.estado}" itemLabel="Estado"
+									disabled="true" />
+							</div>
+
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

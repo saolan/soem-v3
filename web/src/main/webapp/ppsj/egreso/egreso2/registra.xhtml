@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="egresoId" value='#{egresoControl.id}' />
+		<f:event type="preRenderView" listener="#{egresoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="egreso - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="fechaRegi" value="Fecha Registro" />
+					<p:inputText id="fechaRegi" value="#{egresoControl.egreso.fechaRegi}" 
+						required="true" requiredMessage="Ingrese fecha registro" />
+
+					<p:outputLabel for="fechaRegi" value="Fecha Emisión" />
+					<p:inputText id="fechaEmis" value="#{egresoControl.egreso.fechaEmis}" 
+						required="true" requiredMessage="Ingrese fecha emisión" />
+
+					<p:outputLabel for="fechaAuto" value="Fecha Autorización" />
+					<p:inputText id="fechaAuto" value="#{egresoControl.egreso.fechaAuto}" 
+						required="true" requiredMessage="Ingrese fecha autorización" />
+
+					<p:outputLabel for="serieUno" value="Serie No.1" />
+					<p:inputText id="serieUno" value="#{egresoControl.egreso.serie1}" 
+						required="true" requiredMessage="Ingrese fecha serie No.1" />
+
+					<p:outputLabel for="serieDos" value="Serie No.2" />
+					<p:inputText id="serieDos" value="#{egresoControl.egreso.serie2}" 
+						required="true" requiredMessage="Ingrese fecha serie No.2" />
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero" value="#{egresoControl.egreso.numero}" 
+						required="true" requiredMessage="Ingrese fecha número" />
+						
+					<p:outputLabel for="descue" value="Descuento" />
+					<p:inputText id="descue" value="#{egresoControl.egreso.descue}" 
+						required="true" requiredMessage="Ingrese descuento" />
+						
+					<p:outputLabel for="numeroCuot" value="Número Cuotas" />
+					<p:inputText id="numeroCuot" value="#{egresoControl.egreso.numeroCuot}" 
+						required="true" requiredMessage="Ingrese número cuotas" />
+
+					<p:outputLabel for="diasPlaz" value="Días Plazo" />
+					<p:inputText id="diasPlaz" value="#{egresoControl.egreso.diasPlaz}" 
+						required="true" requiredMessage="Ingrese dias plazo" />
+						
+					<p:outputLabel for="autori" value="Autorización" />
+					<p:inputText id="autori" value="#{egresoControl.egreso.autori}" 
+						required="true" requiredMessage="Ingrese autorización" />
+
+					<p:outputLabel for="claveAcce" value="Clave Acceso" />
+					<p:inputText id="claveAcce" value="#{egresoControl.egreso.claveAcce}" 
+						required="true" requiredMessage="Ingrese clave acceso" />
+
+					<p:outputLabel for="nota" value="Nota" />
+					<p:inputText id="nota" value="#{egresoControl.egreso.nota}" 
+						required="true" requiredMessage="Ingrese nota" />
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{egresoControl.egreso.estado}" required="true"
+						requiredMessage="Ingrese estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{egresoControl.grabar}" 
+					rendered="#{(egresoControl.id != null and egresoControl.rolPermiso.get(3101)) or 
+					(egresoControl.id == null and egresoControl.rolPermiso.get(3100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{egresoControl.eliminar}" 
+					rendered="#{egresoControl.id != null and egresoControl.rolPermiso.get(3102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panel" header="Reporte Cuentas Por Cobrar - Cobros">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieApelliDesd" value="Apellido Desde" />
+							<p:inputText id="persClieApelliDesd"
+								value="#{fpmeReportControl.persClieDesd.persona.apelli}"
+								required="false">
+								<f:validateBean for="persClieApelliDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieApelliHast" value="Apellido Hasta" />
+							<p:inputText id="persClieApelliHast"
+								value="#{fpmeReportControl.persClieHast.persona.apelli}"
+								required="false">
+								<f:validateBean for="persClieApelliHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieCedulaDesd" value="Cédula Desde" />
+							<p:inputText id="persClieCedulaDesd"
+								value="#{fpmeReportControl.persClieDesd.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persClieCedulaDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieCedulaHast" value="Cédula Hasta" />
+							<p:inputText id="persClieCedulaHast"
+								value="#{fpmeReportControl.persClieHast.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persClieCedulaHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="fpmiFechaDesd" value="Fecha Desde" />
+							<p:calendar id="fpmiFechaDesd"
+								value="#{fpmeReportControl.fpmeDesd.fecha}" pattern="dd-MM-yyyy"
+								required="true" requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="fpmiFechaHast" value="Fecha Hasta" />
+							<p:calendar id="fpmiFechaHast"
+								value="#{fpmeReportControl.fpmeHast.fecha}" pattern="dd-MM-yyyy"
+								required="true" requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="cajaList" value="Sucursal-Caja"
+								 />
+							<p:selectManyMenu id="cajaList"
+								value="#{fpmeReportControl.cajaIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								 required="true"
+								requiredMessage="Seleccione caja">
+
+								<f:selectItems value="#{fpmeReportControl.cajas}" var="caja"
+									itemLabel="#{caja.sucursal.descri} - #{caja.descri}"
+									itemValue="#{caja.cajaId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="formPagoList" value="Forma Pago"
+								 />
+							<p:selectManyMenu id="formPagoList"
+								value="#{fpmeReportControl.formPagoIds}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" >
+
+								<f:selectItems value="#{fpmeReportControl.formPagos}"
+									var="formPago" itemLabel="#{formPago.descri}"
+									itemValue="#{formPago.formPagoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estadoList" value="Estado"  />
+							<p:selectManyMenu id="estadoList"
+								value="#{fpmeReportControl.estadoDescris}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" >
+
+								<f:selectItems value="#{fpmeReportControl.parametroEstados}"
+									var="estado" itemLabel="#{estado.descri}"
+									itemValue="#{estado.descri}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Cliente Estado"
+								 />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{fpmeReportControl.persClieEstado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato" />
+							<p:selectOneRadio value="#{fpmeReportControl.formatoReporte}">
+								<f:selectItems value="#{fpmeReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{fpmeReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="fpmes" includeViewParams="false"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

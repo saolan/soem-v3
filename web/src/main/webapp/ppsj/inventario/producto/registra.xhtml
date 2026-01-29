@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="productoId" value='#{productoControl.id}' />
+		<f:event type="preRenderView" listener="#{productoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Soem - Productos Registra" />
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{productoControl.grabar}"
+					rendered="#{(productoControl.id != null and productoControl.rolPermiso.get(5001)) or 
+					(productoControl.id == null and productoControl.rolPermiso.get(5000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{productoControl.eliminar}"
+					rendered="#{productoControl.id != null and productoControl.rolPermiso.get(5002)}" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+			</div>
+
+			<p:panel id="panelRegistrar" header="Producto - Crear - Modificar">
+			
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="codigoBarr" value="Código Barra" />
+							<p:inputText id="codigoBarr"
+								value="#{productoControl.producto.codigoBarra}" required="true"
+								requiredMessage="Ingrese código de barra" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="codigo" value="Código Compra" />
+							<p:inputText id="codigo"
+								value="#{productoControl.producto.codigo}" required="true"
+								requiredMessage="Ingrese código" />
+
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="descri" value="Descripción" />
+							<p:inputText id="descri"
+								value="#{productoControl.producto.descri}"
+								styleClass="cajaTextoDescri" required="true"
+								requiredMessage="Ingrese descripción" />
+
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="prodGrupList" value="Grupo" />
+							<p:selectOneMenu id="prodGrupList" requiredMessage="Ingrese Grupo"
+								value="#{productoControl.producto.prodGrup}" placeholder="Grupo"
+								converter="omnifaces.SelectItemsConverter" required="true">
+								<f:selectItem itemLabel="Seleccione Grupo..." itemValue="" />
+								<f:selectItems value="#{productoControl.prodGrups}"
+									var="prodGrup" itemLabel="#{prodGrup.descri}"
+									itemValue="#{prodGrup}" />
+							</p:selectOneMenu>
+
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="controStock" value="Controla Stock" />
+							<p:selectOneMenu id="controStock"
+								value="#{productoControl.producto.controStoc}" required="true">
+								<f:selectItem itemLabel="Controla" itemValue="Controla" />
+								<f:selectItem itemLabel="Advertencia" itemValue="Advertencia" />
+								<f:selectItem itemLabel="NoControla" itemValue="NoControla" />
+							</p:selectOneMenu>
+
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="nota" value="Nota" />
+							<p:inputText id="nota" value="#{productoControl.producto.nota}" />
+
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:selectBooleanCheckbox id="balanz" itemLabel="Balanza"
+								value="#{productoControl.producto.balanz}" />
+
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+								value="#{productoControl.producto.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="documentoId" value='#{docuMoviEgreControl.id}' />
+		<f:event type="preRenderView" listener="#{docuMoviEgreControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Documento Movimiento Egreso - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{docuMoviEgreControl.docuMoviEgre.documento.descri}" styleClass="cajaTextoDescri"
+						required="true" requiredMessage="Ingrese descripción" />
+						
+					<p:outputLabel for="tipoList" value="Tipo" />						
+					<p:selectOneMenu id="tipoList" value="#{docuMoviEgreControl.docuMoviEgre.tipo}"
+						required="true" requiredMessage="Ingrese Tipo">
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{docuMoviEgreControl.parameTipos}" var="tipo" 
+							itemLabel="#{tipo.descri}" itemValue="#{tipo.descri}"/>
+					</p:selectOneMenu>
+						
+					<p:outputLabel for="format" value="Formato Impresión" />
+					<p:inputText id="format" value="#{docuMoviEgreControl.docuMoviEgre.documento.format}" styleClass="cajaTextoDescri" 
+						required="true" requiredMessage="Ingrese formato impresión" />
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero" value="#{docuMoviEgreControl.docuMoviEgre.documento.numero}" 
+						required="true" requiredMessage="Ingrese número" />
+
+					<p:outputLabel for="factor" value="Factor" />
+					<p:inputText id="factor" value="#{docuMoviEgreControl.docuMoviEgre.documento.factor}" 
+						required="true" requiredMessage="Ingrese factor" />
+						
+					<p:outputLabel for="contab" value="Genera Contabilidad" />
+					<p:selectBooleanCheckbox id="contab" value="#{docuMoviEgreControl.docuMoviEgre.documento.contab}" 
+						required="true" requiredMessage="Ingrese genera contabilidad" />
+						
+					<p:outputLabel value="Documento Contable" />
+					<p:selectOneMenu id="documentoList" value="#{docuMoviEgreControl.docuMoviEgre.documento.documento}" converter="omnifaces.SelectItemsConverter"
+						required="false" >
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{docuMoviEgreControl.docuTrans}" var="docuTran" 
+							itemLabel="#{docuTran.documento.descri}" itemValue="#{docuTran.documento}"/>
+					</p:selectOneMenu>
+																		
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{docuMoviEgreControl.docuMoviEgre.documento.estado}" 
+						required="true" requiredMessage="Ingrese documento estado" />
+
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{docuMoviEgreControl.grabar}" 
+					rendered="#{(docuMoviEgreControl.id != null and docuMoviEgreControl.rolPermiso.get(6001)) or 
+					(docuMoviEgreControl.id == null and docuMoviEgreControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{docuMoviEgreControl.eliminar}" 
+					rendered="#{docuMoviEgreControl.id != null and docuMoviEgreControl.rolPermiso.get(6002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,423 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="personaId" value='#{personaControl.id}' />
+		<f:event type="preRenderView" listener="#{personaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="explora" header="Persona - Panel Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Cédula" />
+							<p:inputText value="#{personaControl.persona.cedulaRuc}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Apellido" />
+							<p:inputText value="#{personaControl.persona.apelli}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="#{personaControl.persona.nombre}" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox value="#{personaControl.persona.estado}"
+								itemLabel="Estado" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+
+		<p:tabView rendered="#{personaControl.rolPermiso.get(6003)}">
+
+			<p:tab title="Cliente">
+
+				<h:form>
+					<div class="card product">
+						<p:dataView id="persClieList" emptyMessage="No se encontro datos"
+							value="#{personaControl.persClies}" var="_persClie">
+
+							<f:facet name="header">
+								<h:outputText value="Cliente" />
+							</f:facet>
+
+							<p:dataViewListItem>
+								<div class="product-list-item">
+
+									<div class="product-list-detail">
+										#{_persClie.dimm.descri}</div>
+
+									<div class="product-list-detail">
+										<span><i class="pi pi-envelope product-category-icon" />#{_persClie.persona.correo}</span>
+									</div>
+
+									<div class="product-list-detail">#{_persClie.cupo}</div>
+
+									<div class="product-list-detail">
+										<h:selectBooleanCheckbox value="#{_persClie.estado}"
+											disabled="true" />
+									</div>
+
+									<div class="product-list-action">
+										<p:commandLink styleClass="ui-icon ui-icon-pencil"
+											title="Modificar" action="#{persClieControl.modificar}">
+											<f:setPropertyActionListener value="#{_persClie.personaId}"
+												target="#{persClieControl.id}" />
+											<f:setPropertyActionListener
+												value="#{personaControl.persona.personaId}"
+												target="#{persClieControl.personaId}" />
+											<f:setPropertyActionListener
+												value="/ppsj/parametro/persona/explora"
+												target="#{persClieControl.paginaRuta}" />
+										</p:commandLink>
+									</div>
+								</div>
+							</p:dataViewListItem>
+						</p:dataView>
+					</div>
+
+					<div class="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persClieControl.nuevo}"
+							rendered="#{persClieControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persClieControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persClieControl.paginaRuta}" />
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Proveedor">
+
+				<h:form>
+					<div class="card product">
+						<p:dataView id="persProvList" emptyMessage="No se encontro datos"
+							value="#{personaControl.persProvs}" var="_persProv">
+
+							<f:facet name="header">
+								<h:outputText value="Proveedor" />
+							</f:facet>
+
+							<p:dataViewListItem>
+								<div class="product-list-item">
+
+									<div class="product-list-detail">
+										#{_persProv.dimm.descri}</div>
+
+									<div class="product-list-detail">
+										<span><i class="pi pi-envelope product-category-icon" />#{_persProv.persona.correo}</span>
+									</div>
+
+									<div class="product-list-detail">
+										<h:selectBooleanCheckbox value="#{_persProv.estado}"
+											disabled="true" />
+									</div>
+
+									<div class="product-list-action">
+										<p:commandLink styleClass="ui-icon ui-icon-pencil"
+											title="Modificar" action="#{persProvControl.modificar}">
+											<f:setPropertyActionListener value="#{_persProv.personaId}"
+												target="#{persProvControl.id}" />
+											<f:setPropertyActionListener
+												value="#{personaControl.persona.personaId}"
+												target="#{persProvControl.personaId}" />
+											<f:setPropertyActionListener
+												value="/ppsj/parametro/persona/explora"
+												target="#{persProvControl.paginaRuta}" />
+										</p:commandLink>
+									</div>
+								</div>
+							</p:dataViewListItem>
+						</p:dataView>
+					</div>
+
+					<div class="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persProvControl.nuevo}"
+							rendered="#{persProvControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persProvControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persProvControl.paginaRuta}" />
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Cajero">
+
+				<h:form>
+					<div class="card product">
+						<p:dataView id="persCajeList" emptyMessage="No se encontro datos"
+							value="#{personaControl.persCajes}" var="_persCaje">
+
+							<f:facet name="header">
+								<h:outputText value="Cajero" />
+							</f:facet>
+
+							<p:dataViewListItem>
+								<div class="product-list-item">
+
+									<div class="product-list-detail">
+										<span><i class="pi pi-envelope product-category-icon" />#{_persCaje.persona.correo}</span>
+									</div>
+
+									<div class="product-list-detail">
+										<h:selectBooleanCheckbox value="#{_persCaje.estado}"
+											disabled="true" />
+									</div>
+
+									<div class="product-list-action">
+										<p:commandLink styleClass="ui-icon ui-icon-pencil"
+											title="Modificar" action="#{persCajeControl.modificar}">
+											<f:setPropertyActionListener value="#{_persCaje.personaId}"
+												target="#{persCajeControl.id}" />
+											<f:setPropertyActionListener
+												value="#{personaControl.persona.personaId}"
+												target="#{persCajeControl.personaId}" />
+											<f:setPropertyActionListener
+												value="/ppsj/parametro/persona/explora"
+												target="#{persCajeControl.paginaRuta}" />
+										</p:commandLink>
+									</div>
+								</div>
+							</p:dataViewListItem>
+						</p:dataView>
+					</div>
+
+					<div class="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persCajeControl.nuevo}"
+							rendered="#{persCajeControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persCajeControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persCajeControl.paginaRuta}" />
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Usuario">
+
+				<h:form>
+					<div class="card product">
+						<p:dataView id="persUsuaList" emptyMessage="No se encontro datos"
+							value="#{personaControl.persUsuas}" var="_persUsua">
+
+							<f:facet name="header">
+								<h:outputText value="Usuario" />
+							</f:facet>
+
+							<p:dataViewListItem>
+								<div class="product-list-item">
+
+									<div class="product-list-detail">
+										#{_persUsua.usuari}
+									</div>
+
+									<div class="product-list-detail">
+										<span><i class="pi pi-envelope product-category-icon" />#{_persUsua.persona.correo}</span>
+									</div>
+
+									<div class="product-list-detail">
+										<h:selectBooleanCheckbox value="#{_persUsua.estado}"
+											disabled="true" />
+									</div>
+
+									<div class="product-list-action">
+										<p:commandLink styleClass="ui-icon ui-icon-pencil"
+											title="Modificar" action="#{persUsuaControl.modificar}">
+											<f:setPropertyActionListener value="#{_persUsua.personaId}"
+												target="#{persUsuaControl.id}" />
+											<f:setPropertyActionListener
+												value="#{personaControl.persona.personaId}"
+												target="#{persUsuaControl.personaId}" />
+											<f:setPropertyActionListener
+												value="/ppsj/parametro/persona/explora"
+												target="#{persUsuaControl.paginaRuta}" />
+										</p:commandLink>
+									</div>
+								</div>
+							</p:dataViewListItem>
+						</p:dataView>
+					</div>
+
+					<div class="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persUsuaControl.nuevo}"
+							rendered="#{persUsuaControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persUsuaControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persUsuaControl.paginaRuta}" />
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Vendedor">
+
+				<h:form>
+					<div class="card product">
+						<p:dataView id="persVendList" emptyMessage="No se encontro datos"
+							value="#{personaControl.persVends}" var="_persVend">
+
+							<f:facet name="header">
+								<h:outputText value="Vendedor" />
+							</f:facet>
+
+							<p:dataViewListItem>
+								<div class="product-list-item">
+
+									<div class="product-list-detail">
+										<span><i class="pi pi-envelope product-category-icon" />#{_persVend.persona.correo}</span>
+									</div>
+
+									<div class="product-list-detail">
+										<h:selectBooleanCheckbox value="#{_persVend.estado}"
+											disabled="true" />
+									</div>
+
+									<div class="product-list-action">
+										<p:commandLink styleClass="ui-icon ui-icon-pencil"
+											title="Modificar" action="#{persVendControl.modificar}">
+											<f:setPropertyActionListener value="#{_persVend.personaId}"
+												target="#{persVendControl.id}" />
+											<f:setPropertyActionListener
+												value="#{personaControl.persona.personaId}"
+												target="#{persVendControl.personaId}" />
+											<f:setPropertyActionListener
+												value="/ppsj/parametro/persona/explora"
+												target="#{persVendControl.paginaRuta}" />
+										</p:commandLink>
+									</div>
+								</div>
+							</p:dataViewListItem>
+						</p:dataView>
+					</div>
+
+					<div class="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persVendControl.nuevo}"
+							rendered="#{persVendControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persVendControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persVendControl.paginaRuta}" />
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Cobrador">
+
+				<h:form>
+					<div class="card product">
+						<p:dataView id="persCobrList" emptyMessage="No se encontro datos"
+							value="#{personaControl.persCobrs}" var="_persCobr">
+
+							<f:facet name="header">
+								<h:outputText value="Cobrador" />
+							</f:facet>
+
+							<p:dataViewListItem>
+								<div class="product-list-item">
+
+									<div class="product-list-detail">
+										<span><i class="pi pi-envelope product-category-icon" />#{_persCobr.persona.correo}</span>
+									</div>
+
+									<div class="product-list-detail">
+										<h:selectBooleanCheckbox value="#{_persCobr.estado}"
+											disabled="true" />
+									</div>
+
+									<div class="product-list-action">
+										<p:commandLink styleClass="ui-icon ui-icon-pencil"
+											title="Modificar" action="#{persCobrControl.modificar}">
+											<f:setPropertyActionListener value="#{_persCobr.personaId}"
+												target="#{persCobrControl.id}" />
+											<f:setPropertyActionListener
+												value="#{personaControl.persona.personaId}"
+												target="#{persCobrControl.personaId}" />
+											<f:setPropertyActionListener
+												value="/ppsj/parametro/persona/explora"
+												target="#{persCobrControl.paginaRuta}" />
+										</p:commandLink>
+									</div>
+								</div>
+							</p:dataViewListItem>
+						</p:dataView>
+					</div>
+
+					<div class="barraBotones">
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persCobrControl.nuevo}"
+							rendered="#{persCobrControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persCobrControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persCobrControl.paginaRuta}" />
+						</p:commandLink>
+					</div>
+
+				</h:form>
+			</p:tab>
+		</p:tabView>
+	</ui:define>
+</ui:composition>

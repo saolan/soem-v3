@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="documentoId" value='#{docuCajaControl.id}' />
+		<f:event type="preRenderView" listener="#{docuCajaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Documento Caja - Panel Datos"
+				style="margin-bottom:10px; ">
+
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{docuCajaControl.docuCaja.documento.descri}" styleClass="cajaTextoDescri"
+						required="true" requiredMessage="Cajaese descripción" />
+
+					<p:outputLabel for="format" value="Formato Impresión" />
+					<p:inputText id="format" value="#{docuCajaControl.docuCaja.documento.format}" styleClass="cajaTextoDescri" 
+						required="true" requiredMessage="Ingrese formato impresión" />
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero" value="#{docuCajaControl.docuCaja.documento.numero}" 
+						required="true" requiredMessage="Ingrese número" />
+
+					<p:outputLabel for="factor" value="Factor" />
+					<p:inputText id="factor" value="#{docuCajaControl.docuCaja.documento.factor}" 
+						required="true" requiredMessage="Ingrese factor" />
+						
+					<p:outputLabel for="contab" value="Genera Contabilidad" />
+					<p:selectBooleanCheckbox id="contab" value="#{docuCajaControl.docuCaja.documento.contab}" 
+						required="true" requiredMessage="Ingrese genera contabilidad" />
+						
+					<p:outputLabel value="Documento Contable" />
+					<p:selectOneMenu id="documentoList" value="#{docuCajaControl.docuCaja.documento.documento}" converter="omnifaces.SelectItemsConverter"
+						required="false" >
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{docuCajaControl.docuTrans}" var="docuTran" 
+							itemLabel="#{docuTran.documento.descri}" itemValue="#{docuTran.documento}"/>
+					</p:selectOneMenu>
+																		
+					<p:outputLabel for="abreCaja" value="Inicia Ventas" />
+					<p:selectBooleanCheckbox id="abreCaja" value="#{docuCajaControl.docuCaja.abreCaja}" 
+						required="true" requiredMessage="Ingrese iniciar ventas" />
+						
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{docuCajaControl.docuCaja.documento.estado}" 
+						required="true" requiredMessage="Ingrese documento estado" />
+
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{docuCajaControl.grabar}" 
+					rendered="#{(docuCajaControl.id != null and docuCajaControl.rolPermiso.get(6001)) or 
+					(docuCajaControl.id == null and docuCajaControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{docuCajaControl.eliminar}" 
+					rendered="#{docuCajaControl.id != null and docuCajaControl.rolPermiso.get(6002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

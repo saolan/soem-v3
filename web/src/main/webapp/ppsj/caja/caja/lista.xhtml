@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{cajaControl.pagina}' />
+		<f:event type="preRenderView" listener='#{cajaControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panelBuscar" />
+			<p:defaultCommand target="buscar" />
+
+			<div class="barraBotones">
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{cajaControl.rolPermiso.get(1000)}" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+					ajax="true" action="#{cajaControl.iniciarPagina}" update="cajaList" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="panelBuscar" header="Caja - Panel Busqueda">
+
+				<div class="card">
+					<div class="grid ui-fluid">
+
+						<div class="col-12 md:col-2">
+							<p:selectManyMenu id="sucursalList"
+								value="#{cajaControl.sucursalIds}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="Seleccione Sucursal">
+								<f:selectItems value="#{cajaControl.sucursals}" var="sucursal"
+									itemLabel="#{sucursal.descri}" itemValue="#{sucursal}" />
+							</p:selectManyMenu>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="codigo" value="#{cajaControl.caja.codigo}"
+								placeholder="Código" required="false">
+								<f:validateBean for="descri" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="descri" value="#{cajaControl.caja.descri}"
+								placeholder="Descripción" required="false">
+								<f:validateBean for="descri" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+								value="#{cajaControl.caja.estado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="card product">
+
+				<p:dataView id="cajaList" emptyMessage="No se encontro datos"
+					value="#{cajaControl.cajas}" var="_caja">
+
+					<f:facet name="header">
+						<h:outputText value="Cajas" />
+					</f:facet>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<span><i class="pi pi-building" />#{_caja.sucursal.descri}</span>
+							</div>
+
+							<div class="product-list-detail">
+								<div>#{_caja.codigo}</div>
+								<div>#{_caja.descri}</div>
+							</div>
+
+							<div class="product-list-action">
+								<div class="link-container">
+									<p:commandLink styleClass="ui-icon ui-icon-pencil"
+										title="Modificar" action="#{cajaControl.modificar}">
+										<f:setPropertyActionListener value="#{_caja.cajaId}"
+											target="#{cajaControl.id}" />
+									</p:commandLink>
+
+									<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+										value="Explorar" title="Explorar"
+										action="#{cajaControl.explorar}">
+										<f:setPropertyActionListener value="#{_caja.cajaId}"
+											target="#{cajaControl.id}" />
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{cajaControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+</ui:composition>

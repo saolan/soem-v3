@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cobrDetaId" value='#{cobrDetaControl.id}' />
+		<f:viewParam name="fpmeId" value='#{cobrDetaControl.fpmeId}' />
+		<f:viewParam name="cxcId" value='#{cobrDetaControl.cxcId}' />
+		<f:event type="preRenderView" listener="#{cobrDetaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Cobro Detalle - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<p:panelGrid id="grid1" columns="1" layout="grid" style="margin-top:10px;">
+					<f:facet name="header">
+						Cliente
+					</f:facet>
+					<p:outputLabel id="apellid" 
+						value="#{cobrDetaControl.cobrDeta.cxc.egreso.persClie.persona.apelli}&#160;#{cobrDetaControl.cobrDeta.cxc.egreso.persClie.persona.nombre}" />
+				</p:panelGrid>
+
+				<p:panelGrid id="grid2" columns="3" layout="grid" style="margin-top:10px;">
+					<f:facet name="header">
+						Cuenta a Cobrar:
+					</f:facet>
+										
+					<p:outputLabel for="cxcTotal" value="Total" />
+					<p:outputLabel for="cxcAbono" value="Abonos" />
+					<p:outputLabel for="cxcSaldo" value="Saldo" />
+					
+					<p:outputLabel id="cxcTotal" value="#{cobrDetaControl.cobrDeta.cxc.total}" />
+					<p:outputLabel id="cxcAbono" value="#{cobrDetaControl.cobrDeta.cxc.abono}" />
+					<p:outputLabel id="cxcSaldo" value="#{cobrDetaControl.cobrDeta.cxc.saldo}" />
+
+				</p:panelGrid>
+
+				<p:spacer height="30px" />
+				
+				<p:panelGrid id="grid" columns="2" >
+
+					<p:outputLabel for="fpmiTotal" value="Total&#160;Cobro" />
+
+					<p:outputLabel for="total" value="Total&#160;Abono" />
+					<p:inputText id="total" value="#{cobrDetaControl.cobrDeta.total}"  
+						required="true" requiredMessage="Ingrese total" />
+
+				</p:panelGrid>
+				
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{cobrDetaControl.grabar}" 
+					rendered="#{(cobrDetaControl.id != null and cobrDetaControl.rolPermiso.get(8101)) or 
+					(cobrDetaControl.id == null and cobrDetaControl.rolPermiso.get(8100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{cobrDetaControl.eliminar}" 
+					rendered="#{cobrDetaControl.id != null and cobrDetaControl.rolPermiso.get(8102)}"/>
+				<p:spacer height="2" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

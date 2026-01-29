@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{clieGrupPlanCuenControl.pagina}' />
+		<f:event type="preRenderView" listener='#{clieGrupPlanCuenControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Cliente Grupo Plan Cuenta - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="tipo" value="Tipo" />
+					<p:inputText id="tipo" value="#{clieGrupPlanCuenControl.clieGrupPlanCuen.tipoTran}" required="false">
+						<f:validateBean for="tipo" disabled="true" />
+					</p:inputText>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+					
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#clieGrupPlanCuenControl.nuevo}" 
+					rendered="#{clieGrupPlanCuenControl.rolPermiso.get(3000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/egreso/clieGrupPlanCuen/lista"
+							target="#{clieGrupPlanCuenControl.paginaRuta}" />
+				</p:commandLink>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{clieGrupPlanCuenControl.iniciarPagina}" 
+					ajax="true" update="clieGrupPlanCuenList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="clieGrupPlanCuenList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{clieGrupPlanCuenControl.clieGrupPlanCuens}" var="_clieGrupPlanCuen">
+
+				<f:facet name="header">
+					<h:outputText value="Grupo Clientes - Plan de Cuentas" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{clieGrupPlanCuenControl.modificar}">
+							<f:setPropertyActionListener value="#{_clieGrupPlanCuen.cgpcId}"
+								target="#{clieGrupPlanCuenControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/egreso/clieGrupPlanCuen/lista"
+								target="#{clieGrupPlanCuenControl.paginaRuta}" />								
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{clieGrupPlanCuenControl.explorar}">
+							<f:setPropertyActionListener value="#{_clieGrupPlanCuen.cgpcId}"
+								target="#{clieGrupPlanCuenControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+				
+				<p:column headerText="Grupo Cliente">
+					<h:outputText id="clieGrup" value="#{_clieGrupPlanCuen.clieGrup.descri}" />
+				</p:column>
+
+				<p:column headerText="Plan Cuenta">
+					<h:outputText id="planCuen" value="#{_clieGrupPlanCuen.planCuen.descri}" />
+				</p:column>
+
+				<p:column headerText="Tipo">
+					<h:outputText id="tipo" value="#{_clieGrupPlanCuen.tipoTran}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{clieGrupPlanCuenControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

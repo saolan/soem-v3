@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="prodBodeId" value='#{prodBodeControl.id}' />
+		<f:viewParam name="productoId" value='#{prodBodeControl.productoId}' />
+		<f:viewParam name="paginaRuta" value='#{prodBodeControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{prodBodeControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Producto Bodega - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="productoList" value="Producto" />
+					<p:selectOneMenu id="productoList" value="#{prodBodeControl.prodBode.producto}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{prodBodeControl.productos}" var="producto" 
+							itemLabel="#{producto.descri}" itemValue="#{producto}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="bodegaList" value="Bodega" />
+					<p:selectOneMenu id="bodegaList" value="#{prodBodeControl.prodBode.bodega}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{prodBodeControl.bodegas}" var="bodega" 
+							itemLabel="#{bodega.descri}" itemValue="#{bodega}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="cantidCont" value="Cantidad Conteo" />
+					<p:inputText id="cantidCont" value="#{prodBodeControl.prodBode.cantidCont}"  
+						required="true" requiredMessage="Ingrese cantidad conteo" >
+						<f:convertNumber pattern="#0.0000" locale="en-US"/>
+					</p:inputText>
+
+					<p:outputLabel for="maximo" value="Máximo" />
+					<p:inputText id="maximo" value="#{prodBodeControl.prodBode.maximo}"  
+						required="true" requiredMessage="Ingrese máximo" >
+						<f:convertNumber pattern="#0.0000" locale="en-US"/>
+					</p:inputText>
+
+					<p:outputLabel for="minimo" value="Mínimo" />
+					<p:inputText id="minimo" value="#{prodBodeControl.prodBode.minimo}"  
+						required="true" requiredMessage="Ingrese mínimo" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</p:inputText>
+
+					<p:outputLabel for="ubicac" value="Ubicación" />
+					<p:inputText id="ubicac" value="#{prodBodeControl.prodBode.ubicac}"/>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{prodBodeControl.grabar}" 
+					rendered="#{(prodBodeControl.id != null and prodBodeControl.rolPermiso.get(5001)) or 
+					(prodBodeControl.id == null and prodBodeControl.rolPermiso.get(5000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{prodBodeControl.eliminar}" 
+					rendered="#{prodBodeControl.id != null and prodBodeControl.rolPermiso.get(5002)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{prodBodeControl.cancelar}"	/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

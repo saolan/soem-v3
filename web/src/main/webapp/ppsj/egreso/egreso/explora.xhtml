@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="egresoId" value='#{egresoControl.id}' />
+		<f:event type="preRenderView" listener="#{egresoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="explora" header="Egreso - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Documento" />
+							<p:inputText
+								value="#{egresoControl.egreso.docuEgre.documento.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Fecha&#160;Emisión" />
+							<p:inputText value="#{egresoControl.egreso.fechaEmis}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Número" />
+							<div />
+							<p:inputText value="#{egresoControl.egreso.serie1}"
+								style="width:30%;" />
+							<p:inputText value="#{egresoControl.egreso.serie2}"
+								style="width:30%;" />
+							<p:inputText value="#{egresoControl.egreso.numero}"
+								style="width:30%;" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Total" />
+							<p:inputText value="#{egresoControl.egreso.total}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Estado" />
+							<p:inputText value="#{egresoControl.egreso.estado}" />
+						</div>
+					</div>
+				</div>
+
+				<p:dataTable id="egreTranList" emptyMessage="No se encontro datos"
+					value="#{egresoControl.egreTrans}" var="_egreTran">
+
+					<f:facet name="header">
+							Documentos Contables
+					</f:facet>
+
+					<p:column headerText="Documento" style="width:45%;">
+						<h:outputText id="tranDocu"
+							value="#{_egreTran.transaccion.docuTran.documento.descri}" />
+					</p:column>
+
+					<p:column headerText="Número" style="width:20%;">
+						<h:outputText id="tranNumero"
+							value="#{_egreTran.transaccion.numero}" />
+					</p:column>
+
+					<p:column headerText="Descripción">
+						<h:outputText id="egreTranDescri" value="#{_egreTran.descri}" />
+					</p:column>
+
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cajaDocuEgreId" value='#{cajaDocuEgreControl.id}' />
+		<f:viewParam name="cajaId" value='#{cajaDocuEgreControl.cajaId}' />
+		<f:viewParam name="paginaRuta"
+			value='#{cajaDocuEgreControl.paginaRuta}' />
+		<f:event type="preRenderView"
+			listener="#{cajaDocuEgreControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{cajaDocuEgreControl.grabar}"
+					rendered="#{(cajaDocuEgreControl.id != null and cajaDocuEgreControl.rolPermiso.get(1001)) or 
+					(cajaDocuEgreControl.id == null and cajaDocuEgreControl.rolPermiso.get(1000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{cajaDocuEgreControl.eliminar}"
+					rendered="#{cajaDocuEgreControl.id != null and cajaDocuEgreControl.rolPermiso.get(1002)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{cajaDocuEgreControl.cancelar}" />
+
+			</div>
+
+			<p:panel id="panelRegistrar"
+				header="Caja Documento - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="cajaList" value="Caja" />
+							<p:selectOneMenu id="cajaList"
+								value="#{cajaDocuEgreControl.cajaDocuEgre.caja}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{cajaDocuEgreControl.cajas}" var="caja"
+									itemLabel="#{caja.descri}" itemValue="#{caja}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="documentoList" value="Documento" />
+							<p:selectOneMenu id="documentoList"
+								value="#{cajaDocuEgreControl.cajaDocuEgre.docuEgre}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{cajaDocuEgreControl.docuEgres}"
+									var="docuEgre" itemLabel="#{docuEgre.documento.descri}"
+									itemValue="#{docuEgre}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="serieUno" value="Serie No.1" />
+							<p:inputText id="serieUno"
+								value="#{cajaDocuEgreControl.cajaDocuEgre.serie1}"
+								required="true" requiredMessage="Ingrese serie No.1" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="serieDos" value="Serie No.2" />
+							<p:inputText id="serieDos"
+								value="#{cajaDocuEgreControl.cajaDocuEgre.serie2}"
+								required="true" requiredMessage="Ingrese serie No.2" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="numero" value="Número" />
+							<p:inputText id="numero"
+								value="#{cajaDocuEgreControl.cajaDocuEgre.numero}"
+								required="true" requiredMessage="Ingrese número" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

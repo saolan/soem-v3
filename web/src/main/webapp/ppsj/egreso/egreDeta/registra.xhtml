@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="egreDetaId" value='#{egreDetaControl.id}' />
+		<f:event type="preRenderView" listener="#{egreDetaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="egreDeta - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="fecha" value="Fecha" />
+					<p:inputText id="fecha" value="#{egreDetaControl.egreDeta.fechaRegi}"  
+						required="true" requiredMessage="Ingrese fecha" />
+
+					<p:outputLabel for="cantidad" value="Cantidad" />
+					<p:inputText id="cantidad" value="#{egreDetaControl.egreDeta.cantid}"  
+						required="true" requiredMessage="Ingrese cantidad" />
+						
+					<p:outputLabel for="precio" value="Precio" />
+					<p:inputText id="precio" value="#{egreDetaControl.egreDeta.precio}"  
+						required="true" requiredMessage="Ingrese precio" />
+						
+					<p:outputLabel for="descuento" value="Descuento" />
+					<p:inputText id="descuento" value="#{egreDetaControl.egreDeta.descue}"/>
+						
+					<p:outputLabel for="costo" value="Costo" />
+					<p:inputText id="costo" value="#{egreDetaControl.egreDeta.costo}"  
+						required="true" requiredMessage="Ingrese costo" />
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{egreDetaControl.grabar}" 
+					rendered="#{(egreDetaControl.id != null and egreDetaControl.rolPermiso.get(3101)) or 
+					(egreDetaControl.id == null and egreDetaControl.rolPermiso.get(3100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{egreDetaControl.eliminar}" 
+					rendered="#{egreDetaControl.id != null and egreDetaControl.rolPermiso.get(3102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

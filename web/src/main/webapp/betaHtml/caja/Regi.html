@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soem - Caja Movimientos Registro</title>
+    <link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+    
+    <h1>Caja Movimientos Registro</h1>
+    <form method="post" action="Regi.html"  enctype="application/x-www-form-urlencoded">
+        <fieldset>
+            <legend>Registro</legend>
+            <label id="LabelCajaMoviDocumento"  for="cajaMoviDocumento">Documento</label>
+            <select id="cajaMoviDocumento" name="cajaMoviDocumento" required>
+            <option id="abrirSesion" value="abrirSesion">Abrir sesion</option>
+            <option id="gasto" value="gasto">Gasto</option>
+            <option id="cerrarSesion" value="cerrarSesion">Cerrar sesion</option>
+            </select>
+
+        <label id="LabelCajaMoviCaja"  for="cajaMoviCaja">Documento</label>
+		<input id="cajaMoviCaja" name="cajaMoviCaja" type="text" required>
+
+        <label id="LabelCajaMoviFecha"  for="cajaMoviFecha">Fecha</label>
+        <input id="cajaMoviFecha"  name="cajaMoviFecha" type="date" required>
+
+        <label id="LabelCajaMoviEstado"  for="cajaMoviEstado">Estado</label>
+        <input id="cajaMoviEstado" name="cajaMoviEstado" type="checkbox" required>
+        <input type="submit" value="Buscar">
+    </fieldset>
+    </form>
+</body>
+</html>

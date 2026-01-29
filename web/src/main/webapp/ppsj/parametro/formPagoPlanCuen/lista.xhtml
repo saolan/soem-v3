@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{formPagoPlanCuenControl.pagina}' />
+		<f:event type="preRenderView" listener='#{formPagoPlanCuenControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Forma Pago Plan Cuenta - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="tipo" value="Tipo" />
+					<p:inputText id="tipo" value="#{formPagoPlanCuenControl.formPagoPlanCuen.tipoTran}" required="false">
+						<f:validateBean for="tipo" disabled="true" />
+					</p:inputText>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{formPagoPlanCuenControl.rolPermiso.get(6000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{formPagoPlanCuenControl.iniciarPagina}" 
+					ajax="true" update="formPagoPlanCuenList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="formPagoPlanCuenList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{formPagoPlanCuenControl.formPagoPlanCuens}" var="_formPagoPlanCuen">
+
+				<f:facet name="header">
+					<h:outputText value="Forma Pago - Plan de Cuentas" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{formPagoPlanCuenControl.modificar}">
+							<f:setPropertyActionListener value="#{_formPagoPlanCuen.fppcId}"
+								target="#{formPagoPlanCuenControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{formPagoPlanCuenControl.explorar}">
+							<f:setPropertyActionListener value="#{_formPagoPlanCuen.fppcId}"
+								target="#{formPagoPlanCuenControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Forma Pago">
+					<h:outputText id="formPago" value="#{_formPagoPlanCuen.formPago.descri}" />
+				</p:column>
+				
+				<p:column headerText="Plan Cuenta">
+					<h:outputText id="planCuen" value="#{_formPagoPlanCuen.planCuen.descri}" />
+				</p:column>
+
+				<p:column headerText="Tipo">
+					<h:outputText id="tipo" value="#{_formPagoPlanCuen.tipoTran}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{formPagoPlanCuenControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

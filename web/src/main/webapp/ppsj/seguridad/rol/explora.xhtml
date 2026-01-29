@@ -1,0 +1,481 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="rolId" value='#{rolControl.id}' />
+		<f:event type="preRenderView" listener="#{rolControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Rol - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Descripcion" />
+					<p:inputText value="#{rolControl.rol.descri}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{rolControl.rol.estado}" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<p:spacer />
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+
+		</h:form>
+
+		<p:tabView rendered="#{rolControl.rolPermiso.get(7003)}">
+
+			<p:tab title="Permisos">
+
+				<h:form>
+
+					<p:dataTable id="rolPermList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos" value="#{rolControl.rolPerms}"
+						var="_rolPerm">
+
+						<f:facet name="header">
+							<h:outputText value="Permisos" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{rolPermControl.modificar}">
+									<f:setPropertyActionListener value="#{_rolPerm.rolPermId}"
+										target="#{rolPermControl.id}" />
+									<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+										target="#{rolPermControl.rolId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/seguridad/rol/explora"
+										target="#{rolPermControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Rol">
+							<h:outputText id="rol" value="#{_rolPerm.rol.descri}" />
+						</p:column>
+
+						<p:column headerText="Permiso">
+							<h:outputText id="permiso" value="#{_rolPerm.permiso.descri}" />
+						</p:column>
+
+						<p:column headerText="Acceso">
+							<h:selectBooleanCheckbox id="estado" value="#{_rolPerm.acceso}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{rolPermControl.nuevo}">
+							<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+								target="#{rolPermControl.rolId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rol/explora"
+								target="#{rolPermControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+
+			<p:tab title="Documentos">
+
+				<h:form>
+
+					<p:dataTable id="rolDocuList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos" value="#{rolControl.rolDocus}"
+						var="_rolDocu">
+
+						<f:facet name="header">
+							<h:outputText value="Documentos" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{rolDocuControl.modificar}">
+									<f:setPropertyActionListener value="#{_rolDocu.rolDocuId}"
+										target="#{rolDocuControl.id}" />
+									<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+										target="#{rolDocuControl.rolId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/seguridad/rol/explora"
+										target="#{rolDocuControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Rol">
+							<h:outputText id="rol" value="#{_rolDocu.rol.descri}" />
+						</p:column>
+
+						<p:column headerText="Documento">
+							<h:outputText id="documento" value="#{_rolDocu.documento.descri}" />
+						</p:column>
+
+						<p:column headerText="Predeterminado">
+							<h:selectBooleanCheckbox id="predet" value="#{_rolDocu.predet}" disabled="true"/>
+						</p:column>
+
+						<p:column headerText="Acceso">
+							<h:selectBooleanCheckbox id="estado" value="#{_rolDocu.acceso}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{rolDocuControl.nuevo}">
+							<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+								target="#{rolDocuControl.rolId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rol/explora"
+								target="#{rolDocuControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Formas de pago">
+
+				<h:form>
+
+					<p:dataTable id="rolFormPagoList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos"
+						value="#{rolControl.rolFormPagos}" var="_rolFormPago">
+
+						<f:facet name="header">
+							<h:outputText value="Formas de pago" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{rolFormPagoControl.modificar}">
+									<f:setPropertyActionListener value="#{_rolFormPago.rolFormPagoId}"
+										target="#{rolFormPagoControl.id}" />
+									<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+										target="#{rolFormPagoControl.rolId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/seguridad/rol/explora"
+										target="#{rolFormPagoControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Rol">
+							<h:outputText id="rol" value="#{_rolFormPago.rol.descri}" />
+						</p:column>
+
+						<p:column headerText="Forma Pago">
+							<h:outputText id="formPago"
+								value="#{_rolFormPago.formPago.descri}" />
+						</p:column>
+						
+						<p:column headerText="Forma Pago Ref.">
+							<h:outputText id="formPagoRef"
+								value="#{_rolFormPago.formPago.refere}" />
+						</p:column>
+
+						<p:column headerText="Predeterminado">
+							<h:selectBooleanCheckbox id="predet" value="#{_rolFormPago.predet}" disabled="true"/>
+						</p:column>
+
+						<p:column headerText="Acceso">
+							<h:selectBooleanCheckbox id="estado" value="#{_rolFormPago.acceso}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{rolFormPagoControl.nuevo}">
+							<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+								target="#{rolFormPagoControl.rolId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rol/explora"
+								target="#{rolFormPagoControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Precios">
+
+				<h:form>
+
+					<p:dataTable id="rolPrecList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos"
+						value="#{rolControl.rolPrecs}" var="_rolPrec">
+
+						<f:facet name="header">
+							<h:outputText value="Precios" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{rolPrecControl.modificar}">
+									<f:setPropertyActionListener value="#{_rolPrec.rolPrecId}"
+										target="#{rolPrecControl.id}" />
+									<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+										target="#{rolPrecControl.rolId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/seguridad/rol/explora"
+										target="#{rolPrecControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Sucursal">
+							<h:outputText id="sucurs" value="#{_rolPrec.sucursal.descri}" />
+						</p:column>
+
+						<p:column headerText="Rol">
+							<h:outputText id="rol" value="#{_rolPrec.rol.descri}" />
+						</p:column>
+
+						<p:column headerText="Precio">
+							<h:outputText id="precio" value="#{_rolPrec.precio.descri}" />
+						</p:column>
+
+						<p:column headerText="Predeterminado">
+							<h:selectBooleanCheckbox id="predet" value="#{_rolPrec.predet}" disabled="true"/>
+						</p:column>
+
+						<p:column headerText="Acceso">
+							<h:selectBooleanCheckbox id="estado" value="#{_rolPrec.acceso}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{rolPrecControl.nuevo}">
+							<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+								target="#{rolPrecControl.rolId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rol/explora"
+								target="#{rolPrecControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+
+
+			<p:tab title="Bodegas">
+
+				<h:form>
+
+					<p:dataTable id="rolBodeList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos" value="#{rolControl.rolBodes}"
+						var="_rolBode">
+
+						<f:facet name="header">
+							<h:outputText value="Bodegas" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="1" layout="grid">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" ajax="false"
+									action="#{rolBodeControl.modificar}">
+									<f:setPropertyActionListener value="#{_rolBode.rolBodeId}"
+										target="#{rolBodeControl.id}" />
+									<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+										target="#{rolBodeControl.rolId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/seguridad/rol/explora"
+										target="#{rolBodeControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Sucursal">
+							<h:outputText id="sucurs" value="#{_rolBode.sucursal.descri}" />
+						</p:column>
+
+						<p:column headerText="Rol">
+							<h:outputText id="rol" value="#{_rolBode.rol.descri}" />
+						</p:column>
+
+						<p:column headerText="Bodega">
+							<h:outputText id="bodega" value="#{_rolBode.bodega.descri}" />
+						</p:column>
+
+						<p:column headerText="Predeterminado">
+							<h:selectBooleanCheckbox id="predet" value="#{_rolBode.predet}"
+								disabled="true" />
+						</p:column>
+
+						<p:column headerText="Acceso">
+							<h:selectBooleanCheckbox id="acceso" value="#{_rolBode.acceso}"
+								disabled="true" />
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{rolBodeControl.nuevo}">
+							<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+								target="#{rolBodeControl.rolId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rol/explora"
+								target="#{rolBodeControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Sucursales">
+
+				<h:form>
+
+					<p:dataTable id="rolSucuList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos"
+						value="#{rolControl.rolSucus}" var="_rolSucu">
+
+						<f:facet name="header">
+							<h:outputText value="Sucursales" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{rolSucuControl.modificar}">
+									<f:setPropertyActionListener value="#{_rolSucu.rolSucuId}"
+										target="#{rolSucuControl.id}" />
+									<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+										target="#{rolSucuControl.rolId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/seguridad/rol/explora"
+										target="#{rolSucuControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Sucursal">
+							<h:outputText id="sucurs" value="#{_rolSucu.sucursal.descri}" />
+						</p:column>
+
+						<p:column headerText="Rol">
+							<h:outputText id="rol" value="#{_rolSucu.rol.descri}" />
+						</p:column>
+
+						<p:column headerText="Acceso">
+							<h:selectBooleanCheckbox id="estado" value="#{_rolSucu.acceso}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+					
+					<p:spacer />
+
+					<div id="barraBotones">
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{rolSucuControl.nuevo}">
+							<f:setPropertyActionListener value="#{rolControl.rol.rolId}"
+								target="#{rolSucuControl.rolId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rol/explora"
+								target="#{rolSucuControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>
+
+
+
+	</ui:define>
+</ui:composition>

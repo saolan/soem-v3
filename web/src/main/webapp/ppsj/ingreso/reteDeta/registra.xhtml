@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="reteDetaId" value='#{reteDetaControl.id}' />
+		<f:event type="preRenderView" listener="#{reteDetaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="reteDeta - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="ejerciFiscal" value="Ejercicio Fiscal" />
+					<p:inputText id="ejerciFiscal" value="#{reteDetaControl.reteDeta.ejerciFisc}" 
+						required="true" requiredMessage="Ingrese ejercicio fiscal" />
+
+					<p:outputLabel for="impues" value="Impuesto" />
+					<p:inputText id="impues" value="#{reteDetaControl.reteDeta.impues}" 
+						required="true" requiredMessage="Ingrese impuesto" />
+
+					<p:outputLabel for="codigoImpu" value="Código Impuesto" />
+					<p:inputText id="codigoImpu" value="#{reteDetaControl.reteDeta.codigoImpu}" 
+						required="true" requiredMessage="Ingrese código impuesto" />
+
+					<p:outputLabel for="base" value="Base" />
+					<p:inputText id="base" value="#{reteDetaControl.reteDeta.base}" 
+						required="true" requiredMessage="Ingrese base imponible" />
+
+					<p:outputLabel for="porcen" value="Porcentaje" />
+					<p:inputText id="porcen" value="#{reteDetaControl.reteDeta.porcen}" 
+						required="true" requiredMessage="Ingrese porentaje" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{reteDetaControl.grabar}" 
+					rendered="#{(reteDetaControl.id != null and reteDetaControl.rolPermiso.get(4001)) or 
+					(reteDetaControl.id == null and reteDetaControl.rolPermiso.get(4000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{reteDetaControl.eliminar}" 
+					rendered="#{reteDetaControl.id != null and reteDetaControl.rolPermiso.get(4002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

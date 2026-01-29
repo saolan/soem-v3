@@ -1,0 +1,316 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="paginaPlanCuen" value='#{transaccionControl.paginaPlanCuen}' />
+
+		<f:viewParam name="transaccionId" value='#{transaccionControl.id}' />
+		<f:event type="preRenderView" listener="#{transaccionControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form id="planCuenRegistra">
+		
+		<p:defaultCommand target="buscarPlanCuen" />
+
+			<p:panel id="panelRegistrar" header="Transacción - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+					
+				<h:panelGrid id="grid2" columns="6" columnClasses="columna1,columna2,columna1,columna2,columna1,columna2">
+						
+					<p:outputLabel for="documentoList" value="Documento" />				
+					<p:selectOneMenu id="documentoList" value="#{transaccionControl.transaccion.docuTran}" converter="omnifaces.SelectItemsConverter"
+						required="true" requiredMessage="Ingrese Documento">
+						<f:selectItems value="#{transaccionControl.docuTrans}" var="docuTran" 
+							itemLabel="#{docuTran.documento.descri}" itemValue="#{docuTran}"/>
+					</p:selectOneMenu>
+															
+					<p:outputLabel for="fechaEmis" value="Fecha" />
+					<p:calendar id="fechaEmis" pattern="dd-MM-yyyy"
+						value="#{transaccionControl.transaccion.fechaEmis}" required="true" requiredMessage="Ingrese Fecha">
+					</p:calendar>
+
+					<p:outputLabel for="numero" value="Número" />
+					<h:inputText id="numero" value="#{transaccionControl.transaccion.numero}" disabled="true"/>					
+															
+					<p:outputLabel for="nota" value="Nota" />
+					<p:inputText id="nota" value="#{transaccionControl.transaccion.nota}" style="width:190%;"/>
+
+					<p:column/>
+					<p:column/>		
+
+					<p:outputLabel for="estado" value="Estado" />
+					<h:inputText id="estado" value="#{transaccionControl.transaccion.estado}" disabled="true" />
+
+				</h:panelGrid>
+
+			</p:panel>
+			
+			<p:panel id="panelBuscarPlanCuen" >
+
+				<h:panelGrid id="gridPlanCuen" columns="3">
+
+					<p:outputLabel for="codigoPlanCuen"  value="Buscar&#160;Cuenta" />
+					<p:inputText id="codigoPlanCuen" value="#{transaccionControl.planCuenBuscar.codigo}" >
+						<p:ajax oncomplete="moverCursorDetalle('planCuenRegistra:codigoPlanCuen','planCuenRegistra:tranDetaList',#{transaccionControl.filasTranDetas})" 
+						listener="#{transaccionControl.agregarTranDeta}" update="tranDetaList,codigoPlanCuen,filasTranDetas"/>
+					</p:inputText>
+																			
+					<p:commandLink id="abrirDialogo" style=" font-size: 130%; font-weight: bold; color: blue; text-decoration: underline;"  
+						onclick="PF('seleccionCuenta').show();" 
+						update="panelBuscarCuenta,planCuenList" >
+						<h:graphicImage library="img" name="lupa1.png" width="14px" />	
+					</p:commandLink>
+					
+				</h:panelGrid>
+			</p:panel>
+			
+			<div >
+
+					<p:dataTable id="tranDetaList" scrollable="true" editable="true" editMode="cell"
+						emptyMessage="No se encontro datos" value="#{transaccionControl.tranDetas}" var="_tranDeta" 
+						 >
+						
+						<p:ajax event="cellEdit" listener="#{transaccionControl.modificarCelda}" update=":planCuenRegistra:totalDebe,:planCuenRegistra:totalHaber,:planCuenRegistra:diferencia" />
+    											
+						<p:column style="width:60px;text-align: center" headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-trash" title="eliminar" 
+									ajax="true" action="#{transaccionControl.eliminarTranDeta}"
+									update="tranDetaList,:planCuenRegistra:totalDebe,:planCuenRegistra:totalHaber,:planCuenRegistra:diferencia,:planCuenRegistra:filasTranDetas ">
+									<f:setPropertyActionListener value="#{_tranDeta}" target="#{transaccionControl.tranDeta}" />
+							
+								</p:commandLink>
+
+								<p:commandLink  styleClass="ui-icon ui-icon-comment" title="Agregar Nota"
+									ajax="true" update="planCuenRegistra:tranDetaDetalle" 
+									onclick="PF('tranDetaNotaDialogo').show();"   >
+									<f:setPropertyActionListener value="#{_tranDeta}" target="#{transaccionControl.tranDeta}" />
+								</p:commandLink>
+								
+							</p:panelGrid>
+								
+						</p:column>
+
+						<p:column headerText="Cuenta Código" style="text-align:left; width:180px">
+							<h:outputText id="planCuenCodigo" value="#{_tranDeta.planCuen.codigo}" />
+						</p:column>
+
+						<p:column headerText="Cuenta Descripción" style="text-align:left">
+							<h:outputText id="planCuenDescri" value="#{_tranDeta.planCuen.descri}" />
+						</p:column>
+						
+						<p:column headerText="Total" style="text-align: right" >
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText id="totalOutput" value="#{_tranDeta.total}">
+										<f:convertNumber pattern="#0.00" locale="en-US"/>
+									</h:outputText>
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText id="totalInput" value="#{_tranDeta.total}" style="width:100%" onblur="moverCursor('planCuenRegistra:tranDetaList:totalInput','planCuenRegistra:codigoPlanCuen')" >
+										<f:convertNumber pattern="#0.000000" locale="en-US"/>
+									</p:inputText>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+					</p:dataTable>
+			</div>
+
+			<p:panel id="panelTotal" style="margin-bottom:5px; ">
+			
+				<h:panelGrid id="gridTotal" columns="8">
+				
+					<p:outputLabel for="filasTranDetas" value="Reg." style="font-size: 110%;"/>
+					<h:inputText id="filasTranDetas" value="#{transaccionControl.filasTranDetas}" disabled="true"/>
+					
+					
+					<p:outputLabel for="totalDebe" value="Total&#160;Debe" style="font-size: 110%;"/>
+					<h:inputText id="totalDebe" value="#{transaccionControl.totalDebe}" disabled="true" style="font-size: 110%;">
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</h:inputText>
+
+					<p:outputLabel for="totalHaber" value="Total&#160;Haber" style="font-size: 110%;"/>
+					<h:inputText id="totalHaber" value="#{transaccionControl.totalHabe}" disabled="true" style="font-size: 110%;">
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</h:inputText>
+
+					<p:outputLabel for="diferencia" value="Diferencia" style="font-size: 110%;"/>
+					<h:inputText id="diferencia" value="#{transaccionControl.difere}" disabled="true" style="font-size: 110%;">
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</h:inputText>
+					
+				</h:panelGrid>
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{transaccionControl.grabar}" 
+					rendered="#{(transaccionControl.id != null and transaccionControl.rolPermiso.get(2101)) or 
+					(transaccionControl.id == null and transaccionControl.rolPermiso.get(2100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{transaccionControl.eliminar}" 
+					rendered="#{transaccionControl.id != null and transaccionControl.rolPermiso.get(2102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="anular" value="Anular" 
+					styleClass="boton" action="#{transaccionControl.anular}" 
+					rendered="#{transaccionControl.id != null and 
+						transaccionControl.rolPermiso.get(2107) and transaccionControl.transaccion.estado.equals('PR')}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+			</div>
+
+
+			<p:dialog id="seleccionCuenta" widgetVar="seleccionCuenta" width="60%"
+				header="Buscar y Seleccionar Cuenta" modal="true" resizable="false"
+				focus="codigo">
+
+ 				<p:focus context="panelBuscarCuenta" />
+			
+				<p:panel id="panelBuscarCuenta" style="margin-bottom:5px;" >
+
+					<h:panelGrid columns="2">
+
+						<h:panelGrid columns="1">
+							<p:outputLabel for="codigo" value="Código" />
+							<p:inputText id="codigo" value="#{transaccionControl.planCuenBuscar.codigo}" required="false">
+								<f:validateBean for="codigo" disabled="true" />
+							</p:inputText>
+						</h:panelGrid>
+									
+						<h:panelGrid columns="1">
+							<p:outputLabel for="descri" value="Descripción" />
+							<p:inputText id="descri" value="#{transaccionControl.planCuenBuscar.descri}" required="false"
+								styleClass="cajaTextoDescri">
+								<f:validateBean for="descri" disabled="true" />
+							</p:inputText>
+						</h:panelGrid>
+				
+					</h:panelGrid>
+			</p:panel>
+			
+			<p:commandLink id="buscarPlanCuen" value="Buscar" 
+					styleClass="boton" action="#{transaccionControl.buscarPlanCuens(0)}" 
+					update="planCuenList,panelBuscarCuenta,paginadorPlanCuens" />
+			
+			<p:dataTable id="planCuenList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				selectionMode="single" rowKey="#{_planCuen.planCuenId}"
+				value="#{transaccionControl.planCuens}" var="_planCuen">
+
+        		<p:ajax event="rowSelect" listener="#{transaccionControl.onRowSelect}" oncomplete="moverCursorDetalle('planCuenRegistra:codigoPlanCuen','planCuenRegistra:tranDetaList',#{transaccionControl.filasTranDetas})" 
+        			update="planCuenRegistra:tranDetaList,:planCuenRegistra:totalDebe,:planCuenRegistra:totalHaber,:planCuenRegistra:diferencia,planCuenRegistra:filasTranDetas,planCuenRegistra:codigoPlanCuen" />
+        		<p:ajax event="rowUnselect" listener="#{transaccionControl.onRowUnselect}" oncomplete="moverCursorDetalle('planCuenRegistra:codigoPlanCuen','planCuenRegistra:tranDetaList',#{transaccionControl.filasTranDetas})" 
+        			update="planCuenRegistra:tranDetaList,:planCuenRegistra:totalDebe,:planCuenRegistra:totalHaber,:planCuenRegistra:diferencia,planCuenRegistra:filasTranDetas,planCuenRegistra:codigoPlanCuen" />
+
+				<f:facet name="header">
+					<h:outputText value="Plan Cuenta" />
+				</f:facet>
+
+				<p:column headerText="Codigo" style="width:80px; text-align:left">
+					<h:outputText id="codigo" value="#{_planCuen.codigo}" />
+				</p:column>
+
+				<p:column headerText="Descripción" style="text-align:left">
+					<h:outputText id="descri" value="#{_planCuen.descri}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<div align="center" >
+			
+				<h:panelGroup id="paginadorPlanCuens">
+			
+					<p:commandButton value="Anterior" ajax="true" update="planCuenRegistra:planCuenList,panelBuscarCuenta,paginadorPlanCuens"
+						rendered="#{transaccionControl.paginaPlanCuen gt 0}" 
+						action="#{transaccionControl.buscarPlanCuens(1)}">
+						<f:param name="paginaPlanCuen" value="#{transaccionControl.paginaPlanCuen - 1}"/>
+					</p:commandButton>
+			
+					<p:commandButton value="Siguiente" ajax="true" update="planCuenRegistra:planCuenList,panelBuscarCuenta,paginadorPlanCuens" 
+						rendered="#{(transaccionControl.paginaPlanCuen + 1) * transaccionControl.filasPagina lt transaccionControl.contadorRegPlanCuen}"
+						action="#{transaccionControl.buscarPlanCuens(1)}">
+						<f:param name="paginaPlanCuen" value="#{transaccionControl.paginaPlanCuen + 1}"/>
+					</p:commandButton>
+					
+				</h:panelGroup>
+									
+			</div>
+			</p:dialog>
+
+			<p:dialog id="tranDetaNota" widgetVar="tranDetaNotaDialogo" 
+				header="Nota" modal="true" resizable="false">
+
+				<p:outputPanel id="tranDetaDetalle" style="text-align:center;">
+
+					<p:panelGrid columns="1" layout="grid">
+					<h:outputText value="#{transaccionControl.tranDeta.planCuen.descri}" />
+				
+					<p:inputTextarea rows="10" cols="80" counter="contador" maxlength="1000" 
+						counterTemplate="Caracteres disponibles {0}" autoResize="false"
+						value="#{transaccionControl.tranDeta.nota}">
+					</p:inputTextarea>
+					
+					<h:outputText id="contador" />
+					<br />
+					<p:commandLink id="aceptarTranDetaNotaDialogo" ajax="false" styleClass="boton" value="Aceptar" 
+						onclick="PF('tranDetaNotaDialogo').hide();" />
+					
+					
+					</p:panelGrid> 
+
+				</p:outputPanel>
+			</p:dialog>
+
+
+
+		<script type="text/javascript">
+		
+	        function moverCursor(desde, hasta) {
+	        	
+				if (desde != hasta){
+		        	document.getElementById(hasta).click();
+		        	document.getElementById(hasta).focus();
+				}		       
+	        }
+
+	        function moverCursorDetalle(desde, hasta, filas) {
+
+	        	//filas = filas - 1;
+	        	var destino = hasta + ":" + filas + ":totalInput"
+
+				//alert(filas);
+	        	
+				if (document.getElementById(destino) ){
+		        	document.getElementById(destino).click();
+		        	document.getElementById(destino).focus();
+				}		       
+	        	
+	        }
+	        
+		</script>
+						
+		</h:form>
+	</ui:define>
+</ui:composition>

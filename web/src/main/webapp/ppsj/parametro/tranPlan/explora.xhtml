@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="tranPlanId" value='#{tranPlanControl.id}' />
+		<f:event type="preRenderView" listener="#{tranPlanControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Transación Plantilla - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{tranPlanControl.tranPlan.descri}" />
+									
+					<p:outputLabel value="Módulo" />
+					<p:inputText value="#{tranPlanControl.tranPlan.modulo}" />
+
+					<p:outputLabel value="Tipo" />
+					<p:inputText value="#{tranPlanControl.tranPlan.tipo}" />
+
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{tranPlanControl.tranPlan.estado}" />
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+		
+			<p:tabView rendered="#{tranPlanControl.rolPermiso.get(6003)}">
+
+			<p:tab title="Cuentas Contables">
+
+				<h:form>
+
+					<p:dataTable id="tranPlanDetaList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+						value="#{tranPlanControl.tranPlanDetas}" var="_tranPlanDeta">
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{tranPlanDetaControl.modificar}">
+									<f:setPropertyActionListener value="#{_tranPlanDeta.tranPlanDetaId}"
+										target="#{tranPlanDetaControl.id}" />
+									<f:setPropertyActionListener
+										value="#{tranPlanControl.tranPlan.tranPlanId}"
+										target="#{tranPlanDetaControl.tranPlanId}" />										
+									<f:setPropertyActionListener
+										value="/ppsj/parametro/tranPlan/explora"
+										target="#{tranPlanDetaControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Código" style="width:130px;">
+							<h:outputText id="codigo" value="#{_tranPlanDeta.planCuen.codigo}" />
+						</p:column>
+
+						<p:column headerText="Descripción" >
+							<h:outputText id="descri" value="#{_tranPlanDeta.planCuen.descri}" />
+						</p:column>
+
+						<p:column headerText="Factor" style="width:50px;">
+							<h:outputText id="factor" value="#{_tranPlanDeta.factor}" />
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{tranPlanDetaControl.nuevo}" rendered="#{tranPlanControl.rolPermiso.get(6000)}">
+							<f:setPropertyActionListener
+								value="#{tranPlanControl.tranPlan.tranPlanId}"
+								target="#{tranPlanDetaControl.tranPlanId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/tranPlan/explora"
+								target="#{tranPlanDetaControl.paginaRuta}" />								
+															
+						</p:commandLink>
+					</div>
+				</h:form>
+			</p:tab>
+		</p:tabView>
+	</ui:define>
+</ui:composition>

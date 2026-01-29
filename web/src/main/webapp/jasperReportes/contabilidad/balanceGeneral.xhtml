@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte - General">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="nivelList" value="Nivel"  />
+							<p:selectOneMenu id="nivelList"
+								value="#{balanceGeneralReportControl.planCuenNiveId}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								 required="true"
+								requiredMessage="Seleccione Nivel">
+
+								<f:selectItems
+									value="#{balanceGeneralReportControl.planCuenNives}"
+									var="planCuenNive" itemLabel="#{planCuenNive.descri}"
+									itemValue="#{planCuenNive.nivel}" />
+
+							</p:selectOneMenu>
+						</div>
+						
+						<div class="field col-12 md:col-6" />
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="transaccionFechaDesd" value="Fecha Desde" />
+							<p:calendar id="transaccionFechaDesd"
+								value="#{balanceGeneralReportControl.transaccionDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="transaccionFechaHast" value="Fecha Hasta" />
+							<p:calendar id="transaccionFechaHast"
+								value="#{balanceGeneralReportControl.transaccionHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio
+								value="#{balanceGeneralReportControl.formatoReporte}">
+								<f:selectItems
+									value="#{balanceGeneralReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{balanceGeneralReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="balanceGeneral"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

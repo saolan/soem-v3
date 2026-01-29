@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{docuTranControl.pagina}' />
+		<f:event type="preRenderView" listener='#{docuTranControl.buscar}' />
+	</f:metadata>
+	
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Documento Transacción - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+
+					<p:inputText id="descri" value="#{docuTranControl.docuTran.documento.descri}" styleClass="cajaTextoDescri" 
+						required="false">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{docuTranControl.docuTran.documento.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{docuTranControl.rolPermiso.get(6000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" update="docuTranList" 
+					styleClass="boton" action="#{docuTranControl.iniciarPagina}" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="docuTranList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{docuTranControl.docuTrans}" var="_docuTran">
+
+				<f:facet name="header">
+					<h:outputText value="Documentos Transaccion" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" 
+							action="#{docuTranControl.modificar}">
+							<f:setPropertyActionListener value="#{_docuTran.documentoId}"
+								target="#{docuTranControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar"
+							action="#{docuTranControl.explorar}">
+							<f:setPropertyActionListener value="#{_docuTran.documentoId}"
+								target="#{docuTranControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+				
+				<p:column headerText="Descripción">
+					<h:outputText id="descri" value="#{_docuTran.documento.descri}" />
+				</p:column>
+
+				<p:column headerText="Formato">
+					<h:outputText id="formato" value="#{_docuTran.documento.format}" />
+				</p:column>
+
+				<p:column headerText="Número">
+					<h:outputText id="numero" value="#{_docuTran.documento.numero}" />
+				</p:column>
+				
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{docuTranControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

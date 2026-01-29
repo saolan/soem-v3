@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="persCobrId" value='#{persCobrControl.id}' />
+		<f:viewParam name="personaId" value='#{persCobrControl.personaId}' />
+		<f:viewParam name="paginaRuta" value='#{persCobrControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{persCobrControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{persCobrControl.grabar}"
+					rendered="#{(persCobrControl.id != null and persCobrControl.rolPermiso.get(3001)) or 
+					(persCobrControl.id == null and persCobrControl.rolPermiso.get(3000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{persCobrControl.eliminar}"
+					rendered="#{persCobrControl.id != null and persCobrControl.rolPermiso.get(3002)}" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{persCobrControl.cancelar}" />
+			</div>
+
+			<p:panel id="panelRegistrar" header="Cobrador - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="cedula" value="Cédula" />
+							<p:inputText id="cedula"
+								value="#{persCobrControl.persCobr.persona.cedulaRuc}"
+								required="true" requiredMessage="Ingrese cédula o RUC" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="apellido" value="Apellido" />
+							<p:inputText id="apellido"
+								value="#{persCobrControl.persCobr.persona.apelli}"
+								required="true" requiredMessage="Ingrese apellido" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="nombre" value="Nombre" />
+							<p:inputText id="nombre"
+								value="#{persCobrControl.persCobr.persona.nombre}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="correo" value="Correo" />
+							<p:inputText id="correo"
+								value="#{persCobrControl.persCobr.persona.correo}" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox id="estadoUsua" itemLabel="Estado"
+								value="#{persCobrControl.persCobr.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

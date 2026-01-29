@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="prodGrupId" value='#{prodGrupControl.id}' />
+		<f:event type="preRenderView" listener="#{prodGrupControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form id="prodGrupExploraForm">
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="explora" header="Producto Grupo - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Descripción" />
+							<p:inputText value="#{prodGrupControl.prodGrup.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Tipo" />
+							<p:inputText value="#{prodGrupControl.prodGrup.tipo}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Nivel" />
+							<p:inputText
+								value="#{prodGrupControl.prodGrup.prodGrupNive.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox itemLabel="Detalle"
+								value="#{prodGrupControl.prodGrup.detall}" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox itemLabel="Estado"
+								value="#{prodGrupControl.prodGrup.estado}" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+
+
+		<h:form id="cuentasContablesForm">
+
+			<div class="card product">
+
+				<p:dataView id="prodGrupPlanCuenList"
+					emptyMessage="No se encontro datos"
+					rendered="#{prodGrupControl.rolPermiso.get(5003)}"
+					value="#{prodGrupControl.prodGrupPlanCuens}"
+					var="_prodGrupPlanCuen">
+
+					<f:facet name="header">
+						<h:outputText value="Cuentas Contables" />
+					</f:facet>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<span class="product-category">#{_prodGrupPlanCuen.planCuen.codigo}</span>
+								<div class="product-name">#{_prodGrupPlanCuen.planCuen.descri}</div>
+							</div>
+
+							<div class="product-list-detail">
+								#{_prodGrupPlanCuen.documento.descri}</div>
+
+							<div class="product-list-detail">
+								#{_prodGrupPlanCuen.tipoTran}</div>
+
+							<div class="product-list-action">
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{prodGrupPlanCuenControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_prodGrupPlanCuen.pgpcId}"
+										target="#{prodGrupPlanCuenControl.id}" />
+									<f:setPropertyActionListener
+										value="#{prodGrupControl.prodGrup.prodGrupId}"
+										target="#{prodGrupPlanCuenControl.prodGrupId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/inventario/prodGrup/explora"
+										target="#{prodGrupPlanCuenControl.paginaRuta}" />
+
+								</p:commandLink>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<div class="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+					action="#{prodGrupPlanCuenControl.nuevo}">
+					<f:setPropertyActionListener
+						value="#{prodGrupControl.prodGrup.prodGrupId}"
+						target="#{prodGrupPlanCuenControl.prodGrupId}" />
+					<f:setPropertyActionListener
+						value="/ppsj/inventario/prodGrup/explora"
+						target="#{prodGrupPlanCuenControl.paginaRuta}" />
+				</p:commandLink>
+
+				<p:commandLink id="copiarBtn" styleClass="boton"
+					value="Copiar cuentas contables"
+					action="#{prodGrupControl.buscarProdGrupTodos}"
+					rendered="#{prodGrupControl.prodGrupPlanCuens.size() == 0}"
+					onclick="PF('pgpcCopiarDialogo').show();"
+					update="pgpcCopiarForm:gridProdGrups" />
+
+			</div>
+		</h:form>
+
+		<p:dialog id="pgpcCopiarDg" widgetVar="pgpcCopiarDialogo" fitViewport="true"
+			header="Grupo" modal="true" resizable="false" width="99%"
+			focus="pgpcCopiarForm:cancelarPgpcCopiarDialogo" closable="false">
+
+			<h:form id="pgpcCopiarForm">
+
+				<p:panel id="panelProdGrups">
+
+					<h:panelGrid id="gridProdGrups" >
+
+						<p:outputLabel value="Grupos" />
+						<p:selectOneMenu id="prodGrupList"
+							value="#{prodGrupControl.prodGrupSele}" required="true"
+							requiredMessage="Seleccione un grupo de producto"
+							converter="omnifaces.SelectItemsConverter">
+							<f:selectItem itemLabel="Seleccione grupo ..." itemValue="" />
+							<f:selectItems value="#{prodGrupControl.prodGrups}"
+								var="prodGrup" itemLabel="#{prodGrup.descri}"
+								itemValue="#{prodGrup}" />
+						</p:selectOneMenu>
+
+					</h:panelGrid>
+				</p:panel>
+
+				<p:commandLink id="aceptarPgpcCopiarDialogo" styleClass="boton"
+					value="Aceptar" action="#{prodGrupControl.copiarPgpcs}"
+					ajax="false"
+					oncomplete="handleLoginRequestCopiar(xhr, status, args)" />
+
+				<p:commandLink id="cancelarPgpcCopiarDialogo" ajax="true"
+					styleClass="boton" value="Cancelar"
+					onclick="PF('pgpcCopiarDialogo').hide();" />
+			</h:form>
+		</p:dialog>
+
+		<script type="text/javascript">
+
+	    	function handleLoginRequestCopiar(xhr, status, args) {
+
+		        if(args.validationFailed) {
+	            	PF('pgpcCopiarDialogo').jq.effect("shake", {times:1}, 5);
+	        	}
+	        	else {
+		            PF('pgpcCopiarDialogo').hide();
+	        	}
+		    }
+	        
+        </script>
+
+	</ui:define>
+</ui:composition>

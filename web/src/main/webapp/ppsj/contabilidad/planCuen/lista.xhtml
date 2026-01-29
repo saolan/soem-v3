@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{planCuenControl.pagina}' />
+		<f:event type="preRenderView" listener='#{planCuenControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panelBuscar" />
+			<p:defaultCommand target="buscar" />
+
+			<div class="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{planCuenControl.rolPermiso.get(2000)}" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+					action="#{planCuenControl.iniciarPagina}" ajax="true"
+					update="planCuenList" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+
+
+			</div>
+
+			<p:panel id="panelBuscar" header="Plan Cuenta - Panel Busqueda">
+
+				<div class="card ui-fluid">
+
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:inputText id="codigo"
+								value="#{planCuenControl.planCuen.codigo}" required="false"
+								placeholder="Código">
+								<f:validateBean for="codigo" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:inputText id="descri"
+								value="#{planCuenControl.planCuen.descri}" required="false"
+								placeholder="Descripción">
+								<f:validateBean for="descri" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+								value="#{planCuenControl.planCuen.estado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="card product">
+
+				<p:dataView id="planCuenList"
+					emptyMessage="No se encontro datos"
+					value="#{planCuenControl.planCuens}" var="_planCuen">
+
+					<f:facet name="header">
+						<h:outputText value="Cuentas" />
+					</f:facet>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<div>#{_planCuen.codigo}</div>
+
+							</div>
+
+							<div class="product-list-detail">
+								<div>#{_planCuen.descri}</div>
+							</div>
+
+							<div class="product-list-detail">
+								<div>#{_planCuen.planCuenNive.descri}</div>
+							</div>
+
+							<div class="product-list-detail">
+								<p:selectBooleanCheckbox id="detall" value="#{_planCuen.detall}" itemLabel="Detalle"
+									disabled="true" />
+							</div>
+							<div class="product-list-detail">
+								<p:selectBooleanCheckbox id="estado" value="#{_planCuen.estado}" itemLabel="Estado"
+									disabled="true" />
+							</div>
+
+							<div class="product-list-action">
+								<div class="link-container">
+									<p:commandLink styleClass="ui-icon ui-icon-pencil"
+										title="Modificar" action="#{planCuenControl.modificar}">
+										<f:setPropertyActionListener value="#{_planCuen.planCuenId}"
+											target="#{planCuenControl.id}" />
+									</p:commandLink>
+
+									<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+										title="Explorar" action="#{planCuenControl.explorar}">
+										<f:setPropertyActionListener value="#{_planCuen.planCuenId}"
+											target="#{planCuenControl.id}" />
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{planCuenControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

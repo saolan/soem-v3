@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:event type="preRenderView"
+			listener='#{prodCostSaldReportControl.buscarRolPrecs}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte Inventario - Costos y Saldos">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel fFor="productoCodigoBarraDesd"
+								value="Código Barra Desde" />
+							<p:inputText id="productoCodigoBarraDesd"
+								value="#{prodCostSaldReportControl.productoDesd.codigoBarra}"
+								required="false">
+								<f:validateBean for="productoCodigoBarraDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoBarraHast"
+								value="Código Barra Hasta" />
+							<p:inputText id="productoCodigoBarraHast"
+								value="#{prodCostSaldReportControl.productoHast.codigoBarra}"
+								required="false">
+								<f:validateBean for="productoCodigoBarraHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoDesd" value="Código Desde" />
+							<p:inputText id="productoCodigoDesd"
+								value="#{prodCostSaldReportControl.productoDesd.codigo}"
+								required="false">
+								<f:validateBean for="productoCodigoDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoHast" value="Código Hasta" />
+							<p:inputText id="productoCodigoHast"
+								value="#{prodCostSaldReportControl.productoHast.codigo}"
+								required="false">
+								<f:validateBean for="productoCodigoHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoDescriDesd" value="Descripción Desde" />
+							<p:inputText id="productoDescriDesd"
+								value="#{prodCostSaldReportControl.productoDesd.descri}"
+								required="false">
+								<f:validateBean for="productoDescriDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoDescriHasta"
+								value="Descripción Hasta" />
+							<p:inputText id="productoDescriHasta"
+								value="#{prodCostSaldReportControl.productoHast.descri}"
+								required="false">
+								<f:validateBean for="productoDescriHasta" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="ktvCantidMini" value="Cantidad Mínima" />
+							<p:inputText id="ktvCantidMini"
+								value="#{prodCostSaldReportControl.ktvCantidMini}"
+								required="false">
+								<f:validateBean for="ktvCantidMini" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="ktvCantidMaxi" value="Cantidad Máxima" />
+							<p:inputText id="ktvCantidMaxi"
+								value="#{prodCostSaldReportControl.ktvCantidMaxi}"
+								required="false">
+								<f:validateBean for="ktvCantidMaxi" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="sucursalList" value="Sucursal" />
+							<p:selectManyMenu id="sucursalList"
+								value="#{prodCostSaldReportControl.sucursalIds}"
+								showCheckbox="true" converter="omnifaces.SelectItemsConverter"
+								required="true" requiredMessage="Seleccione Sucursal">
+
+								<f:selectItems value="#{prodCostSaldReportControl.sucursals}"
+									var="sucursal" itemLabel="#{sucursal.descri}"
+									itemValue="#{sucursal.sucursalId}" />
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="prodGrupList" value="Grupo" />
+							<p:selectManyMenu id="prodGrupList" scrollHeight="125"
+								value="#{prodCostSaldReportControl.prodGrupIds}"
+								showCheckbox="true" converter="omnifaces.SelectItemsConverter">
+
+								<f:selectItems value="#{prodCostSaldReportControl.prodGrups}"
+									var="prodGrup" itemLabel="#{prodGrup.descri}"
+									itemValue="#{prodGrup.prodGrupId}" />
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="precioList" value="Precio" />
+							<p:selectOneMenu id="precioList"
+								value="#{prodCostSaldReportControl.precioId}"
+								showCheckbox="true" converter="omnifaces.SelectItemsConverter"
+								required="true" requiredMessage="Seleccione Precio">
+
+								<f:selectItem itemLabel="Seleccione Precio..." itemValue="" />
+								<f:selectItems value="#{prodCostSaldReportControl.precios}"
+									var="precio" itemLabel="#{precio.descri}"
+									itemValue="#{precio.precioId}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="valoracion" value="Valoracion" />
+							<p:selectOneRadio id="valoracion"
+								value="#{prodCostSaldReportControl.valoraInve}">
+								<f:selectItem itemLabel="Costo&#160;Promedio"
+									itemValue="promedio" />
+								<f:selectItem itemLabel="Costo&#160;Ultimo" itemValue="ultimo" />
+							</p:selectOneRadio>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Producto Estado" />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{prodCostSaldReportControl.prodEstado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato" />
+							<p:selectOneRadio
+								value="#{prodCostSaldReportControl.formatoReporte}">
+								<f:selectItems
+									value="#{prodCostSaldReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{prodCostSaldReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="prodCostSalds"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

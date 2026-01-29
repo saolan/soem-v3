@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="persUsuaId" value='#{persUsuaControl.id}' />
+		<f:viewParam name="personaId" value='#{persUsuaControl.personaId}' />
+		<f:viewParam name="paginaRuta" value='#{persUsuaControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{persUsuaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Usuario - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar" />
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="cedula" value="Cédula" />
+					<p:inputText id="cedula"
+						value="#{persUsuaControl.persUsua.persona.cedulaRuc}"
+						required="true" requiredMessage="Ingrese cédula o RUC" />
+
+					<p:outputLabel for="apellido" value="Apellido" />
+					<p:inputText id="apellido"
+						value="#{persUsuaControl.persUsua.persona.apelli}" required="true"
+						styleClass="cajaTextoDescri" requiredMessage="Ingrese apellido" />
+
+					<p:outputLabel for="nombre" value="Nombre" />
+					<p:inputText id="nombre"
+						value="#{persUsuaControl.persUsua.persona.nombre}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel for="usuario" value="Usuario" />
+					<p:inputText id="usuario"
+						value="#{persUsuaControl.persUsua.usuari}" required="true"
+						styleClass="cajaTextoDescri" requiredMessage="Ingrese usuario" />
+
+					<p:outputLabel for="clave" value="Clave" />
+					<p:inputText id="clave" value="#{persUsuaControl.persUsua.clave}"
+						required="true" requiredMessage="Ingrese clave" />
+
+					<p:outputLabel for="caducaClav" value="Caduca Clave" />
+					<p:selectBooleanCheckbox id="caducaClav"
+						value="#{persUsuaControl.persUsua.caducaClav}" required="false" />
+
+					<p:outputLabel for="caducaFech" value="Fecha Caduca" />
+					<p:calendar id="caducaFech"
+						value="#{persUsuaControl.persUsua.caducaFechHora}"
+						pattern="dd-MM-yyyy HH:mm" required="false" />
+
+					<p:outputLabel for="estadoUsua" value="Estado Usuario" />
+					<p:selectBooleanCheckbox id="estadoUsua"
+						value="#{persUsuaControl.persUsua.estado}" required="true"
+						requiredMessage="Ingrese estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{persUsuaControl.grabar}"
+					rendered="#{(persUsuaControl.id != null and persUsuaControl.rolPermiso.get(7001)) or 
+					(persUsuaControl.id == null and persUsuaControl.rolPermiso.get(7000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{persUsuaControl.eliminar}"
+					rendered="#{persUsuaControl.id != null and persUsuaControl.rolPermiso.get(7002)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{persUsuaControl.cancelar}" />
+
+				<p:defaultCommand target="grabar" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

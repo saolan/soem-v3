@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="formPagoMoviIngrId"
+			value='#{formPagoMoviIngrControl.id}' />
+		<f:event type="preRenderView"
+			listener="#{formPagoMoviIngrControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{formPagoMoviIngrControl.descargar}"
+					rendered="true" />
+			</div>
+
+			<p:panel id="explora" header="Pago | Depósito - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Documento" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.docuMoviIngr.documento.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Número" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.numero}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Fecha&#160;Emisión" />
+							<p:calendar id="fechaEmis"
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.fecha}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Forma&#160;Pago" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.formPago.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Proveedor Apellido" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.persona.apelli}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Proveedor Nombre" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.persona.nombre}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Nota" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.nota}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Total" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.total}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Trans.Documento" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.transaccion.docuTran.documento.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+
+							<p:outputLabel value="Trans.Número" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.transaccion.numero}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+
+							<p:outputLabel value="Trans.Fecha" />
+							<p:calendar id="fechaEmision"
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.transaccion.fechaEmis}"
+								pattern="dd-MM-yyyy" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Trans.Estado" />
+							<p:inputText
+								value="#{formPagoMoviIngrControl.formPagoMoviIngr.transaccion.estado}" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+		</h:form>
+
+		<p:dataTable id="pagoDetaList" emptyMessage="No se encontro datos"
+			reflow="true" value="#{formPagoMoviIngrControl.pagoDetas}"
+			var="_pagoDeta"
+			rendered="#{formPagoMoviIngrControl.rolPermiso.get(8103)}">
+
+			<f:facet name="header">
+        		Detalle Pagos
+   			</f:facet>
+
+			<p:column headerText="Núm.Doc.">
+				<h:outputText id="pagonumero"
+					value="#{_pagoDeta.cxp.ingreso.serie1}-#{_pagoDeta.cxp.ingreso.serie2}-#{_pagoDeta.cxp.ingreso.numero}" />
+			</p:column>
+
+			<p:column headerText="Cxp Emisión">
+				<h:outputText id="pagoFechaEmis"
+					value="#{_pagoDeta.cxp.ingreso.fechaEmis}">
+					<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="Cxp Vencimiento">
+				<h:outputText id="pagoFechaVenc" value="#{_pagoDeta.cxp.fechaVenc}">
+					<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="Total Cxp">
+				<h:outputText id="pagototal" value="#{_pagoDeta.cxp.total}">
+					<f:convertNumber pattern="#0.00" locale="en-US" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="Fecha Pago">
+				<h:outputText id="fechaPago"
+					value="#{_pagoDeta.formPagoMoviIngr.fecha}">
+					<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Total Pago">
+				<h:outputText id="total" value="#{_pagoDeta.total}">
+					<f:convertNumber pattern="#0.00" locale="en-US" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="Cxp Estado">
+				<h:selectBooleanCheckbox id="cxpEstado"
+					value="#{_pagoDeta.cxp.estado}" />
+			</p:column>
+
+		</p:dataTable>
+	</ui:define>
+</ui:composition>

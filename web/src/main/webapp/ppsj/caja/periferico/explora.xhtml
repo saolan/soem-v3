@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="perifericoId" value='#{perifericoControl.id}' />
+		<f:event type="preRenderView" listener="#{perifericoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Periferico - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{perifericoControl.periferico.descri}" styleClass="cajaTextoDescri"/>
+				
+					<p:outputLabel value="Puerto" />
+					<p:inputText value="#{perifericoControl.periferico.puerto}"/>
+
+					<p:outputLabel value="Caracter Control" />
+					<p:inputText value="#{perifericoControl.periferico.ascii}"/>
+
+					<p:outputLabel value="Velocidad" />
+					<p:inputText value="#{perifericoControl.periferico.veloci}"/>
+
+					<p:outputLabel value="Datos" />
+					<p:inputText value="#{perifericoControl.periferico.datos}"/>
+
+					<p:outputLabel value="Paridad" />
+					<p:inputText value="#{perifericoControl.periferico.parida}"/>
+
+					<p:outputLabel value="Parada" />
+					<p:inputText value="#{perifericoControl.periferico.parada}"/>
+
+					<p:outputLabel value="Flujo" />
+					<p:inputText value="#{perifericoControl.periferico.flujo}"/>
+
+					<p:outputLabel value="Dígito Peso" />
+					<p:inputText value="#{perifericoControl.periferico.digitoPeso}"/>
+
+					<p:outputLabel value="Dígito Código" />
+					<p:inputText value="#{perifericoControl.periferico.digitoCodi}"/>
+
+					<p:outputLabel value="Factor División" />
+					<p:inputText value="#{perifericoControl.periferico.factorDivi}"/>
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

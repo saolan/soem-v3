@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cajaId" value='#{cajaControl.id}' />
+		<f:event type="preRenderView" listener="#{cajaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Caja - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Sucursal" />
+					<p:inputText value="#{cajaControl.caja.sucursal.descri}" />
+
+					<p:outputLabel value="Código" />
+					<p:inputText value="#{cajaControl.caja.codigo}"
+						styleClass="cajaTextoCodigo" />
+
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{cajaControl.caja.descri}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{cajaControl.caja.estado}" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+
+		<p:tabView rendered="#{cajaControl.rolPermiso.get(1003)}">
+
+			<p:tab title="Documentos">
+			
+				<h:form>
+
+					<p:dataTable id="cajaDocuEgreList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos"
+						value="#{cajaControl.cajaDocuEgres}" var="_cajaDocuEgre">
+
+						<f:facet name="header">
+							<h:outputText value="Documentos" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{cajaDocuEgreControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_cajaDocuEgre.cajaDocuEgreId}"
+										target="#{cajaDocuEgreControl.id}" />
+									<f:setPropertyActionListener value="#{cajaControl.caja.cajaId}"
+										target="#{cajaDocuEgreControl.cajaId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/caja/caja/explora"
+										target="#{cajaDocuEgreControl.paginaRuta}" />																				
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Caja">
+							<h:outputText id="caja" value="#{_cajaDocuEgre.caja.descri}" />
+						</p:column>
+
+						<p:column headerText="Documento">
+							<h:outputText id="documento"
+								value="#{_cajaDocuEgre.docuEgre.documento.descri}" />
+						</p:column>
+
+						<p:column headerText="Serie No.1">
+							<h:outputText id="serieUno" value="#{_cajaDocuEgre.serie1}" />
+						</p:column>
+
+						<p:column headerText="Serie No.2">
+							<h:outputText id="serieDos" value="#{_cajaDocuEgre.serie2}" />
+						</p:column>
+
+						<p:column headerText="Número">
+							<h:outputText id="numero" value="#{_cajaDocuEgre.numero}" />
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{cajaDocuEgreControl.nuevo}">
+							<f:setPropertyActionListener value="#{cajaControl.caja.cajaId}"
+								target="#{cajaDocuEgreControl.cajaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/caja/caja/explora"
+								target="#{cajaDocuEgreControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Periféricos">
+
+				<h:form>
+
+					<p:dataTable id="cajaPeriList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos"
+						value="#{cajaControl.cajaPeris}" var="_cajaPeri">
+
+						<f:facet name="header">
+							<h:outputText value="Periféricos" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{cajaPeriControl.modificar}">
+									<f:setPropertyActionListener value="#{_cajaPeri.cajaPeriId}"
+										target="#{cajaPeriControl.id}" />
+									<f:setPropertyActionListener value="#{cajaControl.caja.cajaId}"
+										target="#{cajaPeriControl.cajaId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/caja/caja/explora"
+										target="#{cajaPeriControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Caja">
+							<h:outputText id="caja" value="#{_cajaPeri.caja.descri}" />
+						</p:column>
+
+						<p:column headerText="Periférico">
+							<h:outputText id="periferico"
+								value="#{_cajaPeri.periferico.descri}" />
+						</p:column>
+
+						<p:column headerText="Estado">
+							<h:selectBooleanCheckbox id="estado" value="#{_cajaPeri.acceso}"
+								disabled="true" />
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{cajaPeriControl.nuevo}">
+							<f:setPropertyActionListener value="#{cajaControl.caja.cajaId}"
+								target="#{cajaPeriControl.cajaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/caja/caja/explora"
+								target="#{cajaPeriControl.paginaRuta}" />
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>
+
+	</ui:define>
+</ui:composition>

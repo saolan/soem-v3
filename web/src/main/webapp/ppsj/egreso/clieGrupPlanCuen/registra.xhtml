@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cgpcId" value='#{clieGrupPlanCuenControl.id}' />
+		<f:viewParam name="clieGrupId"
+			value='#{clieGrupPlanCuenControl.clieGrupId}' />
+		<f:viewParam name="paginaRuta"
+			value='#{clieGrupPlanCuenControl.paginaRuta}' />
+		<f:event type="preRenderView"
+			listener="#{clieGrupPlanCuenControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{clieGrupPlanCuenControl.grabar}"
+					rendered="#{(clieGrupPlanCuenControl.id != null and clieGrupPlanCuenControl.rolPermiso.get(3001)) or 
+					(clieGrupPlanCuenControl.id == null and clieGrupPlanCuenControl.rolPermiso.get(3000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{clieGrupPlanCuenControl.eliminar}"
+					rendered="#{clieGrupPlanCuenControl.id != null and clieGrupPlanCuenControl.rolPermiso.get(3002)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{clieGrupPlanCuenControl.cancelar}" />
+
+				<p:defaultCommand target="grabar" />
+			</div>
+
+			<p:panel id="panelRegistrar"
+				header="Cliente Grupo Asignación De Cuentas - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="clieGrupList" value="Grupo&#160;Cliente" />
+							<p:selectOneMenu id="clieGrupList"
+								value="#{clieGrupPlanCuenControl.clieGrupPlanCuen.clieGrup}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{clieGrupPlanCuenControl.clieGrups}"
+									var="clieGrup" itemLabel="#{clieGrup.descri}"
+									itemValue="#{clieGrup}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-5">
+							<p:outputLabel for="planCuenList" value="Plan&#160;Cuenta" />
+							<p:selectOneMenu id="planCuenList"
+								value="#{clieGrupPlanCuenControl.clieGrupPlanCuen.planCuen}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{clieGrupPlanCuenControl.planCuens}"
+									var="planCuen"
+									itemLabel="#{planCuen.codigo} - #{planCuen.descri}"
+									itemValue="#{planCuen}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel for="documentoId" value="Documento" />
+							<p:selectOneMenu id="documentoId"
+								value="#{clieGrupPlanCuenControl.clieGrupPlanCuen.documento}"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="Seleccione Documento">
+								<f:selectItems value="#{clieGrupPlanCuenControl.documentos}"
+									var="documento" itemLabel="#{documento.descri}"
+									itemValue="#{documento}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Tipo&#160;Transacción" />
+							<p:selectOneMenu id="tipoTran"
+								value="#{clieGrupPlanCuenControl.clieGrupPlanCuen.tipoTran}"
+								required="true" requiredMessage="Ingrese tipo transacción">
+								<f:selectItems value="#{clieGrupPlanCuenControl.parametros}"
+									var="parametro" itemLabel="#{parametro.descri}"
+									itemValue="#{parametro.descri}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

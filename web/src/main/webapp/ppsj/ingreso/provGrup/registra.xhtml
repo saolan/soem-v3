@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="provGrupId" value='#{provGrupControl.id}' />
+		<f:event type="preRenderView" listener="#{provGrupControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{provGrupControl.grabar}"
+					rendered="#{(provGrupControl.id != null and provGrupControl.rolPermiso.get(4001)) or 
+					(provGrupControl.id == null and provGrupControl.rolPermiso.get(4000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{provGrupControl.eliminar}"
+					rendered="#{provGrupControl.id != null and provGrupControl.rolPermiso.get(4002)}" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+
+			</div>
+
+			<p:panel id="panelRegistrar"
+				header="Grupo Proveedor - Crear - Modificar">
+
+				<p:focus for="panelRegistrar" />
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="descripcion" value="Descripción" />
+							<p:inputText id="descripcion"
+								value="#{provGrupControl.provGrup.descri}" required="true"
+								requiredMessage="Ingrese Descripción" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="nota" value="Nota" />
+							<p:inputText id="nota" value="#{provGrupControl.provGrup.nota}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="estado" value="Estado" />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{provGrupControl.provGrup.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{persUsuaControl.pagina}' />
+		<f:event type="preRenderView" listener='#{persUsuaControl.buscar}' />
+	</f:metadata>
+	
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Usuario - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="cedula" value="Cédula" />
+					<p:inputText id="cedula"
+						value="#{persUsuaControl.persUsua.persona.cedulaRuc}" required="false">
+						<f:validateBean for="cedula" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="apelli" value="Apellido" />
+					<p:inputText id="apelli"
+						value="#{persUsuaControl.persUsua.persona.apelli}" required="false"
+							styleClass="cajaTextoDescri">
+						<f:validateBean for="apelli" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="nombre" value="Nombre" />
+					<p:inputText id="nombre"
+						value="#{persUsuaControl.persUsua.persona.nombre}" required="false"
+							styleClass="cajaTextoDescri">
+						<f:validateBean for="nombre" disabled="true" />
+					</p:inputText>
+										
+					<p:outputLabel for="usuari" value="Usuario" />
+					<p:inputText id="usuari"
+						value="#{persUsuaControl.persUsua.usuari}" required="false"
+							styleClass="cajaTextoDescri">
+						<f:validateBean for="usuari" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{persUsuaControl.persUsua.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+					
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{persUsuaControl.nuevo}" 
+					rendered="#{persUsuaControl.rolPermiso.get(7000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/seguridad/persUsua/lista"
+							target="#{persUsuaControl.paginaRuta}" />
+				</p:commandLink>					
+
+				<p:spacer height="2" />
+				
+				<p:commandLink id="buscar" ajax="false" value="Buscar"
+					styleClass="boton" action="#{persUsuaControl.iniciarPagina}" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="persUsuaList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{persUsuaControl.persUsuarios}" var="_persUsuarios">
+
+				<f:facet name="header">
+					<h:outputText value="Usuarios" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" ajax="false" 
+							action="#{persUsuaControl.modificar}">
+							<f:setPropertyActionListener value="#{_persUsuarios.personaId}"
+								target="#{persUsuaControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/persUsua/lista"
+								target="#{persUsuaControl.paginaRuta}" />								
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" ajax="false"
+							action="#{persUsuaControl.explorar}">
+							<f:setPropertyActionListener value="#{_persUsuarios.personaId}"
+								target="#{persUsuaControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/persUsua/lista"
+								target="#{persUsuaControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Cédula">
+					<h:outputText id="cedula" value="#{_persUsuarios.persona.cedulaRuc}" />
+				</p:column>
+
+				<p:column headerText="Apellido">
+					<h:outputText id="apelli" value="#{_persUsuarios.persona.apelli}" />
+				</p:column>
+
+				<p:column headerText="Nombre">
+					<h:outputText id="nombre" value="#{_persUsuarios.persona.nombre}" />
+				</p:column>
+				
+				<p:column headerText="Usuario">
+					<h:outputText id="usuari" value="#{_persUsuarios.usuari}" />
+				</p:column>				
+
+				<p:column headerText="Estado" >
+					<h:selectBooleanCheckbox value="#{_persUsuarios.estado}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{persUsuaControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

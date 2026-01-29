@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Respaldo Base Datos" style="margin-bottom:10px; ">
+
+				<h:panelGrid columns="1">
+
+					<p:outputLabel value="Este proceso realiza un respaldo de su base de datos" style="width:100%; aling:center"/>
+					<p:outputLabel value="Realize este proceso periodicamente" style="width:100%; text-align:center"/>
+					<p:outputLabel value="Conserve sus respaldos en un lugar seguro" style="width:100%; text-align:center"/>
+
+					<p:spacer/>
+
+					<h:inputText value="#{respaldoControl.resumenRespaldo}" disabled="true" styleClass="cajaTextoDescri">
+					</h:inputText>
+				</h:panelGrid>
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="procesar" value="Procesar" styleClass="boton"
+					action="#{respaldoControl.respaldar}" update="panelRegistrar" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

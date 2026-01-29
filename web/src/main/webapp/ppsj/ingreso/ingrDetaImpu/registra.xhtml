@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="ingrDetaImpuId" value='#{ingrDetaImpuControl.id}' />
+		<f:event type="preRenderView" listener="#{ingrDetaImpuControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="ingrDetaImpu - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+
+					<p:outputLabel for="codigo" value="Código" />
+					<p:inputText id="codigo" value="#{ingrDetaImpuControl.ingrDetaImpu.codigo}"  
+						required="true" requiredMessage="Ingrese Código" />
+
+					<p:outputLabel for="porcen" value="Porcentaje" />
+					<p:inputText id="porcen" value="#{ingrDetaImpuControl.ingrDetaImpu.porcen}"  
+						required="true" requiredMessage="Ingrese porcentaje" />
+
+					<p:outputLabel for="factor" value="Factor" />
+					<p:inputText id="factor" value="#{ingrDetaImpuControl.ingrDetaImpu.factor}"  
+						required="true" requiredMessage="Ingrese factor" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{ingrDetaImpuControl.grabar}" 
+					rendered="#{(ingrDetaImpuControl.id != null and ingrDetaImpuControl.rolPermiso.get(4101)) or 
+					(ingrDetaImpuControl.id == null and ingrDetaImpuControl.rolPermiso.get(4100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{ingrDetaImpuControl.eliminar}" 
+					rendered="#{ingrDetaImpuControl.id != null and ingrDetaImpuControl.rolPermiso.get(4102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

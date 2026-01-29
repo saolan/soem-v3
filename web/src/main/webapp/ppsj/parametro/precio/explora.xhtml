@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="precioId" value='#{precioControl.id}' />
+		<f:event type="preRenderView" listener="#{precioControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Precio - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Código" />
+					<p:inputText value="#{precioControl.precio.codigo}" />
+
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{precioControl.precio.descri}" styleClass="cajaTextoDescri" />
+					
+					<p:outputLabel for="alcancList" value="Alcance" />
+					<p:selectOneMenu id="alcancList" value="#{precioControl.precio.alcanc}"
+						required="true" requiredMessage="Seleccione alcance">
+						 <f:selectItem itemLabel="Total" itemValue="0" />
+						 <f:selectItem itemLabel="Parcial" itemValue="1" />
+					</p:selectOneMenu>
+									
+					<p:outputLabel value="Factor" />
+					<p:inputText value="#{precioControl.precio.factor}"  />
+					
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{precioControl.precio.estado}" />
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+		
+
+		
+	</ui:define>
+</ui:composition>

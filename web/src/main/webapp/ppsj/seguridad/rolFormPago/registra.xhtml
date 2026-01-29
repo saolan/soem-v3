@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="rolFormPagoId" value='#{rolFormPagoControl.id}' />
+		<f:viewParam name="rolId" value='#{rolFormPagoControl.rolId}' />
+		<f:viewParam name="paginaRuta" value='#{rolFormPagoControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{rolFormPagoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Rol Forma de Pago - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="rolList" value="Rol" />
+					<p:selectOneMenu id="rolList" value="#{rolFormPagoControl.rolFormPago.rol}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{rolFormPagoControl.rols}" var="rol" 
+							itemLabel="#{rol.descri}" itemValue="#{rol}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="formPagoList" value="Forma Pago" />
+					<p:selectOneMenu id="formPagoList" value="#{rolFormPagoControl.rolFormPago.formPago}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{rolFormPagoControl.formPagos}" var="formPago" 
+							itemLabel="#{formPago.descri} #{formPago.modulo}" itemValue="#{formPago}"/>
+					</p:selectOneMenu>					
+
+					<p:outputLabel for="predet" value="Predeterminado" />
+					<p:selectBooleanCheckbox id="predet" value="#{rolFormPagoControl.rolFormPago.predet}" required="true"
+						requiredMessage="Ingrese predeterminado" />
+
+					<p:outputLabel for="acceso" value="Acceso" />
+					<p:selectBooleanCheckbox id="acceso" value="#{rolFormPagoControl.rolFormPago.acceso}" required="true"
+						requiredMessage="Ingrese acceso" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{rolFormPagoControl.grabar}" 
+					rendered="#{(rolFormPagoControl.id != null and rolFormPagoControl.rolPermiso.get(7001)) or 
+					(rolFormPagoControl.id == null and rolFormPagoControl.rolPermiso.get(7000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{rolFormPagoControl.eliminar}" 
+					rendered="#{rolFormPagoControl.id != null and rolFormPagoControl.rolPermiso.get(7002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{rolFormPagoControl.cancelar}"	/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

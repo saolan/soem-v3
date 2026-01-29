@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="reteDetaId" value='#{reteDetaControl.id}' />
+		<f:event type="preRenderView" listener="#{reteDetaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="reteDeta - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Ejercicio Fiscal" />
+					<p:inputText value="#{reteDetaControl.reteDeta.ejerciFisc}"/>
+				
+					<p:outputLabel value="Impuesto" />
+					<p:inputText value="#{reteDetaControl.reteDeta.impues}"/>
+					
+					<p:outputLabel value="Código Impuesto" />
+					<p:inputText value="#{reteDetaControl.reteDeta.codigoImpu}"/>
+
+					<p:outputLabel value="Base" />
+					<p:inputText value="#{reteDetaControl.reteDeta.base}"/>
+										
+					<p:outputLabel value="Porcentaje" />
+					<p:inputText value="#{reteDetaControl.reteDeta.porcen}"/>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

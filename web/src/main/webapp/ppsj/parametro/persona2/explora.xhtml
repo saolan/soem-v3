@@ -1,0 +1,468 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="personaId" value='#{personaControl.id}' />
+		<f:event type="preRenderView" listener="#{personaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Persona - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Cédula" />
+					<p:inputText value="#{personaControl.persona.cedulaRuc}" styleClass="cajaTextoDescri" />
+				
+					<p:outputLabel value="Apellido" />
+					<p:inputText value="#{personaControl.persona.apelli}" styleClass="cajaTextoCodigo" />
+					
+					<p:outputLabel value="Nombre" />
+					<p:inputText value="#{personaControl.persona.nombre}" styleClass="cajaTextoCodigo" />
+					
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{personaControl.persona.estado}" />
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+		
+		<p:tabView rendered="#{personaControl.rolPermiso.get(6003)}">
+
+			<p:tab title="Cliente">
+
+				<h:form>
+
+					<p:dataTable id="persClieList" style="margin-top:10px;"	emptyMessage="No se encontro datos"
+						value="#{personaControl.persClies}" var="_persClie">
+
+						<f:facet name="header">
+							<h:outputText value="Cliente" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{persClieControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_persClie.personaId}"
+										target="#{persClieControl.id}" />
+									<f:setPropertyActionListener
+										value="#{personaControl.persona.personaId}"
+										target="#{persClieControl.personaId}" />										
+									<f:setPropertyActionListener
+										value="/ppsj/parametro/persona/explora"
+										target="#{persClieControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Razón Social">
+							<h:outputText id="clieRazonSocial"
+								value="#{_persClie.razonSoci}" />
+						</p:column>
+						
+						<p:column headerText="Código Sri">
+							<h:outputText id="codigoSri"
+								value="#{_persClie.dimm.descri}" />
+						</p:column>
+
+						<p:column headerText="Cupo">
+							<h:outputText id="cupo"
+								value="#{_persClie.cupo}" />
+						</p:column>
+						
+						<p:column headerText="Exonerado Iva">
+							<h:selectBooleanCheckbox value="#{_persClie.exonerIva}" disabled="true" />
+						</p:column>
+						
+						<p:column headerText="Retiene Renta">
+							<h:selectBooleanCheckbox value="#{_persClie.retienRent}" disabled="true"/>
+						</p:column>
+						
+						<p:column headerText="Retiene Iva">
+							<h:selectBooleanCheckbox value="#{_persClie.retienIva}" disabled="true"/>
+						</p:column>
+						
+						<p:column headerText="Estado">
+							<h:selectBooleanCheckbox value="#{_persClie.estado}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persClieControl.nuevo}" rendered="#{persClieControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persClieControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persClieControl.paginaRuta}" />								
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+			
+			<p:tab title="Proveedor">
+
+				<h:form>
+
+					<p:dataTable id="persProvList" style="margin-top:10px;"	emptyMessage="No se encontro datos"
+						value="#{personaControl.persProvs}" var="_persProv">
+
+						<f:facet name="header">
+							<h:outputText value="Proveedor" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{persProvControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_persProv.personaId}"
+										target="#{persProvControl.id}" />
+									<f:setPropertyActionListener
+										value="#{personaControl.persona.personaId}"
+										target="#{persProvControl.personaId}" />										
+									<f:setPropertyActionListener
+										value="/ppsj/parametro/persona/explora"
+										target="#{persProvControl.paginaRuta}" />
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Razón Social">
+							<h:outputText id="provRazonSocial"
+								value="#{_persProv.razonSoci}" />
+						</p:column>
+												
+						<p:column headerText="Código Sri">
+							<h:outputText id="proveedor"
+								value="#{_persProv.dimm.descri}" />
+						</p:column>
+
+						<p:column headerText="Exonerado Iva">
+							<h:selectBooleanCheckbox value="#{_persProv.exonerIva}" disabled="true"/>
+						</p:column>
+						
+						<p:column headerText="Retiene Renta">
+							<h:selectBooleanCheckbox value="#{_persProv.retienRent}" disabled="true"/>
+						</p:column>
+						
+						<p:column headerText="Retiene Iva">
+							<h:selectBooleanCheckbox value="#{_persProv.retienIva}" disabled="true"/>
+						</p:column>
+						
+						<p:column headerText="Estado">
+							<h:selectBooleanCheckbox value="#{_persProv.estado}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persProvControl.nuevo}" rendered="#{persProvControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persProvControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persProvControl.paginaRuta}" />								
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+			
+			<p:tab title="Cajero">
+
+				<h:form>
+
+					<p:dataTable id="persCajeList" style="margin-top:10px;"	emptyMessage="No se encontro datos"
+						value="#{personaControl.persCajes}" var="_persCaje">
+
+						<f:facet name="header">
+							<h:outputText value="Cajero" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{persCajeControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_persCaje.personaId}"
+										target="#{persCajeControl.id}" />
+									<f:setPropertyActionListener
+										value="#{personaControl.persona.personaId}"
+										target="#{persCajeControl.personaId}" />										
+									<f:setPropertyActionListener
+										value="/ppsj/parametro/persona/explora"
+										target="#{persCajeControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Estado">
+							<h:selectBooleanCheckbox value="#{_persCaje.estado}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persCajeControl.nuevo}" rendered="#{persCajeControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persCajeControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persCajeControl.paginaRuta}" />								
+						</p:commandLink>
+												
+					</div>
+
+				</h:form>
+
+			</p:tab>
+			
+			<p:tab title="Usuario">
+
+				<h:form>
+
+					<p:dataTable id="persUsuaList" style="margin-top:10px;"	emptyMessage="No se encontro datos"
+						value="#{personaControl.persUsuas}" var="_persUsua">
+
+						<f:facet name="header">
+							<h:outputText value="Usuario" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{persUsuaControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_persUsua.personaId}"
+										target="#{persUsuaControl.id}" />
+									<f:setPropertyActionListener
+										value="#{personaControl.persona.personaId}"
+										target="#{persUsuaControl.personaId}" />										
+									<f:setPropertyActionListener
+										value="/ppsj/parametro/persona/explora"
+										target="#{persUsuaControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Usuario">
+							<h:outputText id="usuario"
+								value="#{_persUsua.usuari}" />
+						</p:column>
+						
+						<p:column headerText="Caduca Clave">
+							<h:selectBooleanCheckbox value="#{_persUsua.caducaClav}" disabled="true"/>
+						</p:column>
+						
+						<p:column headerText="Fecha Caduca">
+							<p:calendar id="fechaCaduca" value="#{_persUsua.caducaFechHora}" pattern="dd-MM-yyyy" 
+								required="false" >
+							</p:calendar>
+						</p:column>
+						
+						<p:column headerText="Estado">
+							<h:selectBooleanCheckbox value="#{_persUsua.estado}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persUsuaControl.nuevo}" rendered="#{persUsuaControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persUsuaControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persUsuaControl.paginaRuta}" />								
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Vendedor">
+
+				<h:form>
+
+					<p:dataTable id="persVendList" style="margin-top:10px;"	emptyMessage="No se encontro datos"
+						value="#{personaControl.persVends}" var="_persVend">
+
+						<f:facet name="header">
+							<h:outputText value="Vendedor" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{persVendControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_persVend.personaId}"
+										target="#{persVendControl.id}" />
+									<f:setPropertyActionListener
+										value="#{personaControl.persona.personaId}"
+										target="#{persVendControl.personaId}" />										
+									<f:setPropertyActionListener
+										value="/ppsj/parametro/persona/explora"
+										target="#{persVendControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Estado">
+							<h:selectBooleanCheckbox value="#{_persVend.estado}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persVendControl.nuevo}" rendered="#{persVendControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persVendControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persVendControl.paginaRuta}" />								
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Cobrador">
+
+				<h:form>
+
+					<p:dataTable id="persCobrList" style="margin-top:10px;"	emptyMessage="No se encontro datos"
+						value="#{personaControl.persCobrs}" var="_persCobr">
+
+						<f:facet name="header">
+							<h:outputText value="Cobrador" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{persCobrControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_persCobr.personaId}"
+										target="#{persCobrControl.id}" />
+									<f:setPropertyActionListener
+										value="#{personaControl.persona.personaId}"
+										target="#{persCobrControl.personaId}" />										
+									<f:setPropertyActionListener
+										value="/ppsj/parametro/persona/explora"
+										target="#{persCobrControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Estado">
+							<h:selectBooleanCheckbox value="#{_persCobr.estado}" disabled="true"/>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{persCobrControl.nuevo}" rendered="#{persCobrControl.rolPermiso.get(5000)}">
+							<f:setPropertyActionListener
+								value="#{personaControl.persona.personaId}"
+								target="#{persCobrControl.personaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/persona/explora"
+								target="#{persCobrControl.paginaRuta}" />								
+						</p:commandLink>
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>
+		
+	</ui:define>
+</ui:composition>

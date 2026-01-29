@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="prodPrecId" value='#{prodPrecControl.id}' />
+		<f:viewParam name="productoId" value='#{prodPrecControl.productoId}' />
+		<f:viewParam name="paginaRuta" value='#{prodPrecControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{prodPrecControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Producto Precio - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="productoList" value="Producto" />
+					<p:selectOneMenu id="productoList" value="#{prodPrecControl.prodPrec.producto}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{prodPrecControl.productos}" var="producto" 
+							itemLabel="#{producto.descri}" itemValue="#{producto}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="precioList" value="Lista Precio" />
+					<p:selectOneMenu id="precioList" value="#{prodPrecControl.prodPrec.precio}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{prodPrecControl.precios}" var="precio" 
+							itemLabel="#{precio.descri}" itemValue="#{precio}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="factor" value="Factor" />
+					<p:inputText id="factor" value="#{prodPrecControl.prodPrec.factor}"  
+						required="true" requiredMessage="Ingrese factor" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</p:inputText>
+
+					<p:outputLabel for="utilid" value="Utilidad" />
+					<p:inputText id="utilid" value="#{prodPrecControl.prodPrec.utilid}"  
+						required="true" requiredMessage="Ingrese utilidad" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</p:inputText>
+
+					<p:outputLabel for="precioConImpu" value="Precio Con Impuestos" />
+					<p:inputText id="precioConImpu" value="#{prodPrecControl.prodPrec.precioConImpu}"  
+						required="true" requiredMessage="Ingrese precio con impuestos" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</p:inputText>
+
+					<p:outputLabel for="precioSinImpu" value="Precio Sin Impuestos" />
+					<h:inputText id="precioSinImpu" value="#{prodPrecControl.prodPrec.precioSinImpu}" 
+						required="true" requiredMessage="Ingrese precio sin impuestos" disabled="true">
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:inputText>
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{prodPrecControl.grabar}" 
+					rendered="#{(prodPrecControl.id != null and prodPrecControl.rolPermiso.get(5001)) or 
+					(prodPrecControl.id == null and prodPrecControl.rolPermiso.get(5000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{prodPrecControl.eliminar}" 
+					rendered="#{prodPrecControl.id != null and prodPrecControl.rolPermiso.get(5002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{prodPrecControl.cancelar}"	/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="formPagoId" value='#{formPagoControl.id}' />
+		<f:event type="preRenderView" listener="#{formPagoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Forma Pago - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="descripcion" value="Descripción" />
+					<p:inputText id="descripcion" value="#{formPagoControl.formPago.descri}" styleClass="cajaTextoDescri" 
+						required="true" requiredMessage="Ingrese Descripción" />
+						
+					<p:outputLabel for="refere" value="Referencia" />
+					<p:inputText id="refere" value="#{formPagoControl.formPago.refere}"  
+						required="false" />
+
+					<p:outputLabel for="tipoList" value="Tipo" />						
+					<p:selectOneMenu id="tipoList" value="#{formPagoControl.formPago.tipo}"
+						required="true" requiredMessage="Ingrese Tipo">
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{formPagoControl.parameFPTipos}" var="tipo" 
+							itemLabel="#{tipo.descri}" itemValue="#{tipo.descri}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel for="dimmList" value="Código SRI" />				
+					<p:selectOneMenu id="dimmList" value="#{formPagoControl.formPago.dimm}" converter="omnifaces.SelectItemsConverter"
+						required="true" requiredMessage="Ingrese Código SRI">
+						<f:selectItems value="#{formPagoControl.dimms}" var="dimm" 
+							itemLabel="#{dimm.codigo} - #{dimm.descri}" itemValue="#{dimm}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel for="moduloList" value="Módulo" />						
+					<p:selectOneMenu id="moduloList" value="#{formPagoControl.formPago.modulo}"
+						required="true">
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{formPagoControl.parameFPModulos}" var="modulo" 
+							itemLabel="#{modulo.descri}" itemValue="#{modulo.descri}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel for="tipo2" value="Banco" />
+					<p:inputText id="tipo2" value="#{formPagoControl.formPago.tipo2}" placeholder="BA" 
+						required="false" />
+					
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{formPagoControl.formPago.estado}" required="true"
+						requiredMessage="Ingrese estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{formPagoControl.grabar}" 
+					rendered="#{(formPagoControl.id != null and formPagoControl.rolPermiso.get(6001)) or 
+					(formPagoControl.id == null and formPagoControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{formPagoControl.eliminar}" 
+					rendered="#{formPagoControl.id != null and formPagoControl.rolPermiso.get(6002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

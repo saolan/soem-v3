@@ -1,0 +1,194 @@
+/* Este div va en soemTemplate */
+#contenedor {
+	margin: 0 auto;
+	/* Espacio desde los componentes internos hacia afuera*/
+	padding: 0 0px 0px 0px;
+	border-right: 0px solid #8c8f91;
+	border-bottom: 2px solid #8c8f91;
+	/* Color del fondo de la pagina */
+	background: #f7f7f7;
+	background-repeat: repeat-x;
+	padding-top: 0px;
+	box-shadow: 3px 3px 15px #d5d5d5;
+}
+
+#content {
+	margin: 0px;
+}
+
+#content .paginador {
+	display: block;
+	text-align: center;
+	font-weight: bold;
+	background: #d4ebfc; /*  #0073e5; */
+	border-radius: 4px;
+}
+
+#content .paginador-content {
+	color: #000000; /*  #FFFFFF; */
+}
+
+#footer {
+	clear: both;
+	text-align: center;
+	color: #666666;
+	font-size: 0.85em;
+}
+
+/* Estilo para dibujar una barra ejemlo: Barra de botones*/
+#barraBotones {
+	/* border: 1px solid #D5D5D5; */
+	/*background: #a19c9c;*/
+	background-repeat: repeat-x;
+	padding: 5px;
+}
+
+.barraBotones {
+	/* border: 1px solid #D5D5D5; */
+	/*background: #a19c9c;*/
+	background-repeat: repeat-x;
+	padding: 3px;
+}
+
+.link-container {
+	display: flex;
+	align-items: center;
+}
+
+.ui-commandlink {
+	display: inline-block;
+	margin-right: 15px;
+}
+
+form {
+	padding: 0.0em;
+	/* font: 90%/1 sans-serif; */
+	/* Dibuja borde en cada form */
+	/* border: 1px solid #D5D5D5; */
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	/* Color del fondo de la pagina parte de abajo - atras*/
+	background-color: #F1F1F1;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	/* font-size: 0.8em; */
+	color: #363636;
+}
+
+/*
+Se usa para modificar el estilo de p:outputLabel
+label {
+	float: left;
+	width: 15%;
+	margin-left: 0px;
+	margin-right: 0.5em;
+	padding-top: 0.2em;
+	text-align: right;
+	font-weight: bold;
+	color: #363636;
+}
+*/
+
+/* Estilo para todos los controles tipo Link */
+a {
+	color: #4a5d75;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #369;
+	text-decoration: underline;
+}
+
+.boton {
+	background-color: #d4ebfc; /* #0073e5;  Azul Cool */
+	border-radius: 4px;
+	color: #000000;
+	padding: 5px 12px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	/* font-size: 12px; */
+	font-weight: bold;
+	margin-right: 4px;
+}
+
+.boton:hover, .boton:active, .boton.active, .boton.disabled, .boton[disabled]
+	{
+	color: #000000;
+	background-color: #d4ebfc; /* #0900ff; */
+	*background-color: #d4ebfc; /* #0900ff; */
+}
+
+/*Cambia los formatos del los componentes de prime faces*/
+.ui-inputfield, .ui-widget-content .ui-inputfield, .ui-widget-header .ui-inputfield
+	{
+	box-shadow: none;
+}
+
+.cajaTextoCodigo {
+	width: 170px;
+}
+
+.cajaTextoDescri {
+	width: 370px;
+}
+
+.ocultar-nombre-columnas table thead tr {
+	display: none;
+}
+
+.columna1 {
+	width: 90px;
+}
+
+.columna2 {
+	width: 280px;
+}
+
+.noBorders tr, .noBorders td {
+	background: none !important;
+	border: none !important;
+}
+
+.stockMaximo {
+	background-color: #A4A4A4 /*#FA5858; */
+}
+
+.stockMinimo {
+	background-color: #F5A9A9 /* #F3F781; */
+}
+
+.ui-growl {
+	position: fixed;
+	top: 20% !important;
+	left: 50% !important;
+	transform: translate(-50%, -50%);
+	z-index: 9999; /* Asegúrate de que tenga un alto índice de capa */
+}
+
+/*
+Cambia el tama�o de fuente en todas las paginas
+.ui-widget,
+    .ui-widget .ui-widget {
+    font-size: 12px !important;
+}*/
+
+/*
+Cambia el tama�o de los iconos
+.ui-icon-pencil {
+Primera linea IE 9 sedunda Linea Chrome, Safari, Opera
+  -ms-transform: scale(0.8); 
+  -webkit-transform: scale(0.8); 
+  transform: scale(0.8);
+}
+
+.ui-icon-folder-open {
+Primera linea IE 9 sedunda Linea Chrome, Safari, Opera
+  -ms-transform: scale(0.8); 
+  -webkit-transform: scale(0.8); 
+  transform: scale(0.8);
+}
+*/

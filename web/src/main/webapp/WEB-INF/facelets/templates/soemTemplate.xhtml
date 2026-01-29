@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html"
+	xmlns:ui="jakarta.faces.facelets" xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<!--
+	Titulo de las paginas
+	Viene como parametro el nombre de cada pagina  -->
+	<title>#{empty pageTitle ? 'Soem' : pageTitle}</title>
+	<title>Soem</title>
+
+	<h:outputStylesheet name="layout.css" library="css" />
+	<h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css" />
+	<h:outputStylesheet name="screen.css" library="css" />
+</h:head>
+
+<h:body>
+	<div id="contenedor">
+
+		<ui:debug
+			rendered="#{facesContext.application.projectStage == 'Development'}" />
+
+		<ui:include src="/WEB-INF/facelets/templates/menu.xhtml" />
+
+		<div id="content">
+
+			<p:growl id="mensajes" autoUpdate="true" closable="true"
+				showSummary="false" showDetail="true">
+				<p:autoUpdate />
+			</p:growl>
+
+			<ui:insert name="main">
+			</ui:insert>
+
+		</div>
+
+		<div id="footer">
+
+			<h:panelGrid columns="3" width="100%">
+				<h:column>
+					<h:outputText value="Sucursal:" />
+					<h:outputText
+						value="#{sessionScope.variablesSesion.sucursal.descri}" />
+				</h:column>
+				<h:column>
+					<h:outputText value="Usuario:" />
+					<h:outputText
+						value="#{sessionScope.persUsua.persona.apelli} #{sessionScope.persUsua.persona.nombre}" />
+				</h:column>
+				<h:column>
+					Desarrollado Por: <a href="http://www.saolan.com.ec">Saolan</a>
+				</h:column>
+
+			</h:panelGrid>
+		</div>
+	</div>
+</h:body>
+</html>

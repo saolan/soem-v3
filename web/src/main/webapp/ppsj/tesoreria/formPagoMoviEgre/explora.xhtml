@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="formPagoMoviEgreId"
+			value='#{formPagoMoviEgreControl.id}' />
+		<f:event type="preRenderView"
+			listener="#{formPagoMoviEgreControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{formPagoMoviEgreControl.descargar}"
+					rendered="true" />
+			</div>
+
+			<p:panel id="explora" header="Cobro - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Documento" />
+							<p:inputText
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.docuMoviEgre.documento.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Número" />
+							<p:inputText
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.numero}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Cliente Apellido" />
+							<p:inputText
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.persona.apelli}" 
+								styleClass="cajaTextoDescri" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Cliente Nombre" />
+							<p:inputText
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.persona.nombre}"
+								styleClass="cajaTextoDescri" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Fecha&#160;Emisión" />
+							<p:calendar id="fechaEmis"
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.fecha}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha" />
+						</div>
+
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Nota" />
+							<p:inputText
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.nota}"
+								styleClass="cajaTextoDescri" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Total" />
+							<p:inputText
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.total}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Trans.Documento" />
+							<p:inputText
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.transaccion.docuTran.documento.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Trans.Número" />
+							<p:inputText
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.transaccion.numero}" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Trans.Fecha" />
+							<p:calendar id="fechaEmision"
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.transaccion.fechaEmis}"
+								pattern="dd-MM-yyyy" />
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel value="Trans.Estado" />
+							<p:inputText
+								value="#{formPagoMoviEgreControl.formPagoMoviEgre.transaccion.estado}" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+
+		<p:dataTable id="cobrDetaList" emptyMessage="No se encontro datos"
+			reflow="true" value="#{formPagoMoviEgreControl.cobrDetas}"
+			var="_cobrDeta"
+			rendered="#{formPagoMoviEgreControl.rolPermiso.get(8103)}">
+
+			<f:facet name="header">
+        		Detalle Cobros
+    		</f:facet>
+
+			<p:column headerText="Núm.Doc.">
+				<h:outputText id="pagonumero" value="#{_cobrDeta.cxc.egreso.serie1}-#{_cobrDeta.cxc.egreso.serie2}-#{_cobrDeta.cxc.egreso.numero}" />
+			</p:column>
+
+			<p:column headerText="Cxc Emisión">
+				<h:outputText id="pagoFechaEmis"
+					value="#{_cobrDeta.cxc.egreso.fechaEmis}">
+					<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+				</h:outputText>
+
+			</p:column>
+
+			<p:column headerText="Cxc Vencim.">
+				<h:outputText id="pagoFechaVenc" value="#{_cobrDeta.cxc.fechaVenc}">
+					<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+				</h:outputText>
+
+			</p:column>
+
+			<p:column headerText="Total Cxc">
+				<h:outputText id="pagototal" value="#{_cobrDeta.cxc.total}">
+					<f:convertNumber pattern="#0.00" locale="en-US" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="Número Cobro">
+				<h:outputText id="numeroCobr"
+					value="#{_cobrDeta.fpmeFormPago.formPagoMoviEgre.numero}" />
+			</p:column>
+
+			<p:column headerText="Fecha Cobro">
+				<h:outputText id="fechaCobr"
+					value="#{_cobrDeta.fpmeFormPago.formPagoMoviEgre.fecha}">
+					<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+				</h:outputText>
+
+			</p:column>
+
+			<p:column headerText="Forma Cobro">
+				<h:outputText id="formPago"
+					value="#{_cobrDeta.fpmeFormPago.formPago.descri}" />
+			</p:column>
+
+			<p:column headerText="Total Cobro">
+				<h:outputText id="total" value="#{_cobrDeta.total}">
+					<f:convertNumber pattern="#0.00" locale="en-US" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="Cxc Estado">
+				<h:selectBooleanCheckbox id="cxcEstado"
+					value="#{_cobrDeta.cxc.estado}" />
+			</p:column>
+
+		</p:dataTable>
+
+	</ui:define>
+</ui:composition>

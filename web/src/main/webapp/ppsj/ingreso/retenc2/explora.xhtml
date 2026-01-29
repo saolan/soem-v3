@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="retencionId" value='#{retencControl.id}' />
+		<f:event type="preRenderView" listener="#{retencControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Retención - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="proveedor" value="Proveedor" style="font-size: 125%;"/>
+					<h:outputText id="proveedor" value="#{retencControl.retencion.ingreso.persProv.persona.apelli} #{retencControl.retencion.ingreso.persProv.persona.nombre}" 
+						style="font-size: 125%;" />
+					
+					<p:outputLabel for="facturaNume" value="Factura&#160;Número" style="font-size: 125%;"/>
+					<h:outputText id="facturaNume" value="#{retencControl.retencion.ingreso.numero}" 
+						style="font-size: 125%;" />
+					
+					<p:outputLabel for="numero" value="Retención&#160;Número" />
+					<p:column>
+						<p:inputText id="serie1" value="#{retencControl.retencion.serie1}" style="width:30px;"
+							required="true" requiredMessage="Ingrese serie1" />
+					
+						<p:inputText id="serie2" value="#{retencControl.retencion.serie2}" style="width:30px;"
+							required="true" requiredMessage="Ingrese serie2" />
+					
+						<p:inputText id="numero" value="#{retencControl.retencion.numero}" 
+							required="true" requiredMessage="Ingrese numero" />	
+					</p:column>
+
+					<p:outputLabel value="Fecha&#160;Emisión" />
+					<p:calendar id="fechaEmis" value="#{retencControl.retencion.fechaEmis}" pattern="dd-MM-yyyy" 
+						required="true" requiredMessage="Ingrese fecha"/>
+
+					<p:outputLabel value="Fecha&#160;Autorización" />
+					<p:calendar id="fechaAuto" value="#{retencControl.retencion.fechaAuto}" pattern="dd-MM-yyyy HH:mm" />
+
+					<p:outputLabel for="autori" value="Autorización" />
+					<p:inputText id="autori" value="#{retencControl.retencion.autori}" style="width:400px;" />
+
+					<p:outputLabel for="claveAcce" value="Clave&#160;Acceso" />
+					<p:inputText id="claveAcce" value="#{retencControl.retencion.claveAcce}" style="width:400px;" />
+						
+					<p:outputLabel for="nota" value="Nota" />
+					<p:inputText id="nota" value="#{retencControl.retencion.nota}" style="width:400px;"/>
+
+					<p:outputLabel for="documeElec" value="Docum.Electrónico" />
+					<p:selectBooleanCheckbox id="documeElec" value="#{retencControl.retencion.documeElec}" 
+						required="true" requiredMessage="Documento Electronico" />
+				</h:panelGrid>	
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="/ppsj/ingreso/retencion/lista"
+					styleClass="boton" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton" value="Descargar" 
+					action="#{retencControl.descargar}" 
+					rendered="#{retencControl.rolPermiso.get(4106) and retencControl.id != null}" />
+				
+				<p:spacer height="2" />
+					
+				<p:commandLink id="descargarRide" ajax="false" styleClass="boton" value="Descargar Ride" 
+					action="#{retencControl.descargarRide}" 
+					rendered="#{retencControl.rolPermiso.get(4106) and retencControl.id != null}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="reenviarCorreo" ajax="false" styleClass="boton" value="Enviar Correo" 
+					action="#{retencControl.reenviarCorreo}" 
+					rendered="#{retencControl.rolPermiso.get(4106) and retencControl.id != null}" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

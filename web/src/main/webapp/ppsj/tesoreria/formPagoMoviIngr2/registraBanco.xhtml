@@ -1,0 +1,422 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{formPagoMoviIngrControl.pagina}' />
+		<f:viewParam name="paginaProv" value='#{formPagoMoviIngrControl.paginaProv}' />
+	
+		<f:viewParam name="formPagoMoviIngrId" value='#{formPagoMoviIngrControl.id}' />
+		<f:viewParam name="ingresoId" value='#{formPagoMoviIngrControl.ingresoId}' />
+		<f:event type="preRenderView" listener="#{formPagoMoviIngrControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form id="fpmi">
+			<p:defaultCommand target="buscarPersProv"/>
+
+			<p:panel id="panelRegistrar" header="Pago - Panel Datos"
+				style="margin-bottom:5px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid2" columns="6" columnClasses="columna1,columna2,columna1,columna2,columna1,columna2">
+
+					<p:outputLabel value="Documento" />					
+					<p:selectOneMenu id="documentoList" value="#{formPagoMoviIngrControl.formPagoMoviIngr.docuMoviIngr}" converter="omnifaces.SelectItemsConverter"
+						required="true" requiredMessage="Seleccione documento">
+						<p:ajax event="change" listener="#{formPagoMoviIngrControl.filtrarFormPagos}" update="fpmi:cxpList,fpmi:cxpListSele,fpmi:total,formPagoList, persProvApelli, abrirDialogo" />
+						<f:selectItem itemLabel="Seleccione Documento..." itemValue="" />
+						<f:selectItems value="#{formPagoMoviIngrControl.docuMoviIngrs}" var="docuMoviIng" 
+							itemLabel="#{docuMoviIng.documento.descri}" itemValue="#{docuMoviIng}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Fecha" />
+					<p:calendar id="fechaEmision" value="#{formPagoMoviIngrControl.formPagoMoviIngr.fecha}" pattern="dd-MM-yyyy" 
+						required="true" requiredMessage="Ingrese fecha"/>
+
+					<p:column/>
+					<p:column/>
+
+					<p:outputLabel for="formPagoList" value="Forma&#160;Pago" />				
+					<p:selectOneMenu id="formPagoList" value="#{formPagoMoviIngrControl.formPagoMoviIngr.formPago}" converter="omnifaces.SelectItemsConverter"
+						required="true" requiredMessage="Ingrese forma de pago">
+						<f:selectItem itemLabel="Seleccione Documento..." itemValue="" />
+						<f:selectItems value="#{formPagoMoviIngrControl.formPagos}" var="formPago" 
+							itemLabel="#{formPago.descri}" itemValue="#{formPago}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel for="refere" value="Referencia" />
+					<p:inputText id="refere" value="#{formPagoMoviIngrControl.formPagoMoviIngr.refere}" 
+						required="false" />
+					
+					<p:outputLabel for="total" value="Total" style="font-size: 150%;"/>
+					<h:inputText id="total" value="#{formPagoMoviIngrControl.formPagoMoviIngr.total}" 
+						disabled="#{formPagoMoviIngrControl.formPagoMoviIngr.docuMoviIngr.tipo == 'PAGO-COBRO' or 
+							formPagoMoviIngrControl.formPagoMoviIngr.docuMoviIngr.tipo == null}"
+						required="true" requiredMessage="Ingrese total" style="font-size: 150%;">
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</h:inputText>
+
+					<p:outputLabel for="nota" value="Nota" />
+					<p:inputText id="nota" value="#{formPagoMoviIngrControl.formPagoMoviIngr.nota}" 
+						required="false" style="width:250px;" />
+
+				</h:panelGrid>
+				
+				<p:separator />
+								
+				<h:panelGrid id="grid1" columns="2" width="100%" >
+
+					<p:commandLink id="abrirDialogo" style=" font-size: 130%; font-weight: bold; color: blue; text-decoration: underline;"  
+						onclick="PF('seleccionPersona').show();" update="panelProveedor,persProvList"  >
+							<h:outputText value="#{formPagoMoviIngrControl.formPagoMoviIngr.persona.apelli == null ? 'Seleccione Proveedor ' : 'Proveedor '}" />
+							<h:graphicImage library="img" name="lupa1.png" width="14px" />
+					</p:commandLink>
+																				
+					<p:outputLabel id="persProvApelli" style="text-align: left; width:500px; font-size: 130%; font-weight: normal;"
+					 	value="#{formPagoMoviIngrControl.formPagoMoviIngr.persona.apelli} #{formPagoMoviIngrControl.formPagoMoviIngr.persona.nombre} " />
+				</h:panelGrid>
+				
+			</p:panel>
+
+			<div style="margin-top:3px; margin-bottom:5px; float:left; width:45%;">
+
+					<p:dataTable id="cxpList" scrollable="true" scrollHeight="200"
+						selectionMode="single" rowKey="#{_cxp.cxpId}" 
+						emptyMessage="No se encontro datos" value="#{formPagoMoviIngrControl.cxps}"
+						var="_cxp" rendered="#{formPagoMoviIngrControl.id == null}">
+						
+        				<p:ajax event="rowSelect" listener="#{formPagoMoviIngrControl.onRowSelect}" update="fpmi:cxpListSele,:fpmi:total" />
+        				<p:ajax event="rowUnselect" listener="#{formPagoMoviIngrControl.onRowUnselect}" update="fpmi:cxpListSele,:fpmi:total" />
+        				
+    					<f:facet name="header">
+        					Seleccione Cuenta Por Pagar  
+    					</f:facet>
+
+						<p:column headerText="Emisión">
+							<h:outputText id="fecha" value="#{_cxp.ingreso.fechaEmis}" />
+						</p:column>
+
+						<p:column headerText="Vencimiento">
+							<h:outputText id="fechaVenc" value="#{_cxp.fechaVenc}" />
+						</p:column>
+
+						<p:column headerText="Núm.Doc." style="text-align: right">
+							<h:outputText id="numero" value="#{_cxp.ingreso.numero}" />
+						</p:column>
+
+						<p:column headerText="Total" style="width:50px; text-align: right">
+							<h:outputText id="total" value="#{_cxp.total}" />
+						</p:column>
+						
+						<p:column headerText="Abono" style="width:50px; text-align: right">
+												
+							<p:commandLink id="abrirDialogoPagos" value="#{_cxp.abono}" title="Consultar Pagos" onclick="PF('consultarPagosDialogo').show();"
+								action="#{formPagoMoviIngrControl.buscarPagoDetas}" update=":fpmi:pagosList">
+ 								<f:setPropertyActionListener value="#{_cxp.cxpId}"
+									target="#{formPagoMoviIngrControl.cxpId}" />
+							
+							</p:commandLink>
+						
+						</p:column>
+						
+						<p:column headerText="Saldo" style="width:50px; text-align: right">
+							<h:outputText id="saldo" value="#{_cxp.saldo}" />
+						</p:column>
+												
+						<p:column headerText="Estado" style="width:36px; text-align: center">
+							<h:selectBooleanCheckbox id="estado" value="#{_cxp.estado}" disabled="true"/>
+						</p:column>
+					</p:dataTable>
+			</div>
+
+			<div style="margin-top:3px; margin-bottom:5px; float:right; width:54%;">
+
+					<p:dataTable id="cxpListSele" scrollable="true" scrollHeight="200" editable="true" editMode="cell" 
+						emptyMessage="No se encontro datos" value="#{formPagoMoviIngrControl.cxpSeles}" var="_cxp" 
+						rendered="#{formPagoMoviIngrControl.id == null}">
+						
+						<p:ajax event="cellEdit" listener="#{formPagoMoviIngrControl.modificarCelda}" update=":fpmi:total" />
+
+    					<f:facet name="header">
+        					Detalle Pagos  
+    					</f:facet>
+    											
+						<p:column style="width:18px;text-align: center"
+							headerText="Op.">
+
+								<p:commandLink styleClass="ui-icon ui-icon-trash" title="eliminar" 
+									ajax="true" action="#{formPagoMoviIngrControl.eliminarCxpSele}"
+									update="cxpListSele,fpmi:total">
+									<f:setPropertyActionListener value="#{_cxp}" target="#{formPagoMoviIngrControl.cxpSele}" />
+							
+								</p:commandLink>
+								
+						</p:column>
+
+						<p:column headerText="Emisión" style="text-align: center">
+							<h:outputText id="fecha" value="#{_cxp.ingreso.fechaEmis}" />
+						</p:column>
+
+						<p:column headerText="Vencimiento" style="text-align: center">
+							<h:outputText id="fechaVenc" value="#{_cxp.fechaVenc}" />
+						</p:column>
+
+						<p:column headerText="Núm.Doc." style="text-align: right">
+							<h:outputText id="numero" value="#{_cxp.ingreso.numero}" />
+						</p:column>
+
+						<p:column headerText="Total" style="text-align: right">
+							<h:outputText id="total" value="#{_cxp.total}" />
+						</p:column>
+						
+						<p:column headerText="Abono" style="text-align: right">
+							<h:outputText id="abono" value="#{_cxp.abono}" />
+						</p:column>
+						
+						<p:column headerText="Saldo" style="text-align: right">
+							<h:outputText id="Saldo" value="#{_cxp.total - _cxp.abono}" />
+						</p:column>
+
+						<p:column headerText="Pago" style="text-align: right" >
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText id="saldoOutput" value="#{_cxp.saldo}">
+										<f:convertNumber pattern="#0.00" locale="en-US"/>
+									</h:outputText>
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText id="saldoInput" value="#{_cxp.saldo}" style="width:100%" >
+										<f:convertNumber pattern="#0.00" locale="en-US"/>
+									</p:inputText>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+					</p:dataTable>
+			</div>
+
+
+			<div style="margin-top:3px; margin-bottom:5px; float:right; ">
+					<p:dataTable id="pagoDetaList" emptyMessage="No se encontro datos"
+						value="#{formPagoMoviIngrControl.pagoDetas}" var="_pagoDeta"
+						rendered="#{formPagoMoviIngrControl.pagoDetas.size() != null}">
+
+    					<f:facet name="header">
+        					Pagos
+    					</f:facet>
+
+						<p:column headerText="Cxp Estado" style="text-align: center; width:80px">
+							<h:selectBooleanCheckbox id="cxpEstado" value="#{_pagoDeta.cxp.estado}" />
+						</p:column>
+
+						<p:column headerText="Cxp Emisión ">
+							<h:outputText id="pagoFechaEmis" value="#{_pagoDeta.cxp.ingreso.fechaEmis}" />
+						</p:column>
+
+						<p:column headerText="Cxp Vencimiento">
+							<h:outputText id="pagoFechaVenc" value="#{_pagoDeta.cxp.fechaVenc}" />
+						</p:column>
+						
+						<p:column headerText="Núm.Doc.">
+							<h:outputText id="pagoNumero" value="#{_pagoDeta.cxp.ingreso.numero}" />
+						</p:column>
+												
+						<p:column headerText="Cxp Total">
+							<h:outputText id="pagototal" value="#{_pagoDeta.cxp.total}" />
+						</p:column>
+
+						<p:column headerText="Fecha Pago">
+							<h:outputText id="fechaPago" value="#{_pagoDeta.formPagoMoviIngr.fecha}" />
+						</p:column>
+												
+						<p:column headerText="Total Pago">
+							<h:outputText id="total" value="#{_pagoDeta.total}">
+							</h:outputText>
+						</p:column>
+
+					</p:dataTable>
+			</div>
+
+			<div id="barraBotones" style="margin-top:5px; margin-bottom:5px; float:right; width:100%;">
+			
+				<p:commandLink id="Procesar" value="Procesar" 
+					styleClass="boton" action="#{formPagoMoviIngrControl.procesar}" 
+					rendered="#{(formPagoMoviIngrControl.id == null and formPagoMoviIngrControl.rolPermiso.get(8104))}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{formPagoMoviIngrControl.eliminar}" 
+					rendered="#{formPagoMoviIngrControl.id != null and formPagoMoviIngrControl.rolPermiso.get(8102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="anular" value="Anular" 
+					styleClass="boton" action="#{formPagoMoviIngrControl.anular}" 
+					rendered="#{formPagoMoviIngrControl.id != null and formPagoMoviIngrControl.rolPermiso.get(8107)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+			</div>
+
+			<p:dialog id="seleccionPersona" widgetVar="seleccionPersona" width="60%"
+				header="Seleccionar Proveedor" modal="true" resizable="false"
+				focus="cedulaRuc">
+
+				<p:panel id="panelProveedor" style="margin-bottom:5px;" >
+
+					<p:focus context="panelProveedor" />
+
+					<h:panelGrid columns="3">
+
+					<h:panelGrid columns="1">
+						<p:outputLabel for="apelli" value="Apellido" />
+						<p:inputText id="apelli"
+							value="#{formPagoMoviIngrControl.personaBuscar.apelli}"
+							required="false">
+							<f:validateBean for="apelli" disabled="true" />
+						</p:inputText>
+					</h:panelGrid>
+					
+					<h:panelGrid columns="1">
+						<p:outputLabel for="nombre" value="Nombre" />
+						<p:inputText id="nombre"
+							value="#{formPagoMoviIngrControl.personaBuscar.nombre}"
+							required="false">
+							<f:validateBean for="nombre" disabled="true" />
+						</p:inputText>
+					</h:panelGrid>
+					
+					<h:panelGrid columns="1">
+						<p:outputLabel for="cedulaRuc" value="Cédula/Ruc" />
+						<p:inputText id="cedulaRuc"
+							value="#{formPagoMoviIngrControl.personaBuscar.cedulaRuc}"
+							required="false">
+							<f:validateBean for="cedulaRuc" disabled="true" />
+						</p:inputText>
+					</h:panelGrid>
+					
+					</h:panelGrid>
+
+				</p:panel>
+
+				<p:commandLink id="buscarPersProv" value="Buscar Proveedor"
+					styleClass="boton"
+					action="#{formPagoMoviIngrControl.buscarPersonas(0)}"
+					update="fpmi:persProvList,panelProveedor,paginadorProveedores" />
+
+				<p:dataTable id="persProvList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+					value="#{formPagoMoviIngrControl.personas}" var="_persona">
+
+					<f:facet name="header">
+						<h:outputText value="Proveedores" />
+					</f:facet>
+
+					<p:column headerText="Cédula" width="20%">
+						<p:commandLink id="persProvCedula" 
+							title="Seleccionar Proveedor" action="#{formPagoMoviIngrControl.seleccionarPersProv}"
+							value="#{_persona.cedulaRuc}" ajax="true"
+							update="fpmi:persProvApelli,fpmi:abrirDialogo,fpmi:cxpList,fpmi:cxpListSele,fpmi:total"
+							oncomplete="controlarSeleccionPersonaDialogo(xhr, status, args)">
+
+							<f:setPropertyActionListener value="#{_persona}"
+								target="#{formPagoMoviIngrControl.formPagoMoviIngr.persona}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Apellido / Nombre">
+						<p:commandLink id="persProvApelliNombre"
+							title="Seleccionar Proveedor" action="#{formPagoMoviIngrControl.seleccionarPersProv}"
+							value="#{_persona.apelli} #{_persona.nombre}" ajax="true"
+							update="fpmi:persProvApelli,fpmi:abrirDialogo,fpmi:cxpList,fpmi:cxpListSele,fpmi:total"
+							oncomplete="controlarSeleccionPersonaDialogo(xhr, status, args)">
+							
+							<f:setPropertyActionListener value="#{_persona}"
+								target="#{formPagoMoviIngrControl.formPagoMoviIngr.persona}" />
+						</p:commandLink>
+					</p:column>
+
+				</p:dataTable>
+
+			<div align="center">
+
+			<h:panelGroup id="paginadorProveedores">
+	
+				<p:commandButton value="Anterior" ajax="true" update="fpmi:persProvList,panelProveedor,paginadorProveedores"
+					rendered="#{formPagoMoviIngrControl.paginaProv gt 0}" 
+					action="#{formPagoMoviIngrControl.buscarPersonas(1)}">
+					<f:param name="paginaProv" value="#{formPagoMoviIngrControl.paginaProv - 1}"/>
+				</p:commandButton>
+			
+				<p:commandButton value="Siguiente" ajax="true" update="fpmi:persProvList,panelProveedor,paginadorProveedores" 
+					rendered="#{(formPagoMoviIngrControl.paginaProv + 1) * formPagoMoviIngrControl.filasPagina lt formPagoMoviIngrControl.contadorRegProv}"
+					action="#{formPagoMoviIngrControl.buscarPersonas(1)}">
+					<f:param name="paginaProv" value="#{formPagoMoviIngrControl.paginaProv + 1}"/>
+				</p:commandButton>
+		
+			</h:panelGroup>					
+			</div>
+			</p:dialog>
+
+    		<p:dialog id="consultarPagos" widgetVar="consultarPagosDialogo" width="60%"  
+    			header="Consulta Pagos" modal="true" resizable="false"  >
+				<p:dataTable id="pagosList" style="margin-bottom:5px;"
+					emptyMessage="No se encontro datos"
+					value="#{formPagoMoviIngrControl.pagoDetas}" var="_pagoDeta">
+
+						<p:column headerText="Cxp Estado" style="text-align: center; width:80px">
+							<h:selectBooleanCheckbox id="cxpEstado" value="#{_pagoDeta.cxp.estado}" />
+						</p:column>
+
+						<p:column headerText="Cxp Emisión" style="text-align: center;">
+							<h:outputText id="pagoFechaEmis" value="#{_pagoDeta.cxp.ingreso.fechaEmis}" />
+						</p:column>
+
+						<p:column headerText="Cxp Vencim." style="text-align: center;">
+							<h:outputText id="pagoFechaVenc" value="#{_pagoDeta.cxp.fechaVenc}" />
+						</p:column>
+						
+						<p:column headerText="Núm.Doc." style="text-align: right;">
+							<h:outputText id="pagonumero" value="#{_pagoDeta.cxp.ingreso.numero}" />
+						</p:column>
+												
+						<p:column headerText="Total Cxp" style="text-align: right;">
+							<h:outputText id="pagototal" value="#{_pagoDeta.cxp.total}" />
+						</p:column>
+
+						<p:column headerText="Fecha Pago" style="text-align: center;">
+							<h:outputText id="fechaPago" value="#{_pagoDeta.formPagoMoviIngr.fecha}" />
+						</p:column>
+												
+						<p:column headerText="Total Pago" style="text-align: right;">
+							<h:outputText id="total" value="#{_pagoDeta.total}">
+							</h:outputText>
+						</p:column>
+
+				</p:dataTable>
+ 
+    		</p:dialog>
+
+		</h:form>
+		
+		<script type="text/javascript">
+		
+    		function controlarSeleccionPersonaDialogo(xhr, status, args) {
+        		
+            		PF('seleccionPersona').hide();
+    		}
+		</script>
+				
+	</ui:define>
+</ui:composition>

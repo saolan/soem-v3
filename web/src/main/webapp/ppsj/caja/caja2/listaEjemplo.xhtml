@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{cajaControl.pagina}' />
+		<f:event type="preRenderView" listener='#{cajaControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="buscar" />
+
+			<div>
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{cajaControl.rolPermiso.get(1000)}" />
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+				<p:spacer height="2" />
+
+
+				<div style="float: right;">
+
+					<p:commandLink id="descargar" value="Descargar" styleClass="boton"
+						ajax="false" action="#{cajaControl.descargar}" />
+					<p:spacer height="5" />
+
+					<p:selectOneButton value="#{cajaControl.formatoReporte}">
+						<f:selectItems value="#{cajaControl.formatoReportes}"
+							var="formatoReporte" itemValue="#{formatoReporte.descri}"
+							itemLabel="#{formatoReporte.descri}" />
+					</p:selectOneButton>
+
+				</div>
+
+			</div>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Caja - Panel Busqueda1">
+				<div class="card">
+					<div class="grid ui-fluid">
+
+						<div class="col-12 md:col-4">
+							<div class="ui-inputgroup">
+								<p:selectManyMenu id="sucursalList"
+									value="#{cajaControl.sucursalIds}" showCheckbox="true"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Seleccione Sucursal">
+
+									<f:selectItems value="#{cajaControl.sucursals}" var="sucursal"
+										itemLabel="#{sucursal.descri}" itemValue="#{sucursal}" />
+
+								</p:selectManyMenu>
+
+							</div>
+						</div>
+
+						<div class="col-12 md:col-4">
+							<div class="ui-inputgroup">
+								<p:inputText id="codigo" value="#{cajaControl.caja.codigo}"
+									placeholder="Código" required="false">
+									<f:validateBean for="descri" disabled="true" />
+								</p:inputText>
+
+							</div>
+						</div>
+
+						<div class="col-12 md:col-4">
+							<div class="ui-inputgroup">
+								<p:inputText id="descri" value="#{cajaControl.caja.descri}"
+									placeholder="Descripción" required="false">
+									<f:validateBean for="descri" disabled="true" />
+								</p:inputText>
+
+							</div>
+						</div>
+
+						<div class="col-12 md:col-4">
+							<div class="ui-inputgroup">
+								<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+									value="#{cajaControl.caja.estado}" required="false">
+									<f:validateBean for="estado" disabled="true" />
+								</p:selectBooleanCheckbox>
+							</div>
+						</div>
+
+						<div class="col-12 md:col-4">
+							<div class="ui-inputgroup">
+								<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+									ajax="true" action="#{cajaControl.iniciarPagina}"
+									update="cajaList" />
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="card product">
+
+				<p:dataView id="cajaList" style="margin-top:10px;"
+					emptyMessage="No se encontro datos" value="#{cajaControl.cajas}"
+					var="_caja" rows="12" gridIcon="pi pi-th-large"
+					listIcon="pi pi-bars">
+
+					<f:facet name="header">
+						<h:outputText value="Cajas" />
+					</f:facet>
+
+					<p:dataViewGridItem>
+						<div class="product-grid-item card border-1">
+							<div class="product-grid-item-top">
+								<div>
+									<i class="pi pi-tag product-category-icon" /> <span
+										class="product-category">#{_caja.sucursal.descri}</span>
+								</div>
+								<span class="product-badge status-#{_caja.descri.toLowerCase()}">#{_caja.cajaId}</span>
+							</div>
+							<div class="product-grid-item-content">
+								<h:outputText value="#{caja.descri}" />
+								<div class="product-name">#{_caja.codigo}</div>
+								<div class="product-description">#{_caja.descri}</div>
+								<p:rating readonly="true" value="#{_caja.cajaId}" />
+							</div>
+							<div class="product-grid-item-bottom">
+								<h:outputText value="#{_caja.cajaId}" styleClass="product-price">
+									<f:convertNumber currencySymbol="$" type="currency" />
+								</h:outputText>
+								<p:commandButton type="button" value="Add To Cart"
+									icon="pi pi-shopping-cart">
+								</p:commandButton>
+							</div>
+						</div>
+					</p:dataViewGridItem>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+							<h:outputText value="#{_caja.descri} Grafico" />
+							<div class="product-list-detail">
+								<i class="pi pi-tag product-category-icon" /><span
+									class="product-category">#{_caja.sucursal.descri}</span>
+								<div class="product-name">#{_caja.codigo}</div>
+								<div class="product-description">#{_caja.descri}</div>
+								<p:rating readonly="true" value="#{_caja.cajaId}" />
+
+							</div>
+							<div class="product-list-action">
+								<h:outputText value="#{_caja.cajaId}" styleClass="product-price">
+									<f:convertNumber currencySymbol="$" type="currency" />
+								</h:outputText>
+								<p:commandButton type="button" value="Add To Cart"
+									icon="pi pi-shopping-cart">
+								</p:commandButton>
+								<span class="product-badge status-#{_caja.descri.toLowerCase()}">#{_caja.cajaId
+									+ 500}</span>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+
+				<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+					<ui:param name="paginadorControl" value='#{cajaControl}' />
+				</ui:include>
+			</div>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

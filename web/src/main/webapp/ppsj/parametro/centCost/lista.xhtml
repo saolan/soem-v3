@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{centCostControl.pagina}' />
+		<f:event type="preRenderView" listener='#{centCostControl.preCargarLista}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:5px"
+				header="Centro de Costo - Buscar">
+
+				<p:focus context="panelBuscar" />
+
+				<h:panelGrid columns="6">
+
+					<p:outputLabel for="codigo" value="Código" />
+					<p:inputText id="codigo" value="#{centCostControl.centCost.codigo}"
+						required="false">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{centCostControl.centCost.descri}"
+						required="false" styleClass="cajaTextoDescri">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="estadoList" value="Estado"  />
+					<p:selectOneRadio id="estadoList" value="#{centCostControl.centCost.estado}"
+						converter="omnifaces.SelectItemsConverter" showCheckbox="true">
+
+						<f:selectItems value="#{centCostControl.parameEstados}"
+							var="parameEstados" itemLabel="#{parameEstados.descri}"
+							itemValue="#{parameEstados.descri}" />
+
+					</p:selectOneRadio>
+				</h:panelGrid>
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{centCostControl.rolPermiso.get(6000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+					action="#{centCostControl.iniciarPagina}" ajax="true"
+					update="centCostList" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+
+				<p:defaultCommand target="buscar" />
+
+			</div>
+
+			<p:dataTable id="centCostList" style="margin-top:5px;"
+				emptyMessage="No se encontro datos"
+				value="#{centCostControl.centCosts}" var="_centCost">
+
+				<p:column style="width:80px;text-align: center"
+					headerText="Opciones">
+
+					<h:panelGrid columns="2" styleClass="noBorders">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{centCostControl.modificar}">
+							<f:setPropertyActionListener value="#{_centCost.centCostId}"
+								target="#{centCostControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{centCostControl.explorar}">
+							<f:setPropertyActionListener value="#{_centCost.centCostId}"
+								target="#{centCostControl.id}" />
+						</p:commandLink>
+
+					</h:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Código" style="width:10%;">
+					<h:outputText id="codigo" value="#{_centCost.codigo}" />
+				</p:column>
+
+				<p:column headerText="Descripción">
+					<h:outputText id="descri" value="#{_centCost.descri}" />
+				</p:column>
+
+				<p:column headerText="Estado" style="width:5%;">
+					<h:outputText id="estado" value="#{_centCost.estado}"
+						disabled="true" />
+				</p:column>
+
+			</p:dataTable>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{centCostControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{auditoriaControl.pagina}' />
+		<f:event type="preRenderView" listener='#{auditoriaControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="auditoria - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="direccIp" value="Dirección IP" />
+					<p:inputText id="direccIp" value="#{auditoriaControl.auditoria.direccIp}" required="false">
+						<f:validateBean for="direccIp" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="operac" value="operación" />
+					<p:inputText id="operac" value="#{auditoriaControl.auditoria.operac}" required="false">
+						<f:validateBean for="operac" disabled="true" />
+					</p:inputText>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{auditoriaControl.rolPermiso.get(7000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{auditoriaControl.iniciarPagina}" 
+					ajax="true" update="auditoriaList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="auditoriaList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{auditoriaControl.auditorias}" var="_auditoria">
+
+				<f:facet name="header">
+					<h:outputText value="Lista auditorias" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{auditoriaControl.modificar}">
+							<f:setPropertyActionListener value="#{_auditoria.auditoriaId}"
+								target="#{auditoriaControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{auditoriaControl.explorar}">
+							<f:setPropertyActionListener value="#{_auditoria.auditoriaId}"
+								target="#{auditoriaControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Dirección Ip">
+					<h:outputText id="direccIp" value="#{_auditoria.direccIp}" />
+				</p:column>
+
+				<p:column headerText="Fecha Hora">
+					<h:outputText id="fechaHora" value="#{_auditoria.fechaHora}" />
+				</p:column>
+
+				<p:column headerText="Operación">
+					<h:outputText id="operac" value="#{_auditoria.operac}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{auditoriaControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

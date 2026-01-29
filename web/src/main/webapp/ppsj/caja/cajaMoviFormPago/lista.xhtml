@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{cajaMoviFormPagoControl.pagina}' />
+		<f:event type="preRenderView" listener='#{cajaMoviFormPagoControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Movimiento Caja Forma Pago - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{cajaMoviFormPagoControl.rolPermiso.get(1100)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{cajaMoviFormPagoControl.iniciarPagina}" 
+					ajax="true" update="cajaMoviFormPagoList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="cajaMoviFormPagoList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{cajaMoviFormPagoControl.cajaMoviFormPagos}" var="_cajaMoviFormPago">
+
+				<f:facet name="header">
+					<h:outputText value="Movimientos Caja - Formas de Pago" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{cajaMoviFormPagoControl.modificar}">
+							<f:setPropertyActionListener value="#{_cajaMoviFormPago.cmfpId}"
+								target="#{cajaMoviFormPagoControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{cajaMoviFormPagoControl.explorar}">
+							<f:setPropertyActionListener value="#{_cajaMoviFormPago.cmfpId}"
+								target="#{cajaMoviFormPagoControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Movimiento Id">
+					<h:outputText id="moviId" value="#{_cajaMoviFormPago.cajaMovi.cajaMoviId}" />
+				</p:column>
+
+				<p:column headerText="Forma de Pago">
+					<h:outputText id="formPago" value="#{_cajaMoviFormPago.formPago.descri}" />
+				</p:column>
+
+				<p:column headerText="Total">
+					<h:outputText id="total" value="#{_cajaMoviFormPago.total}" >
+						<f:convertNumber pattern="#0.00" locale="en_US"/>
+					</h:outputText>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{cajaMoviFormPagoControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+	
+	<h:panelGroup styleClass="paginador" rendered="#{paginadorControl.contadorReg gt paginadorControl.filasPagina}">
+	
+		<!-- Use commandLink, not outputLink, so that search criteria is not lost -->
+		<h:commandLink styleClass="boton" rendered="#{paginadorControl.pagina gt 0}" >
+			<f:param name="pagina" value="#{paginadorControl.pagina - 1}"/>
+			&lt; Ant. 
+		</h:commandLink>
+		<h:outputText styleClass="paginador-content" value="Registros del #{paginadorControl.pagina * paginadorControl.filasPagina + 1} al #{paginadorControl.pagina * paginadorControl.filasPagina + paginadorControl.numeroReg} (Total #{paginadorControl.contadorReg})"/>
+		<h:commandLink styleClass="boton" rendered="#{(paginadorControl.pagina + 1) * paginadorControl.filasPagina lt paginadorControl.contadorReg}">
+			<f:param name="pagina" value="#{paginadorControl.pagina + 1}"/>
+			Sig. &gt;
+		</h:commandLink>
+		
+	</h:panelGroup>
+
+</ui:composition>

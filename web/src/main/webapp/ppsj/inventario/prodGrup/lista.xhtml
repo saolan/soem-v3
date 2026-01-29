@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{prodGrupControl.pagina}' />
+		<f:event type="preRenderView" listener='#{prodGrupControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panelBuscar" />
+			<p:defaultCommand target="buscar" />
+
+			<div class="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{prodGrupControl.rolPermiso.get(5000)}" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+					action="#{prodGrupControl.iniciarPagina}" ajax="true"
+					update="prodGrupList" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="panelBuscar" header="Producto Grupo - Panel Busqueda">
+
+				<div class="card">
+					<div class="grid ui-fluid">
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="descri"
+								value="#{prodGrupControl.prodGrup.descri}" required="false"
+								placeholder="Descripción">
+								<f:validateBean for="descri" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+								value="#{prodGrupControl.prodGrup.estado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="card product">
+
+				<p:dataView id="prodGrupList" emptyMessage="No se encontro datos"
+					value="#{prodGrupControl.prodGrups}" var="_prodGrup">
+
+					<f:facet name="header">
+						<h:outputText value="Grupos" />
+					</f:facet>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<div class="product-name">#{_prodGrup.descri}</div>
+								<div>#{_prodGrup.tipo}</div>
+							</div>
+
+							<div class="product-list-detail">
+								#{_prodGrup.prodGrupNive.descri}</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Compra: "></p:outputLabel>
+								<h:selectBooleanCheckbox id="moduloComp"
+									value="#{_prodGrup.moduloComp}" disabled="true" />
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Venta: "></p:outputLabel>
+								<h:selectBooleanCheckbox id="moduloVent"
+									value="#{_prodGrup.moduloVent}" disabled="true" />
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Inventario: "></p:outputLabel>
+								<h:selectBooleanCheckbox id="moduloInve"
+									value="#{_prodGrup.moduloInve}" disabled="true" />
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Detalle: "></p:outputLabel>
+								<h:selectBooleanCheckbox id="detall" value="#{_prodGrup.detall}"
+									disabled="true" />
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Estado: "></p:outputLabel>
+								<h:selectBooleanCheckbox id="estado" value="#{_prodGrup.estado}"
+									disabled="true" />
+							</div>
+
+							<div class="product-list-action">
+								<div class="link-container">
+									<p:commandLink styleClass="ui-icon ui-icon-pencil"
+										title="Modificar" action="#{prodGrupControl.modificar}">
+										<f:setPropertyActionListener value="#{_prodGrup.prodGrupId}"
+											target="#{prodGrupControl.id}" />
+									</p:commandLink>
+
+									<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+										title="Explorar" action="#{prodGrupControl.explorar}">
+										<f:setPropertyActionListener value="#{_prodGrup.prodGrupId}"
+											target="#{prodGrupControl.id}" />
+									</p:commandLink>
+								</div>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{prodGrupControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

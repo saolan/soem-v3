@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="mapaId" value='#{mapaControl.id}' />
+		<f:event type="preRenderView" listener="#{mapaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Mapa - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="descripcion" value="Descripción" />
+					<p:inputText id="descripcion" value="#{mapaControl.mapa.descri}" styleClass="cajaTextoDescri" 
+						required="true" requiredMessage="Ingrese descripción" />
+						
+					<p:outputLabel for="mapaNiveList" value="Nivel" />				
+					<p:selectOneMenu id="mapaNiveList" value="#{mapaControl.mapa.mapaNive}" converter="omnifaces.SelectItemsConverter"
+						required="true">
+						<f:selectItems value="#{mapaControl.mapaNives}" var="mapaNive" 
+							itemLabel="#{mapaNive.descri}" itemValue="#{mapaNive}"/>
+					</p:selectOneMenu>
+						
+					<p:outputLabel for="detall" value="Detalle" />
+					<p:selectBooleanCheckbox id="detall" value="#{mapaControl.mapa.detall}" required="true"
+						requiredMessage="Ingrese detalle" />
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{mapaControl.mapa.estado}" required="true"
+						requiredMessage="Ingrese estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{mapaControl.grabar}"
+					rendered="#{(mapaControl.id != null and mapaControl.rolPermiso.get(6001)) or 
+					(mapaControl.id == null and mapaControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{mapaControl.eliminar}"  
+					rendered="#{mapaControl.id != null and mapaControl.rolPermiso.get(6002)}"/>
+
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

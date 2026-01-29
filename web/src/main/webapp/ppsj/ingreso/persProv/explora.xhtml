@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="persProvId" value='#{persProvControl.id}' />
+		<f:event type="preRenderView" listener="#{persProvControl.recuperar}" />
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Soem - Proveedor Explorar" />
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<div class="barraBotones">
+			<p:link id="aceptar" value="Aceptar" outcome="lista"
+				styleClass="boton" />
+		</div>
+
+		<p:panel id="explora" header="Proveedor - Explorar">
+
+			<div class="card ui-fluid">
+				<div class="formgrid grid">
+
+					<div class="field col-12 md:col-2">
+						<p:outputLabel value="Cédula" />
+						<p:inputText value="#{persProvControl.persProv.persona.cedulaRuc}"
+							readonly="true" />
+					</div>
+
+					<div class="field col-12 md:col-2">
+						<p:outputLabel value="Apellido" />
+						<p:inputText value="#{persProvControl.persProv.persona.apelli}"
+							readonly="true" />
+					</div>
+
+					<div class="field col-12 md:col-2">
+						<p:outputLabel value="Nombre" />
+						<p:inputText value="#{persProvControl.persProv.persona.nombre}"
+							readonly="true" />
+					</div>
+
+					<div class="field col-12 md:col-2">
+						<p:outputLabel value="Grupo" />
+						<p:inputText value="#{persProvControl.persProv.provGrup.descri}"
+							readonly="true" />
+					</div>
+
+					<div class="field col-12 md:col-2">
+						<p:outputLabel value="Estado" />
+						<p:selectBooleanCheckbox disabled="true"
+							value="#{persProvControl.persProv.estado}" />
+					</div>
+				</div>
+			</div>
+		</p:panel>
+
+		<h:form>
+
+			<div class="card product">
+
+				<p:dataView id="prodDimmRetencionRentaList"
+					emptyMessage="No se encontro datos"
+					value="#{persProvControl.persProvDimms}" var="_persProvDimm">
+
+					<f:facet name="header">
+						<p:commandLink value="+ Retenciones" ajax="false"
+							action="#{persProvDimmControl.nuevo}">
+							<f:setPropertyActionListener
+								value="#{persProvControl.persProv.personaId}"
+								target="#{persProvDimmControl.personaId}" />
+						</p:commandLink>
+					</f:facet>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<span class="product-category">#{_persProvDimm.dimm.codigo}</span>
+								<div class="product-name">#{_persProvDimm.dimm.descri}</div>
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Tipo: "></p:outputLabel>
+								<p:outputLabel value="#{_persProvDimm.tipo}">
+								</p:outputLabel>
+								<div></div>
+								<p:outputLabel value="#{_persProvDimm.dimm.porcen}"
+									class="product-descri">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:outputLabel>
+							</div>
+
+							<div class="product-list-action">
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{persProvDimmControl.modificar}">
+
+									<f:setPropertyActionListener
+										value="#{_persProvDimm.persProvDimmId}"
+										target="#{persProvDimmControl.id}" />
+									<f:setPropertyActionListener
+										value="#{persProvControl.persProv.personaId}"
+										target="#{persProvDimmControl.personaId}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

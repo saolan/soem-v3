@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{persVendControl.pagina}' />
+		<f:event type="preRenderView" listener='#{persVendControl.buscar}' />
+	</f:metadata>
+	
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:5px"
+				header="Vendedor - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="8">
+
+					<p:outputLabel for="cedula" value="Cédula" />
+					<p:inputText id="cedula"
+						value="#{persVendControl.persVend.persona.cedulaRuc}" required="false">
+						<f:validateBean for="cedula" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="apelli" value="Apellido" />
+					<p:inputText id="apelli"
+						value="#{persVendControl.persVend.persona.apelli}" required="false">
+						<f:validateBean for="apelli" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="nombre" value="Nombre" />
+					<p:inputText id="nombre"
+						value="#{persVendControl.persVend.persona.nombre}" required="false">
+						<f:validateBean for="nombre" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{persVendControl.persVend.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{persVendControl.nuevo}" 
+					rendered="#{persVendControl.rolPermiso.get(3000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/egreso/persVend/lista"
+							target="#{persVendControl.paginaRuta}" />
+				</p:commandLink>
+					
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" ajax="false" value="Buscar"
+					styleClass="boton" action="#{persVendControl.iniciarPagina}" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="persVendList" style="margin-top:5px;" emptyMessage="No se encontro datos"
+				value="#{persVendControl.persVends}" var="_persVend">
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" ajax="false" action="#{persVendControl.modificar}">
+							<f:setPropertyActionListener value="#{_persVend.personaId}"
+								target="#{persVendControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/egreso/persVend/lista"
+								target="#{persVendControl.paginaRuta}" />								
+						</p:commandLink>
+	
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" ajax="false" action="#{persVendControl.explorar}">
+							<f:setPropertyActionListener value="#{_persVend.personaId}"
+								target="#{persVendControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Cédula">
+					<h:outputText id="cedula" value="#{_persVend.persona.cedulaRuc}" />
+				</p:column>
+
+				<p:column headerText="Apellido">
+					<h:outputText id="apelli" value="#{_persVend.persona.apelli}" />
+				</p:column>
+
+				<p:column headerText="Nombre">
+					<h:outputText id="nombre" value="#{_persVend.persona.nombre}" />
+				</p:column>
+
+				<p:column headerText="Estado" >
+					<h:selectBooleanCheckbox value="#{_persVend.estado}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{persVendControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

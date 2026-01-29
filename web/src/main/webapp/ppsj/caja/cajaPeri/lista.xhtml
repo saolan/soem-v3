@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{cajaPeriControl.pagina}' />
+		<f:event type="preRenderView" listener='#{cajaPeriControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Caja Periférico - Panel Busqueda">
+
+				<p:focus context="panelBuscar" />
+
+				<h:panelGrid columns="2">
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{cajaPeriControl.nuevo}" 
+					rendered="#{cajaPeriControl.rolPermiso.get(1000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/caja/cajaPeri/lista"
+							target="#{cajaPeriControl.paginaRuta}" />
+				</p:commandLink>
+					
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+					action="#{cajaPeriControl.iniciarPagina}" ajax="true"
+					update="cajaPeriList" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+
+				<p:defaultCommand target="buscar" />
+
+			</div>
+
+			<p:dataTable id="cajaPeriList" style="margin-top:10px;"
+				emptyMessage="No se encontro datos"
+				value="#{cajaPeriControl.cajaPeris}" var="_cajaPeri">
+
+				<f:facet name="header">
+					<h:outputText value="Cajas - Periféricos" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center"
+					headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{cajaPeriControl.modificar}">
+							<f:setPropertyActionListener value="#{_cajaPeri.cajaPeriId}"
+								target="#{cajaPeriControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/caja/cajaPeri/lista"
+								target="#{cajaPeriControl.paginaRuta}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{cajaPeriControl.explorar}">
+							<f:setPropertyActionListener value="#{_cajaPeri.cajaPeriId}"
+								target="#{cajaPeriControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Caja">
+					<h:outputText id="caja" value="#{_cajaPeri.caja.descri}" />
+				</p:column>
+
+				<p:column headerText="Periférico">
+					<h:outputText id="periferico"
+						value="#{_cajaPeri.periferico.descri}" />
+				</p:column>
+
+
+				<p:column headerText="Estado">
+					<h:selectBooleanCheckbox id="estado" value="#{_cajaPeri.acceso}"
+						disabled="true" />
+				</p:column>
+
+			</p:dataTable>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{cajaPeriControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

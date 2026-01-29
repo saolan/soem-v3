@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="secuencialId" value='#{secuencialControl.id}' />
+		<f:event type="preRenderView" listener="#{secuencialControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Secuencial - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="tabla" value="Tabla" />
+					<p:inputText id="tabla" value="#{secuencialControl.secuencial.tabla}"  
+						required="true" requiredMessage="Ingrese tabla" />
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero" value="#{secuencialControl.secuencial.numero}" 
+						required="true" requiredMessage="Ingrese número" />
+
+					<p:outputLabel for="secuencialId" value="Secuencial Id" />
+					<p:inputText id="secuencialId" value="#{secuencialControl.secuencial.secuencialId}"  
+						required="true" requiredMessage="Ingrese id" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{secuencialControl.grabar}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{secuencialControl.eliminar}" />
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

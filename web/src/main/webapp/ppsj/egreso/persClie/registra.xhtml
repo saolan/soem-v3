@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="persClieId" value='#{persClieControl.id}' />
+		<f:viewParam name="personaId" value='#{persClieControl.personaId}' />
+		<f:viewParam name="paginaRuta" value='#{persClieControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{persClieControl.recuperar}" />
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Soem - Clientes Registro" />
+
+	<ui:define name="main">
+
+
+		<h:form>
+
+			<p:focus for="panelRegistrar" />
+			<p:defaultCommand target="grabar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{persClieControl.grabar}"
+					rendered="#{(persClieControl.id != null and persClieControl.rolPermiso.get(3001)) or 
+					(persClieControl.id == null and persClieControl.rolPermiso.get(3000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{persClieControl.eliminar}"
+					rendered="#{persClieControl.id != null and persClieControl.rolPermiso.get(3002)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{persClieControl.cancelar}" />
+			</div>
+
+			<p:panel id="panelRegistrar" header="Cliente - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="cedula" value="Cédula" />
+							<p:inputText id="cedula"
+								value="#{persClieControl.persClie.persona.cedulaRuc}"
+								required="true" requiredMessage="Ingrese cédula o RUC"
+								disabled="#{persClieControl.id != null and persClieControl.rolPermiso.get(3150)}">
+								<p:ajax listener="#{persClieControl.seleccionarDimm}"
+									event="change" update="dimmList" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Tipo&#160;Identificación" />
+							<p:selectOneMenu id="dimmList" required="true"
+								value="#{persClieControl.persClie.dimm}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{persClieControl.dimms}" var="dimm"
+									itemLabel="#{dimm.codigo} - #{dimm.descri}" itemValue="#{dimm}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="apellido" value="Apellido" />
+							<p:inputText id="apellido"
+								value="#{persClieControl.persClie.persona.apelli}"
+								required="true" requiredMessage="Ingrese apellido" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="nombre" value="Nombre" />
+							<p:inputText id="nombre"
+								value="#{persClieControl.persClie.persona.nombre}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="direcc" value="Dirección" />
+							<p:inputText id="direcc"
+								value="#{persClieControl.persClie.persona.direcc}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="telefo" value="Teléfono" />
+							<p:inputText id="telefo"
+								value="#{persClieControl.persClie.persona.telefo}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="correo" value="Correo" />
+							<p:inputText id="correo"
+								value="#{persClieControl.persClie.persona.correo}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="cupo" value="Crédito&#160;Máximo" />
+							<p:inputText id="cupo" value="#{persClieControl.persClie.cupo}"
+								disabled="#{persClieControl.id != null and persClieControl.rolPermiso.get(3151)}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="descueMaxi" value="Descuento&#160;Máximo" />
+							<p:inputText id="descueMaxi"
+								value="#{persClieControl.persClie.descueMaxi}"
+								disabled="#{persClieControl.id != null and persClieControl.rolPermiso.get(3152)}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Fecha&#160;Nacimiento" />
+							<p:calendar id="fechaNaci"
+								value="#{persClieControl.persClie.persona.fechaNaci}"
+								pattern="dd-MM-yyyy" required="false"
+								requiredMessage="Ingrese fecha nacimiento" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Grupo" />
+							<p:selectOneMenu id="clieGrup" required="true" requiredMessage="Ingrese grupo"
+								value="#{persClieControl.persClie.clieGrup}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{persClieControl.clieGrups}"
+									var="clieGrup" itemLabel="#{clieGrup.descri}"
+									itemValue="#{clieGrup}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="naturaList" value="Tipo&#160;Cliente" />
+							<p:selectOneMenu id="naturaList" required="true" requiredMessage="Ingrese tipo cliente"
+								value="#{persClieControl.persClie.natura}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{persClieControl.dimmTipoIdenClies}"
+									var="dimm" itemLabel="#{dimm.descri}"
+									itemValue="#{dimm.codigo}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="estadoClie" value="Estado" />
+							<p:selectBooleanCheckbox id="estadoClie"
+								value="#{persClieControl.persClie.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

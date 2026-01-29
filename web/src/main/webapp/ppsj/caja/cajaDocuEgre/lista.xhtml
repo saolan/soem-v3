@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{cajaDocuEgreControl.pagina}' />
+		<f:event type="preRenderView" listener='#{cajaDocuEgreControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Caja Documento - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel for="descri" value="Caja Descripción" />
+					<p:inputText id="descri" value="#{cajaDocuEgreControl.cajaDocuEgre.caja.descri}" required="false">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{cajaDocuEgreControl.nuevo}" 
+					rendered="#{cajaDocuEgreControl.rolPermiso.get(1000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/caja/cajaDocuEgre/lista"
+							target="#{cajaDocuEgreControl.paginaRuta}" />
+				</p:commandLink>
+					
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{cajaDocuEgreControl.iniciarPagina}" 
+					ajax="true" update="cajaDocuEgreList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="cajaDocuEgreList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{cajaDocuEgreControl.cajaDocuEgres}" var="_cajaDocuEgre">
+
+				<f:facet name="header">
+					<h:outputText value="Cajas y Documentos" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{cajaDocuEgreControl.modificar}">
+							<f:setPropertyActionListener value="#{_cajaDocuEgre.cajaDocuEgreId}"
+								target="#{cajaDocuEgreControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/caja/cajaDocuEgre/lista"
+								target="#{cajaDocuEgreControl.paginaRuta}" />								
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{cajaDocuEgreControl.explorar}">
+							<f:setPropertyActionListener value="#{_cajaDocuEgre.cajaDocuEgreId}"
+								target="#{cajaDocuEgreControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Caja">
+					<h:outputText id="caja" value="#{_cajaDocuEgre.caja.descri}" />
+				</p:column>
+				
+				<p:column headerText="Documento">
+					<h:outputText id="documento" value="#{_cajaDocuEgre.docuEgre.documento.descri}" />
+				</p:column>
+				
+				<p:column headerText="Serie No.1">
+					<h:outputText id="serieUno" value="#{_cajaDocuEgre.serie1}" />
+				</p:column>
+
+				<p:column headerText="Serie No.1">
+					<h:outputText id="serieDos" value="#{_cajaDocuEgre.serie2}" />
+				</p:column>
+
+				<p:column headerText="Número">
+					<h:outputText id="numero" value="#{_cajaDocuEgre.numero}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{cajaDocuEgreControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+	
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{tranPlanControl.pagina}' />
+		<f:event type="preRenderView" listener='#{tranPlanControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Transacción Plantilla - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{tranPlanControl.tranPlan.descri}" required="false"
+						styleClass="cajaTextoDescri">
+						<f:validateBean for="numero" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="modulo" value="Módulo" />
+					<p:inputText id="modulo" value="#{tranPlanControl.tranPlan.modulo}" required="false">
+						<f:validateBean for="numero" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{tranPlanControl.tranPlan.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="/ppsj/parametro/tranPlan/registra" styleClass="boton"
+					rendered="#{parametroControl.rolPermiso.get(6000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{tranPlanControl.iniciarPagina}" 
+					ajax="false" update="tranPlanList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="tranPlanList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{tranPlanControl.tranPlans}" var="_tranPlan">
+
+				<f:facet name="header">
+					<h:outputText value="Transacción Plantillas" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{tranPlanControl.modificar}">
+							<f:setPropertyActionListener value="#{_tranPlan.tranPlanId}"
+								target="#{tranPlanControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{tranPlanControl.explorar}">
+							<f:setPropertyActionListener value="#{_tranPlan.tranPlanId}"
+								target="#{tranPlanControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Descripción">
+					<h:outputText id="descripcion" value="#{_tranPlan.descri}" />
+				</p:column>
+
+				<p:column headerText="Módulo">
+					<h:outputText id="modulo" value="#{_tranPlan.modulo}" />
+				</p:column>
+								
+				<p:column headerText="Tipo">
+					<h:outputText id="tipo" value="#{_tranPlan.tipo}" />
+				</p:column>
+								
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{tranPlanControl}' />
+			</ui:include>
+			
+		</h:form>
+	</ui:define>
+
+</ui:composition>

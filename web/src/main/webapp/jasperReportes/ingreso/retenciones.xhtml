@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte Retenciones">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persProvApelliDesd" value="Apellido Desde" />
+							<p:inputText id="persProvApelliDesd"
+								value="#{retencionReportControl.persProvDesd.persona.apelli}"
+								required="false">
+								<f:validateBean for="persProvApelliDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persProvApelliHast" value="Apellido Hasta" />
+							<p:inputText id="persProvApelliHast"
+								value="#{retencionReportControl.persProvHast.persona.apelli}"
+								required="false">
+								<f:validateBean for="persProvApelliHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persProvCedulaDesd"
+								value="Cédula / Ruc Desde" />
+							<p:inputText id="persProvCedulaDesd"
+								value="#{retencionReportControl.persProvDesd.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persProvCedulaDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persProvCedulaHast"
+								value="Cédula / Ruc Hasta" />
+							<p:inputText id="persProvCedulaHast"
+								value="#{retencionReportControl.persProvHast.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persProvCedulaHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="ingresoFechaDesd" value="Fecha Desde" />
+							<p:calendar id="ingresoFechaDesd"
+								value="#{retencionReportControl.ingresoDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="ingresoFechaHast" value="Fecha Hasta" />
+							<p:calendar id="ingresoFechaHast"
+								value="#{retencionReportControl.ingresoHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="sucursalList" value="Sucursal"
+								 />
+							<p:selectManyMenu id="sucursalList"
+								value="#{retencionReportControl.sucursalIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								 required="true"
+								requiredMessage="Seleccione sucursales">
+
+								<f:selectItems value="#{retencionReportControl.sucursals}"
+									var="sucursal" itemLabel="#{sucursal.descri}"
+									itemValue="#{sucursal.sucursalId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Proveedor Estado"
+								 />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{retencionReportControl.persProvEstado}"
+								required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio
+								value="#{retencionReportControl.formatoReporte}">
+								<f:selectItems value="#{retencionReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{retencionReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="retenciones"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cajaMoviId" value='#{cajaMoviControl.id}' />
+		<f:event type="preRenderView" listener="#{cajaMoviControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+				<p:commandLink id="descargar" value="Descargar" styleClass="boton"
+					ajax="false" action="#{cajaMoviControl.descargar}"
+					rendered="#{cajaMoviControl.rolPermiso.get(1106) and cajaMoviControl.id != null}" />
+			</div>
+
+			<p:poll interval="15"
+				listener="#{cajaMoviControl.consultarEgresosNoAutorizados}"
+				update="docuNoAuto" onactivated="console.log('Poll started')" />
+
+			<p:panel id="explora" header="Movimiento Caja - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Documento" for="@next" />
+							<p:inputText
+								value="#{cajaMoviControl.cajaMovi.docuCaja.documento.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Caja" />
+							<p:inputText value="#{cajaMoviControl.cajaMovi.caja.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Cajero" />
+							<p:inputText
+								value="#{cajaMoviControl.cajaMovi.persCaje.persona.apelli}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Fecha" />
+							<p:calendar value="#{cajaMoviControl.cajaMovi.fecha}"
+								pattern="dd-MM-yyyy" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Nota" />
+							<p:inputText value="#{cajaMoviControl.cajaMovi.nota}"/>
+
+						</div>
+
+						<div class="field col-12 md:col-12">
+							<p:outputLabel
+								style="text-align: left;  color: blue; margin-right:25px"
+								value="Doc. No Autorizados" />
+							<p:outputLabel id="docuNoAuto"
+								value="#{cajaMoviControl.contadorDocuNoAuto}"
+								style="text-align: left; color: blue;">
+							</p:outputLabel>
+						</div>
+					</div>
+				</div>
+				
+				<h:form>
+
+					<p:dataTable id="cajaMoviFormPagoList"
+						emptyMessage="No se encontro datos"
+						value="#{cajaMoviControl.cajaMoviFormPagos}"
+						var="_cajaMoviFormPago">
+
+						<p:column headerText="Forma de Pago">
+							<h:outputText id="formPago"
+								value="#{_cajaMoviFormPago.formPago.descri}" />
+						</p:column>
+
+						<p:column headerText="Total">
+							<h:outputText id="total" value="#{_cajaMoviFormPago.total}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</h:outputText>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:dataTable id="cajaMoviTranList"
+						emptyMessage="No se encontro datos"
+						value="#{cajaMoviControl.cajaMoviTrans}" var="_cajaMoviTran">
+
+						<f:facet name="header">
+							Documentos Contables
+						</f:facet>
+
+						<p:column headerText="Documento">
+							<h:outputText id="tranDocu"
+								value="#{_cajaMoviTran.transaccion.docuTran.documento.descri}" />
+						</p:column>
+
+						<p:column headerText="Número">
+							<h:outputText id="tranNumero"
+								value="#{_cajaMoviTran.transaccion.numero}" />
+						</p:column>
+
+						<p:column headerText="Descripción">
+							<h:outputText id="cajaMoviTranDescri"
+								value="#{_cajaMoviTran.descri}" />
+						</p:column>
+
+					</p:dataTable>
+				</h:form>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

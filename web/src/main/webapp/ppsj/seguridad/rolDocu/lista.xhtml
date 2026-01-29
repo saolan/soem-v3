@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{rolDocuControl.pagina}' />
+		<f:event type="preRenderView" listener='#{rolDocuControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Rol Documento - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{rolDocuControl.nuevo}" 
+					rendered="#{rolDocuControl.rolPermiso.get(7000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/seguridad/rolDocu/lista"
+							target="#{rolDocuControl.paginaRuta}" />
+				</p:commandLink>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{rolDocuControl.iniciarPagina}" 
+					ajax="true" update="rolDocuList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="rolDocuList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{rolDocuControl.rolDocus}" var="_rolDocu">
+
+				<f:facet name="header">
+					<h:outputText value="Roles - Documentos" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{rolDocuControl.modificar}">
+							<f:setPropertyActionListener value="#{_rolDocu.rolDocuId}"
+								target="#{rolDocuControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rolDocu/lista"
+								target="#{rolDocuControl.paginaRuta}" />								
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{rolDocuControl.explorar}">
+							<f:setPropertyActionListener value="#{_rolDocu.rolDocuId}"
+								target="#{rolDocuControl.id}" />
+								
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Rol">
+					<h:outputText id="rol" value="#{_rolDocu.rol.descri}" />
+				</p:column>
+
+				<p:column headerText="Documento">
+					<h:outputText id="documento" value="#{_rolDocu.documento.descri}" />
+				</p:column>
+
+				<p:column headerText="Predeterminado">
+					<h:selectBooleanCheckbox id="predet" value="#{_rolDocu.predet}" disabled="true"/>
+				</p:column>
+
+				<p:column headerText="Acceso">
+					<h:selectBooleanCheckbox id="estado" value="#{_rolDocu.acceso}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{rolDocuControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

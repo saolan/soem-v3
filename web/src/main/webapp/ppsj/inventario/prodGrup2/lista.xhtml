@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{prodGrupControl.pagina}' />
+		<f:event type="preRenderView" listener='#{prodGrupControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Producto Grupo - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="4">
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{prodGrupControl.prodGrup.descri}" required="false"
+						styleClass="cajaTextoDescri">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{prodGrupControl.prodGrup.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div >
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{prodGrupControl.rolPermiso.get(5000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{prodGrupControl.iniciarPagina}" 
+					ajax="true" update="prodGrupList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="prodGrupList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{prodGrupControl.prodGrups}" var="_prodGrup">
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{prodGrupControl.modificar}">
+							<f:setPropertyActionListener value="#{_prodGrup.prodGrupId}"
+								target="#{prodGrupControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{prodGrupControl.explorar}">
+							<f:setPropertyActionListener value="#{_prodGrup.prodGrupId}"
+								target="#{prodGrupControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Descripción">
+					<h:outputText id="descri" value="#{_prodGrup.descri}" />
+				</p:column>
+
+				<p:column headerText="Tipo">
+					<h:outputText id="tipo" value="#{_prodGrup.tipo}" />
+				</p:column>
+
+				<p:column headerText="Nivel">
+					<h:outputText id="nivel" value="#{_prodGrup.prodGrupNive.descri}" />
+				</p:column>
+
+				<p:column headerText="Modulo Compras">
+					<h:selectBooleanCheckbox id="moduloComp" value="#{_prodGrup.moduloComp}" disabled="true"/>
+				</p:column>
+
+				<p:column headerText="Modulo Ventas">
+					<h:selectBooleanCheckbox id="moduloVent" value="#{_prodGrup.moduloVent}" disabled="true"/>
+				</p:column>
+
+				<p:column headerText="Modulo Inventario">
+					<h:selectBooleanCheckbox id="moduloInve" value="#{_prodGrup.moduloInve}" disabled="true"/>
+				</p:column>
+
+				<p:column headerText="Detalle">
+					<h:selectBooleanCheckbox id="detall" value="#{_prodGrup.detall}" disabled="true"/>
+				</p:column>
+
+				<p:column headerText="Estado">
+					<h:selectBooleanCheckbox id="estado" value="#{_prodGrup.estado}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{prodGrupControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

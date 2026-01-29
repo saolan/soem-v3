@@ -1,0 +1,187 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:event type="preRenderView"
+			listener='#{ventaClieProdReportControl.buscarRolSucus}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte - Ventas Clientes Productos">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="clieGrupList" value="Grupo Cliente"
+								 />
+							<p:selectManyMenu id="clieGrupList"
+								value="#{ventaClieProdReportControl.clieGrupIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true">
+
+								<f:selectItems value="#{ventaClieProdReportControl.clieGrups}"
+									var="clieGrup" itemLabel="#{clieGrup.descri}"
+									itemValue="#{clieGrup.clieGrupId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6" />
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieCedulaDesd"
+								value="Cédula / Ruc Desde" />
+							<p:inputText id="persClieCedulaDesd"
+								value="#{ventaClieProdReportControl.persClieDesd.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persClieCedulaDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieCedulaHast"
+								value="Cédula / Ruc Hasta" />
+							<p:inputText id="persClieCedulaHast"
+								value="#{ventaClieProdReportControl.persClieHast.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persClieCedulaHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieApelliDesd" value="Apellido Desde" />
+							<p:inputText id="persClieApelliDesd"
+								value="#{ventaClieProdReportControl.persClieDesd.persona.apelli}"
+								required="false">
+								<f:validateBean for="persClieApelliDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieApelliHast" value="Apellido Hasta" />
+							<p:inputText id="persClieApelliHast"
+								value="#{ventaClieProdReportControl.persClieHast.persona.apelli}"
+								required="false">
+								<f:validateBean for="persClieApelliHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoBarraDesd"
+								value="Código Barra Desde" />
+							<p:inputText id="productoCodigoBarraDesd"
+								value="#{ventaClieProdReportControl.productoDesd.codigoBarra}"
+								required="false">
+								<f:validateBean for="productoCodigoBarraDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoBarraHast"
+								value="Código Barra Hasta" />
+							<p:inputText id="productoCodigoBarraHast"
+								value="#{ventaClieProdReportControl.productoHast.codigoBarra}"
+								required="false">
+								<f:validateBean for="productoCodigoBarraHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoDescriDesd" value="Descripción Desde" />
+							<p:inputText id="productoDescriDesd"
+								value="#{ventaClieProdReportControl.productoDesd.descri}"
+								required="false">
+								<f:validateBean for="productoDescriDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoDescriHasta"
+								value="Descripción Hasta" />
+							<p:inputText id="productoDescriHasta"
+								value="#{ventaClieProdReportControl.productoHast.descri}"
+								required="false">
+								<f:validateBean for="productoDescriHasta" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaDesd" value="Fecha Desde" />
+							<p:calendar id="egresoFechaDesd"
+								value="#{ventaClieProdReportControl.egresoDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaHast" value="Fecha Hasta" />
+							<p:calendar id="egresoFechaHast"
+								value="#{ventaClieProdReportControl.egresoHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="sucursalList" value="Sucursal"
+								 />
+							<p:selectManyMenu id="sucursalList"
+								value="#{ventaClieProdReportControl.sucursalIds}"
+								showCheckbox="true" converter="omnifaces.SelectItemsConverter"
+								required="true" requiredMessage="Seleccione Sucursal">
+
+								<f:selectItems value="#{ventaClieProdReportControl.sucursals}"
+									var="sucursal" itemLabel="#{sucursal.descri}"
+									itemValue="#{sucursal.sucursalId}" />
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="docuEgreList" value="Documento"
+								 />
+							<p:selectManyMenu id="docuEgreList"
+								value="#{ventaClieProdReportControl.docuEgreIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true">
+
+								<f:selectItems value="#{ventaClieProdReportControl.docuEgres}"
+									var="docuEgre" itemLabel="#{docuEgre.documento.descri}"
+									itemValue="#{docuEgre.documentoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio
+								value="#{ventaClieProdReportControl.formatoReporte}">
+								<f:selectItems
+									value="#{ventaClieProdReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{ventaClieProdReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="ventasClieProd"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

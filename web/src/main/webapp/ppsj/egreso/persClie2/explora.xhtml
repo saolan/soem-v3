@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="persClieId" value='#{persClieControl.id}' />
+		<f:event type="preRenderView" listener="#{persClieControl.recuperar}" />
+	</f:metadata>
+	
+	<ui:param name="pageTitle" value="Soem - Clientes Explora" />
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Cliente - Panel Explorar"
+				style="margin-bottom:10px">
+			
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Cédula" />
+					<p:inputText value="#{persClieControl.persClie.persona.cedulaRuc}"/>
+
+					<p:outputLabel value="Apellido" />
+					<p:inputText value="#{persClieControl.persClie.persona.apelli}" styleClass="cajaTextoDescri"/>
+
+					<p:outputLabel value="Nombre" />
+					<p:inputText value="#{persClieControl.persClie.persona.nombre}" styleClass="cajaTextoDescri"/>
+
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{persClieControl.persClie.estado}"/>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

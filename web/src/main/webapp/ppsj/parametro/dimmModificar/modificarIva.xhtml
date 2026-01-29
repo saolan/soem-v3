@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form id="formModificarIva">
+
+			<p:growl id="growl" closable="true" showSummary="false"
+				showDetail="true" sticky="true" />
+
+			<p:panel id="panelModificarIva" style="margin-bottom:10px"
+				header="Modificar Impuesto">
+
+				<h:panelGrid columns="1">
+
+					<p:outputLabel
+						value="Este proceso modifica los parametro de los impuestos en todo el sistema"
+						style="width:100%; aling:center; font-size:110%" />
+					<p:outputLabel
+						value="Todos los productos que pertenezcan al impuesto actual seran afectados"
+						style="width:100%; text-align:center; font-size:110%" />
+					<p:outputLabel
+						value="Se realculara el precio de venta de acuerdo al nuevo impuesto"
+						style="width:100%; text-align:center; font-size:110%" />
+					<p:outputLabel
+						value="Tenga precaución y realize la selección adecuadamente"
+						style="width:100%; text-align:center; font-size:110%" />
+
+					<p:spacer />
+
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="dimmActualList" value="Impuesto Actual" />
+					<p:selectOneMenu id="dimmActualList" required="true"
+						requiredMessage="Seleccione Impuesto Actual"
+						value="#{modificaIvaControl.dimmActual}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItem itemLabel="Seleccione Impuesto Actual..." />
+						<f:selectItems value="#{modificaIvaControl.dimmActuals}"
+							var="dimm"
+							itemLabel="#{dimm.codigo} - #{dimm.descri} - #{dimm.porcen}"
+							itemValue="#{dimm}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="dimmNuevaList" value="Impuesto Nuevo" />
+					<p:selectOneMenu id="dimmNuevaList" required="true"
+						requiredMessage="Seleccione Impuesto Nuevo"
+						value="#{modificaIvaControl.dimmNuevo}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItem itemLabel="Seleccione Impuesto Nuevo..." />
+						<f:selectItems value="#{modificaIvaControl.dimmNuevos}" var="dimm"
+							itemLabel="#{dimm.codigo} - #{dimm.descri} - #{dimm.porcen}"
+							itemValue="#{dimm}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="campoCalculo" value="Recalcular" />
+					<p:selectOneMenu id="campoCalculo" required="true"
+						value="#{modificaIvaControl.campoCalculo}">
+						<f:selectItem itemLabel="Seleccione el precio que se va actualizar..." />
+						<f:selectItem itemLabel="Precio Con Iva" itemValue="PRECIO_CON_IMPU" />
+						<f:selectItem itemLabel="Precio Sin Iva" itemValue="PRECIO_SIN_IMPU" />
+					</p:selectOneMenu>
+
+
+					<p:outputLabel for="redondeoList" value="Redondeo Decimales" />
+					<p:selectOneMenu id="redondeoList"
+						value="#{modificaIvaControl.redondeo}">
+						<f:selectItems value="#{modificaIvaControl.redondeos}" var="redon"
+							itemLabel="#{redon}" itemValue="#{redon}" />
+					</p:selectOneMenu>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:commandLink id="procesar" ajax="false" styleClass="boton"
+					value="Aceptar" action="#{modificaIvaControl.modificarIva}">
+
+					<p:confirm
+						message="Esta seguro de realizar el cambio de Impuestos?"
+						icon="pi pi-exclamation-triangle" />
+
+				</p:commandLink>
+			</div>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Si" type="button"
+					styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+				<p:commandButton value="No" type="button"
+					styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+			</p:confirmDialog>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

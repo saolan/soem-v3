@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte Anexo Ventas Clientes">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaDesd" value="Fecha Desde" />
+							<p:calendar id="egresoFechaDesd"
+								value="#{ventaCliesReportControl.egresoDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaHast" value="Fecha Hasta" />
+							<p:calendar id="egresoFechaHast"
+								value="#{ventaCliesReportControl.egresoHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="cajaList" value="Sucursal-Caja"
+								 />
+							<p:selectManyMenu id="cajaList"
+								value="#{ventaCliesReportControl.cajaIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								 required="true"
+								requiredMessage="Seleccione caja">
+
+								<f:selectItems value="#{ventaCliesReportControl.cajas}"
+									var="caja" itemLabel="#{caja.sucursal.descri} - #{caja.descri}"
+									itemValue="#{caja.cajaId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="docuEgreList" value="Documento"
+								 />
+							<p:selectManyMenu id="docuEgreList"
+								value="#{ventaCliesReportControl.docuEgreIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								 required="true"
+								requiredMessage="Seleccione Documentos">
+
+								<f:selectItems value="#{ventaCliesReportControl.docuEgreAnexos}"
+									var="docuEgre" itemLabel="#{docuEgre.documento.descri}"
+									itemValue="#{docuEgre.documentoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Cliente Estado"
+								 />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{ventaCliesReportControl.persClieEstado}"
+								required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato" />
+							<p:selectOneRadio
+								value="#{ventaCliesReportControl.formatoReporte}">
+								<f:selectItems
+									value="#{ventaCliesReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{ventaCliesReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="ventaClies"
+					includeViewParams="false" styleClass="boton" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

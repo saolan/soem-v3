@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{rolBodeControl.pagina}' />
+		<f:event type="preRenderView" listener='#{rolBodeControl.buscar}' />
+	</f:metadata>
+	
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Rol Bodega - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="rolDescri" value="Rol" />
+					<p:inputText id="rolDescri"
+						value="#{rolBodeControl.rolBode.rol.descri}" required="false">
+						<f:validateBean for="rolDescri" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="bodegaDescri" value="Bodega" />
+					<p:inputText id="bodegaDescri"
+						value="#{rolBodeControl.rolBode.bodega.descri}" required="false">
+						<f:validateBean for="bodegaDescri" disabled="true" />
+					</p:inputText>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{rolBodeControl.nuevo}" 
+					rendered="#{rolBodeControl.rolPermiso.get(7000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/seguridad/rolBode/lista"
+							target="#{rolBodeControl.paginaRuta}" />
+				</p:commandLink>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{rolBodeControl.iniciarPagina}"
+					ajax="true" update="rolBodeList" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="rolBodeList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{rolBodeControl.rolBodes}" var="_rolBode">
+
+				<f:facet name="header">
+					<h:outputText value="Roles - Bodegas" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" ajax="false" 
+							action="#{rolBodeControl.modificar}">
+							<f:setPropertyActionListener value="#{_rolBode.rolBodeId}"
+								target="#{rolBodeControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rolBode/lista"
+								target="#{rolBodeControl.paginaRuta}" />								
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" ajax="false"
+							action="#{rolBodeControl.explorar}">
+							<f:setPropertyActionListener value="#{_rolBode.rolBodeId}"
+								target="#{rolBodeControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Sucursal">
+					<h:outputText id="sucurs" value="#{_rolBode.sucursal.descri}" />
+				</p:column>
+
+				<p:column headerText="Rol">
+					<h:outputText id="rol" value="#{_rolBode.rol.descri}" />
+				</p:column>
+				
+				<p:column headerText="Bodega">
+					<h:outputText id="bodega" value="#{_rolBode.bodega.descri}" />
+				</p:column>
+				
+				<p:column headerText="Predeterminado">
+					<h:selectBooleanCheckbox id="predet" value="#{_rolBode.predet}" disabled="true"/>
+				</p:column>
+				
+		 		<p:column headerText="Acceso">
+					<h:selectBooleanCheckbox id="acceso" value="#{_rolBode.acceso}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{rolBodeControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

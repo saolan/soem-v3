@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="persProvId" value='#{persProvControl.id}' />
+		<f:viewParam name="personaId" value='#{persProvControl.personaId}' />
+		<f:viewParam name="paginaRuta" value='#{persProvControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{persProvControl.recuperar}" />
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Soem - Proveedores Registro" />
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Proveedor - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar" />
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="cedula" value="Cédula" />
+					<p:inputText id="cedula"
+						value="#{persProvControl.persProv.persona.cedulaRuc}"
+						required="true" requiredMessage="Ingrese cédula o RUC" />
+
+					<p:outputLabel for="apellido" value="Apellido" />
+					<p:inputText id="apellido"
+						value="#{persProvControl.persProv.persona.apelli}" required="true"
+						styleClass="cajaTextoDescri" requiredMessage="Ingrese apellido" />
+
+					<p:outputLabel for="nombre" value="Nombre" />
+					<p:inputText id="nombre"
+						value="#{persProvControl.persProv.persona.nombre}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel for="direcc" value="Dirección" />
+					<p:inputText id="direcc"
+						value="#{persProvControl.persProv.persona.direcc}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel for="telefo" value="Telefono" />
+					<p:inputText id="telefo"
+						value="#{persProvControl.persProv.persona.telefo}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel for="correo" value="Correo" />
+					<p:inputText id="correo"
+						value="#{persProvControl.persProv.persona.correo}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Grupo" />
+					<p:selectOneMenu id="provGrup"
+						value="#{persProvControl.persProv.provGrup}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItem itemLabel="Seleccione..." />
+						<f:selectItems value="#{persProvControl.provGrups}" var="provGrup"
+							itemLabel="#{provGrup.descri}" itemValue="#{provGrup}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Tipo&#160;Identificación" />
+					<p:selectOneMenu id="dimmList"
+						value="#{persProvControl.persProv.dimm}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItem itemLabel="Seleccione..." />
+						<f:selectItems value="#{persProvControl.dimms}" var="dimm"
+							itemLabel="#{dimm.codigo} - #{dimm.descri}" itemValue="#{dimm}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="naturaList" value="Tipo&#160;Proveedor" />
+					<p:selectOneMenu id="naturaList"
+						value="#{persProvControl.persProv.natura}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{persProvControl.dimmTipoIdenProvs}"
+							var="dimm" itemLabel="#{dimm.descri}" itemValue="#{dimm.codigo}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="nota" value="Nota" />
+					<p:inputText id="nota" value="#{persProvControl.persProv.nota}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel for="parteRela" value="Parte&#160;Relacionada" />
+					<p:selectBooleanCheckbox id="parteRela"
+						value="#{persProvControl.persProv.parteRela}" required="true"
+						requiredMessage="Ingrese parte relacionada" />
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{persProvControl.persProv.estado}" required="true"
+						requiredMessage="Ingrese estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{persProvControl.grabar}"
+					rendered="#{(persProvControl.id != null and persProvControl.rolPermiso.get(4001)) or 
+					(persProvControl.id == null and persProvControl.rolPermiso.get(4000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{persProvControl.eliminar}"
+					rendered="#{persProvControl.id != null and persProvControl.rolPermiso.get(4002)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{persProvControl.cancelar}" />
+
+				<p:defaultCommand target="grabar" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

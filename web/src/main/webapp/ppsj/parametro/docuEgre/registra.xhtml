@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="documentoId" value='#{docuEgreControl.id}' />
+		<f:event type="preRenderView" listener="#{docuEgreControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Documento Venta - Panel Datos"
+				style="margin-bottom:10px; ">
+
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{docuEgreControl.docuEgre.documento.descri}" styleClass="cajaTextoDescri"
+						required="true" requiredMessage="Ingrese descripción" />
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero" value="#{docuEgreControl.docuEgre.documento.numero}" 
+						required="true" requiredMessage="Ingrese número" />
+
+					<p:outputLabel for="factor" value="Factor" />
+					<p:inputText id="factor" value="#{docuEgreControl.docuEgre.documento.factor}" 
+						required="true" requiredMessage="Ingrese factor" />
+						
+					<p:outputLabel for="maximoRegi" value="Máximo&#160;Registros" />
+					<p:inputText id="maximoRegi" value="#{docuEgreControl.docuEgre.maximoRegi}" 
+						required="true" requiredMessage="Ingrese máximo registros" />
+						
+					<p:outputLabel for="forma2" value="Formato&#160;Ride" />
+					<p:inputText id="forma2" value="#{docuEgreControl.docuEgre.forma2}" />
+
+					<p:outputLabel for="ambienList" value="Ambiente" />
+					<p:selectOneMenu id="ambienList" value="#{docuEgreControl.docuEgre.ambien}">
+						<f:selectItems value="#{docuEgreControl.dimmAmbiens}" var="dimm" 
+							itemLabel="#{dimm.descri}" itemValue="#{dimm.codigo}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel for="tipoEmisList" value="Tipo&#160;Emisión" />
+					<p:selectOneMenu id="tipoEmisList" value="#{docuEgreControl.docuEgre.tipoEmis}">
+						<f:selectItems value="#{docuEgreControl.dimmTipoEmiss}" var="dimm" 
+							itemLabel="#{dimm.descri}" itemValue="#{dimm.codigo}"/>
+					</p:selectOneMenu>
+						
+					<p:outputLabel value="Tipo&#160;Comprobante ATS." />
+					<p:selectOneMenu id="dimmListAts" value="#{docuEgreControl.docuEgre.tipoComp}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{docuEgreControl.dimmTipoComps}" var="dimm" 
+							itemLabel="#{dimm.codigo} - #{dimm.descri}" itemValue="#{dimm.codigo}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Tipo&#160;Comprobante FE." />
+					<p:selectOneMenu id="dimmListFe" value="#{docuEgreControl.docuEgre.dimm}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{docuEgreControl.dimms}" var="dimm" 
+							itemLabel="#{dimm.codigo} - #{dimm.descri}" itemValue="#{dimm}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel for="documeElec" value="Documento&#160;Electrónico" />
+    				<p:selectOneMenu id="documeElec" value="#{docuEgreControl.docuEgre.documeElec}" required="true" requiredMessage="Ingrese tipo documento electrónico">
+	    				<f:selectItems value="#{docuEgreControl.tipoDocuElecs}" var="tipoDocuElec"  
+    						itemValue="#{tipoDocuElec.descri}" itemLabel="#{tipoDocuElec.descri}" />
+        			</p:selectOneMenu>
+
+					<p:outputLabel value="Documento&#160;Contable" />
+					<p:selectOneMenu id="documentoList" value="#{docuEgreControl.docuEgre.documento.documento}" converter="omnifaces.SelectItemsConverter"
+						required="false" >
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{docuEgreControl.docuTrans}" var="docuTran" 
+							itemLabel="#{docuTran.documento.descri}" itemValue="#{docuTran.documento}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel for="contab" value="Genera&#160;Contabilidad" />
+					<p:selectBooleanCheckbox id="contab" value="#{docuEgreControl.docuEgre.documento.contab}" 
+						required="true" requiredMessage="Ingrese genera contabilidad" />
+
+					<p:outputLabel for="enviaCorreo" value="Envia&#160;Correo" />
+					<p:selectBooleanCheckbox id="enviaCorreo" value="#{docuEgreControl.docuEgre.documento.enviaCorreo}" 
+						required="true" requiredMessage="Ingrese si envia correo" />
+																								
+					<p:outputLabel for="generaAnex" value="Genera&#160;Anexo" />
+					<p:selectBooleanCheckbox id="generaAnex" value="#{docuEgreControl.docuEgre.generaAnex}" 
+						required="true" requiredMessage="Ingrese genera anexo" />
+
+					<p:outputLabel for="generaCxp" value="Genera&#160;Cxc" />
+					<p:selectBooleanCheckbox id="generaCxp" value="#{docuEgreControl.docuEgre.generaCxc}" 
+						required="true" requiredMessage="Ingrese genera Cxc" />
+
+					<p:outputLabel for="generaImpu" value="Genera&#160;Impuestos" />
+					<p:selectBooleanCheckbox id="generaImpu" value="#{docuEgreControl.docuEgre.generaImpu}" 
+						required="true" requiredMessage="Ingrese genera Impuestos" />
+												
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{docuEgreControl.docuEgre.documento.estado}" 
+						required="true" requiredMessage="Ingrese documento estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{docuEgreControl.grabar}" 
+					rendered="#{(docuEgreControl.id != null and docuEgreControl.rolPermiso.get(6001)) or 
+					(docuEgreControl.id == null and docuEgreControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{docuEgreControl.eliminar}" 
+					rendered="#{docuEgreControl.id != null and docuEgreControl.rolPermiso.get(6002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

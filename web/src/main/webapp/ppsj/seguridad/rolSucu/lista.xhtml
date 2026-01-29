@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{rolSucuControl.pagina}' />
+		<f:event type="preRenderView" listener='#{rolSucuControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Rol Sucursal - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{rolSucuControl.nuevo}" 
+					rendered="#{rolSucuControl.rolPermiso.get(7000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/seguridad/rolSucu/lista"
+							target="#{rolSucuControl.paginaRuta}" />
+				</p:commandLink>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{rolSucuControl.iniciarPagina}" 
+					ajax="true" update="rolSucuList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="rolSucuList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{rolSucuControl.rolSucus}" var="_rolSucu">
+
+				<f:facet name="header">
+					<h:outputText value="Roles - Sucursales" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{rolSucuControl.modificar}">
+							<f:setPropertyActionListener value="#{_rolSucu.rolSucuId}"
+								target="#{rolSucuControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rolSucu/lista"
+								target="#{rolSucuControl.paginaRuta}" />								
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{rolSucuControl.explorar}">
+							<f:setPropertyActionListener value="#{_rolSucu.rolSucuId}"
+								target="#{rolSucuControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Rol">
+					<h:outputText id="rol" value="#{_rolSucu.rol.descri}" />
+				</p:column>
+
+				<p:column headerText="Sucursal">
+					<h:outputText id="sucurs" value="#{_rolSucu.sucursal.descri}" />
+				</p:column>
+
+				<p:column headerText="Acceso">
+					<h:selectBooleanCheckbox id="estado" value="#{_rolSucu.acceso}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{rolSucuControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

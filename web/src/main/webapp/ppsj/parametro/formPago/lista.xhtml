@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{formPagoControl.pagina}' />
+		<f:event type="preRenderView" listener='#{formPagoControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Forma Pago - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{formPagoControl.formPago.descri}" required="false"
+						styleClass="cajaTextoDescri">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{formPagoControl.formPago.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{formPagoControl.rolPermiso.get(6000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{formPagoControl.iniciarPagina}" 
+					ajax="true" update="formPagoList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="formPagoList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{formPagoControl.formPagos}" var="_formPago">
+
+				<f:facet name="header">
+					<h:outputText value="Formas de Pago" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{formPagoControl.modificar}">
+							<f:setPropertyActionListener value="#{_formPago.formPagoId}"
+								target="#{formPagoControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{formPagoControl.explorar}">
+							<f:setPropertyActionListener value="#{_formPago.formPagoId}"
+								target="#{formPagoControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Descripción">
+					<h:outputText id="descri" value="#{_formPago.descri}" />
+				</p:column>
+
+				<p:column headerText="Referencia">
+					<h:outputText id="refere" value="#{_formPago.refere}"/>
+				</p:column>
+
+				<p:column headerText="Tipo">
+					<h:outputText id="tipo" value="#{_formPago.tipo}"/>
+				</p:column>
+
+				<p:column headerText="Código SRI">
+					<h:outputText id="codigoSri" value="#{_formPago.dimm.codigo}" />
+				</p:column>
+
+				<p:column headerText="Módulo">
+					<h:outputText id="modulo" value="#{_formPago.modulo}" />
+				</p:column>
+				
+				<p:column headerText="Banco">
+					<h:outputText id="tipo2" value="#{_formPago.tipo2}"/>
+				</p:column>
+				
+
+				<p:column headerText="Estado">
+					<h:selectBooleanCheckbox id="estado" value="#{_formPago.estado}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{formPagoControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="persCajeId" value='#{persCajeControl.id}' />
+		<f:viewParam name="personaId" value='#{persCajeControl.personaId}' />
+		<f:viewParam name="paginaRuta" value='#{persCajeControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{persCajeControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus for="panelRegistrar" />
+			<p:defaultCommand target="grabar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{persCajeControl.grabar}"
+					rendered="#{(persCajeControl.id != null and persCajeControl.rolPermiso.get(1001)) or 
+					(persCajeControl.id == null and persCajeControl.rolPermiso.get(1000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{persCajeControl.eliminar}"
+					rendered="#{persCajeControl.id != null and persCajeControl.rolPermiso.get(1002)}" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{persCajeControl.cancelar}" />
+
+			</div>
+
+			<p:panel id="panelRegistrar" header="Cajero - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="cedula" value="Cédula" />
+							<p:inputText id="cedula"
+								value="#{persCajeControl.persCaje.persona.cedulaRuc}"
+								required="true" requiredMessage="Ingrese cédula o RUC" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="apellido" value="Apellido" />
+							<p:inputText id="apellido"
+								value="#{persCajeControl.persCaje.persona.apelli}"
+								required="true" requiredMessage="Ingrese Apellido" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="nombre" value="Nombre" />
+							<p:inputText id="nombre"
+								value="#{persCajeControl.persCaje.persona.apelli}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="correo" value="Correo" />
+							<p:inputText id="correo" value="#{persCajeControl.persCaje.persona.correo}" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox id="estadoUsua" itemLabel="Estado"
+								value="#{persCajeControl.persCaje.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

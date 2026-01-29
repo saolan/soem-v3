@@ -1,0 +1,227 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{egresoControl.pagina}' />
+		<f:event type="preRenderView" listener='#{egresoControl.buscar}' />
+	</f:metadata>
+	
+	<ui:param name="pageTitle" value="Soem - Ventas Listado" />
+
+	<ui:define name="main">
+
+		<h:form id="egresoListaForm">
+
+			<p:panel id="panelBuscar" style="margin-bottom:3px"
+				header="Ventas - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="10">
+				
+					<p:outputLabel for="cedulaRuc" value="Clie.&#160;Cédula&#160;/&#160;Ruc" />
+					<p:inputText id="cedulaRuc" value="#{egresoControl.egreso.persClie.persona.cedulaRuc}" 
+						required="false">
+						<f:validateBean for="cedulaRuc" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="apelli" value="Clie.&#160;Apellido" />
+					<p:inputText id="apelli" value="#{egresoControl.egreso.persClie.persona.apelli}"  
+						required="false">
+						<f:validateBean for="apelli" disabled="true" />
+					</p:inputText>
+			
+					<p:outputLabel for="nombre" value="Clie.&#160;Nombre" />
+					<p:inputText id="nombre" value="#{egresoControl.egreso.persClie.persona.nombre}" 
+						required="false">
+						<f:validateBean for="nombre" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="docuEgre" value="Tipo&#160;Documento" />
+					<p:inputText id="docuEgre" value="#{egresoControl.egreso.docuEgre.documento.descri}" 
+						required="false">
+						<f:validateBean for="docuEgre" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="numero" value="Número&#160;Doc." />
+					<p:inputText id="numero"
+						value="#{egresoControl.egreso.numero}" required="false">
+						<f:validateBean for="numero" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="fecha" value="Fecha" />
+					<p:calendar id="fecha" pattern="dd-MM-yyyy"
+						value="#{egresoControl.egreso.fechaEmis}" required="false">
+						<f:validateBean for="fecha" disabled="true" />
+					</p:calendar>
+										
+					<p:outputLabel value="Estado" style="width:100%"/>
+					<p:selectOneRadio id="estado" value="#{egresoControl.egreso.estado}" >
+						<f:selectItems value="#{egresoControl.parametros}" var="parametro" 
+							itemLabel="#{parametro.descri}" itemValue="#{parametro.descri}"/>
+					</p:selectOneRadio>					
+					
+					<p:outputLabel value="Orden" style="width:100%;"/>
+					<p:selectOneRadio id="orden" value="#{egresoControl.orden}" >
+						<f:selectItems value="#{egresoControl.ordens}" var="orden" 
+							itemLabel="#{orden}" itemValue="#{orden}"/>
+					</p:selectOneRadio>					
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<p:link value="Nuevo" outcome="/ppsj/egreso/venta/ventaDeta"
+				styleClass="boton"
+				rendered="#{egresoControl.sesionVentas and egresoControl.rolPermiso.get(3100)}" />
+
+			<p:spacer height="2" />
+
+				<p:commandLink id="buscar" ajax="false" value="Buscar" 
+					styleClass="boton" action="#{egresoControl.iniciarPagina}"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+
+				<p:defaultCommand target="buscar"/>
+
+			<p:dataTable id="egresoList" style="margin-top:3px;" emptyMessage="No se encontro datos"
+				value="#{egresoControl.egresos}" var="_egreso">
+
+				<p:column style="width:80px; text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="3" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil" title="Modificar" 
+							ajax="false" action="#{ventaControl.modificarEgreDetas}">
+							<f:setPropertyActionListener value="#{_egreso.egresoId}"
+								target="#{ventaControl.egresoId}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" ajax="false" 
+							action="#{egresoControl.explorar}">
+							<f:setPropertyActionListener value="#{_egreso.egresoId}"
+								target="#{egresoControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink  styleClass="ui-icon ui-icon-print" title="Imprimir"
+							action="#{egresoControl.buscarSaliArchs}"
+							ajax="true" update="egresoListaForm:saliArchSele" 
+							onclick="PF('saliArchDialogo').show();"
+								rendered="#{ventaControl.rolPermiso.get(3106)}" >
+ 							<f:setPropertyActionListener value="#{_egreso}" target="#{egresoControl.egresoSele}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+ 				<p:column headerText="Sucursal" style="width:100px;">
+					<h:outputText id="sucursal" value="#{_egreso.sucursal.descri}" />
+				</p:column>
+
+ 				<p:column headerText="Documento" style="width:140px;">
+					<h:outputText id="docuEgre" value="#{_egreso.docuEgre.documento.descri}" />
+				</p:column>
+
+  				<p:column headerText="Cliente">
+					<h:outputText id="apelli" value="#{_egreso.persClie.persona.apelli} #{_egreso.persClie.persona.nombre}" />
+				</p:column>
+
+				<p:column headerText="Fecha" style="width:80px;">
+					<h:outputText id="fecha" value="#{_egreso.fechaEmis}">
+						<f:convertDateTime type="localDate"  pattern="dd-MM-yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Inicio No." style="width:80px;text-align:right">
+					<h:outputText id="cajaMoviId" value="#{_egreso.cajaMovi.cajaMoviId}">
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Serie1" style="width:60px;text-align:right">
+					<h:outputText id="serie1" value="#{_egreso.serie1}" />
+				</p:column>
+
+				<p:column headerText="serie2" style="width:60px;text-align:right">
+					<h:outputText id="serie2" value="#{_egreso.serie2}" />
+				</p:column>
+
+				<p:column headerText="Número" style="width:60px;text-align:right">
+					<h:outputText id="numero" value="#{_egreso.numero}" />
+				</p:column>
+				
+				<p:column headerText="Mesa" style="width:60px;" visible="#{egresoControl.activarMesa}">
+					<h:outputText id="Mesa" value="#{_egreso.mesa.descri}" />
+				</p:column>
+
+				<p:column headerText="Total" style="width:80px; text-align:right">
+					<h:outputText id="total" value="#{_egreso.total}" >
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Estado" style="width:60px;">
+					<h:outputText id="estado" value="#{_egreso.estado}" />
+				</p:column>
+
+				<p:column headerText="Estado Docu.Elec" style="width:110px;">
+					<h:outputText id="estadoDe" value="#{_egreso.estadoDocuElec}" />
+				</p:column>
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{egresoControl}' />
+			</ui:include>
+			
+			
+    		<p:dialog id="saliArchDg" widgetVar="saliArchDialogo" width="70%"  
+    			header="Imprimir - Descargar - Enviar" modal="true" resizable="false"  >
+								    			
+				<p:dataTable id="saliArchSele" style="margin-bottom:5px;"
+					emptyMessage="No se encontro datos"
+					value="#{egresoControl.saliArchs}" var="_saliArch">
+
+					<p:column headerText="Salida" width="50%">
+						<h:outputText value="#{_saliArch.salida}" />
+					</p:column>
+
+					<p:column headerText="Formato">
+						<h:outputText value="#{_saliArch.format}" />
+					</p:column>
+
+					<p:column headerText="Impresora">
+						<h:outputText value="#{_saliArch.impres}" />
+					</p:column>
+
+					<p:column headerText="Predeterminado">
+						<p:selectBooleanCheckbox value="#{_saliArch.predet}"/>	
+					</p:column>
+
+				</p:dataTable>
+
+				<p:commandLink id="aceptarSaliArchDg" styleClass="boton" value="Aceptar" ajax="false"
+						action="#{egresoControl.descargar}" onclick="PF('saliArchDialogo').hide();" />
+
+				<p:spacer height="2" />
+								
+				<p:commandLink id="cancelarConvertirDialogo" ajax="false" styleClass="boton" value="Cancelar" 
+						onclick="PF('saliArchDialogo').hide();" />
+ 
+    		</p:dialog> 
+			
+		</h:form>
+		<!-- Aqui ya o va codigo javascript porque en onClick del boton id=aceptarSaliArchDg se cierra el dialogo -->
+	</ui:define>
+
+</ui:composition>

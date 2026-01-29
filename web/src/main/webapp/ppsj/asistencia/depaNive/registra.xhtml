@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="depaNiveId" value='#{depaNiveControl.id}' />
+		<f:event type="preRenderView"
+			listener="#{depaNiveControl.preCargarRegExp}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Departamento Nivel - Gestionar"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar" />
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="descripcion" value="Descripción" />
+					<p:inputText id="descripcion"
+						value="#{depaNiveControl.depaNive.descri}" required="true"
+						requiredMessage="Ingrese descripción" />
+
+					<p:outputLabel for="nivel" value="Nivel" />
+					<p:inputText id="nivel" value="#{depaNiveControl.depaNive.nivel}"
+						required="true" requiredMessage="Ingrese nivel" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{depaNiveControl.grabar}"
+					rendered="#{(depaNiveControl.id != null and depaNiveControl.rolPermiso.get(9001)) or 
+					(depaNiveControl.id == null and depaNiveControl.rolPermiso.get(9000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{depaNiveControl.eliminar}"
+					rendered="#{depaNiveControl.id != null and depaNiveControl.rolPermiso.get(9002)}" />
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+
+				<p:defaultCommand target="grabar" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

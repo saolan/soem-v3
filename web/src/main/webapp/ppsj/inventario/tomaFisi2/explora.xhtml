@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="transaccionId" value='#{transaccionControl.id}' />
+		<f:event type="preRenderView" listener="#{transaccionControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Transaccion - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Documento" />
+					<p:inputText value="#{transaccionControl.transaccion.docuTran.documento.descri}" />
+
+					<p:outputLabel value="Número" />
+					<p:inputText value="#{transaccionControl.transaccion.numero}" />
+				
+					<p:outputLabel for="fechaEmis" value="Fecha" />
+					<p:calendar id="fechaEmis" pattern="dd-MM-yyyy"
+						value="#{transaccionControl.transaccion.fechaEmis}" >
+					</p:calendar>
+					
+					<p:outputLabel value="Total Debe" />
+					<p:inputText value="#{transaccionControl.transaccion.totalDebe}" >
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</p:inputText>
+					
+					<p:outputLabel value="Total Haber" />
+					<p:inputText value="#{transaccionControl.transaccion.totalHabe}" >
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</p:inputText>
+
+					<p:outputLabel value="Diferencia" />
+					<p:inputText value="#{transaccionControl.transaccion.difere}" >
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</p:inputText>
+										
+					<p:outputLabel value="Estado" />
+					<p:inputText value="#{transaccionControl.transaccion.estado}" />
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista" styleClass="boton" />
+					
+				<p:spacer height="2" />
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton" value="Descargar" 
+					action="#{transaccionControl.descargar}" 
+					rendered="#{transaccionControl.rolPermiso.get(2101) and transaccionControl.id != null}" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

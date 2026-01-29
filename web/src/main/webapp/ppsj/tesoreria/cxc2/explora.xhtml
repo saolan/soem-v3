@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cxcId" value='#{cxcControl.id}' />
+		<f:event type="preRenderView" listener="#{cxcControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Cuentas Por Cobrar  - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Cliente" />
+					<p:outputLabel value="#{cxcControl.cxc.egreso.persClie.persona.apelli} #{cxcControl.cxc.egreso.persClie.persona.nombre}" />
+				
+					<p:outputLabel value="Fecha Vencimiento" />
+					<p:inputText value="#{cxcControl.cxc.fechaVenc}" />
+				
+					<p:outputLabel value="Total" />
+					<p:inputText value="#{cxcControl.cxc.total}" >
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</p:inputText>
+					
+					<p:outputLabel value="Abono" />
+					<p:inputText value="#{cxcControl.cxc.abono}" >
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</p:inputText>
+
+					<p:outputLabel value="Saldo" />
+					<p:inputText value="#{cxcControl.cxc.saldo}" >
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</p:inputText>
+																				
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{cxcControl.cxc.estado}" />
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+		
+		<p:tabView rendered="#{cxcControl.rolPermiso.get(8003)}">
+
+			<p:tab title="Detalle Cobros">
+			
+					<p:dataTable id="cobroDetaList" emptyMessage="No se encontro datos"
+						value="#{cxcControl.cobrDetas}" var="_cobrDeta"
+						rendered="#{cxcControl.cobrDetas.size() != null}">
+    					
+						<p:column headerText="Núm.Doc.">
+							<h:outputText id="cobrNumero" value="#{_cobrDeta.cxc.egreso.numero}" />
+						</p:column>
+
+						<p:column headerText="Cxc Emisión ">
+							<h:outputText id="cobrFechaEmis" value="#{_cobrDeta.cxc.egreso.fechaEmis}" />
+						</p:column>
+
+						<p:column headerText="Cxc Vencimiento">
+							<h:outputText id="pagoFechaVenc" value="#{_cobrDeta.cxc.fechaVenc}" />
+						</p:column>
+																		
+						<p:column headerText="Cxc Total">
+							<h:outputText id="pagototal" value="#{_cobrDeta.cxc.total}" >
+								<f:convertNumber pattern="#0.00" locale="en-US"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Número Cobro">
+							<h:outputText id="numeroCobr" value="#{_cobrDeta.fpmeFormPago.formPagoMoviEgre.numero}" />
+						</p:column>
+
+						<p:column headerText="Fecha Cobro">
+							<h:outputText id="fechaCobr" value="#{_cobrDeta.fpmeFormPago.formPagoMoviEgre.fecha}" />
+						</p:column>
+												
+						<p:column headerText="Forma Pago">
+							<h:outputText id="formPago" value="#{_cobrDeta.fpmeFormPago.formPago.descri}" />
+						</p:column>
+
+						<p:column headerText="Total Cobro">
+							<h:outputText id="total" value="#{_cobrDeta.total}">
+								<f:convertNumber pattern="#0.00" locale="en-US"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Cxc Estado" style="text-align: center; width:80px">
+							<h:selectBooleanCheckbox id="cxcEstado" value="#{_cobrDeta.cxc.estado}" />
+						</p:column>
+
+					</p:dataTable>
+			</p:tab>
+		</p:tabView>		
+	</ui:define>
+</ui:composition>

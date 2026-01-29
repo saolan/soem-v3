@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="prodDimmId" value='#{prodDimmControl.id}' />
+		<f:viewParam name="productoId" value='#{prodDimmControl.productoId}' />
+		<f:viewParam name="paginaRuta" value='#{prodDimmControl.paginaRuta}' />
+		<f:viewParam name="listarIvaRete"
+			value='#{prodDimmControl.listarIvaRete}' />
+		<f:event type="preRenderView" listener="#{prodDimmControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus for="panelRegistrar" />
+			<p:defaultCommand target="grabar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{prodDimmControl.grabar}"
+					rendered="#{(prodDimmControl.id != null and prodDimmControl.rolPermiso.get(5001)) or 
+					(prodDimmControl.id == null and prodDimmControl.rolPermiso.get(5000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{prodDimmControl.eliminar}"
+					rendered="#{prodDimmControl.id != null and prodDimmControl.rolPermiso.get(5002)}" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{prodDimmControl.cancelar}" />
+
+			</div>
+
+			<p:panel id="panelRegistrar"
+				header="Producto Dimm - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="productoList" value="Producto" />
+							<p:selectOneMenu id="productoList"
+								value="#{prodDimmControl.prodDimm.producto}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{prodDimmControl.productos}"
+									var="producto" itemLabel="#{producto.descri}"
+									itemValue="#{producto}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="dimmList" value="Dimm" />
+							<p:selectOneMenu id="dimmList"
+								value="#{prodDimmControl.prodDimm.dimm}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{prodDimmControl.dimms}" var="dimm"
+									itemLabel="#{dimm.codigo} - #{dimm.descri} - #{dimm.porcen}"
+									itemValue="#{dimm}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

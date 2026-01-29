@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="rolPersUsuaId" value='#{rolPersUsuaControl.id}' />
+		<f:viewParam name="personaId" value='#{rolPersUsuaControl.personaId}' />
+		<f:viewParam name="paginaRuta"
+			value='#{rolPersUsuaControl.paginaRuta}' />
+		<f:event type="preRenderView"
+			listener="#{rolPersUsuaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{rolPersUsuaControl.grabar}"
+					rendered="#{(rolPersUsuaControl.id != null and rolPersUsuaControl.rolPermiso.get(7001)) or 
+					(rolPersUsuaControl.id == null and rolPersUsuaControl.rolPermiso.get(7000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{rolPersUsuaControl.eliminar}"
+					rendered="#{rolPersUsuaControl.id != null and rolPersUsuaControl.rolPermiso.get(7002)}" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{rolPersUsuaControl.cancelar}" />
+			</div>
+
+			<p:panel id="panelRegistrar" header="Rol Usuario - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel for="usuarioList" value="Usuario" />
+							<p:selectOneMenu id="usuarioList"
+								value="#{rolPersUsuaControl.rolPersUsua.persUsua}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{rolPersUsuaControl.persUsuas}"
+									var="persUsua" itemLabel="#{persUsua.usuari}"
+									itemValue="#{persUsua}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel for="rolList" value="Rol" />
+							<p:selectOneMenu id="rolList"
+								value="#{rolPersUsuaControl.rolPersUsua.rol}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{rolPersUsuaControl.rols}" var="rol"
+									itemLabel="#{rol.descri}" itemValue="#{rol}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="prodGrupId" value='#{prodGrupControl.id}' />
+		<f:event type="preRenderView" listener="#{prodGrupControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form id="prodGrupExploraForm">
+			<p:panel id="explora" header="Producto Grupo - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{prodGrupControl.prodGrup.descri}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Tipo" />
+					<p:inputText value="#{prodGrupControl.prodGrup.tipo}" />
+
+					<p:outputLabel value="Nivel" />
+					<p:inputText
+						value="#{prodGrupControl.prodGrup.prodGrupNive.descri}" />
+
+					<p:outputLabel value="Detalle" />
+					<p:selectBooleanCheckbox value="#{prodGrupControl.prodGrup.detall}" />
+
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{prodGrupControl.prodGrup.estado}" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+
+		<p:tabView id="cuentasContablesTab" rendered="#{prodGrupControl.rolPermiso.get(5003)}">
+
+			<p:tab title="Asignación de cuentas contables">
+
+				<h:form id="cuentasContablesForm">
+
+					<p:dataTable id="prodGrupPlanCuenList"
+						emptyMessage="No se encontro datos"
+						value="#{prodGrupControl.prodGrupPlanCuens}"
+						var="_prodGrupPlanCuen" style="margin-bottom:3px">
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:commandLink styleClass="ui-icon ui-icon-pencil"
+								title="Modificar" action="#{prodGrupPlanCuenControl.modificar}">
+								<f:setPropertyActionListener value="#{_prodGrupPlanCuen.pgpcId}"
+									target="#{prodGrupPlanCuenControl.id}" />
+								<f:setPropertyActionListener
+									value="#{prodGrupControl.prodGrup.prodGrupId}"
+									target="#{prodGrupPlanCuenControl.prodGrupId}" />
+								<f:setPropertyActionListener
+									value="/ppsj/inventario/prodGrup/explora"
+									target="#{prodGrupPlanCuenControl.paginaRuta}" />
+
+							</p:commandLink>
+
+						</p:column>
+
+						<p:column headerText="Grupo Producto">
+							<h:outputText id="prodGrup"
+								value="#{_prodGrupPlanCuen.prodGrup.descri}" />
+						</p:column>
+
+						<p:column headerText="Cuenta Código">
+							<h:outputText id="planCuenCodigo"
+								value="#{_prodGrupPlanCuen.planCuen.codigo}" />
+						</p:column>
+
+						<p:column headerText="Cuenta Descripción">
+							<h:outputText id="planCuenDescri"
+								value="#{_prodGrupPlanCuen.planCuen.descri}" />
+						</p:column>
+
+						<p:column headerText="Documento">
+							<h:outputText id="documentoId"
+								value="#{_prodGrupPlanCuen.documento.descri}" />
+						</p:column>
+
+						<p:column headerText="Tipo Transacción">
+							<h:outputText id="tipoTran" value="#{_prodGrupPlanCuen.tipoTran}" />
+						</p:column>
+
+					</p:dataTable>
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{prodGrupPlanCuenControl.nuevo}">
+							<f:setPropertyActionListener
+								value="#{prodGrupControl.prodGrup.prodGrupId}"
+								target="#{prodGrupPlanCuenControl.prodGrupId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/inventario/prodGrup/explora"
+								target="#{prodGrupPlanCuenControl.paginaRuta}" />
+						</p:commandLink>
+						
+						<p:commandLink id="copiarBtn"  styleClass="boton" 
+							value="Copiar cuentas contables" action="#{prodGrupControl.buscarProdGrupTodos}"
+							rendered="#{prodGrupControl.prodGrupPlanCuens.size() == 0}"
+							onclick="PF('pgpcCopiarDialogo').show();"
+							update="pgpcCopiarForm:gridProdGrups" />
+						
+					</div>
+				</h:form>
+			</p:tab>
+		</p:tabView>
+
+		<p:dialog id="pgpcCopiarDg" widgetVar="pgpcCopiarDialogo"
+			header="Grupo" modal="true" resizable="false"
+			focus="pgpcCopiarForm:cancelarPgpcCopiarDialogo" closable="false">
+
+			<h:form id="pgpcCopiarForm">
+
+				<p:panel id="panelProdGrups" style="margin-bottom:10px; ">
+
+					<h:panelGrid id="gridProdGrups" columns="2">
+
+						<p:outputLabel value="Grupos" />
+						<p:selectOneMenu id="prodGrupList"
+							value="#{prodGrupControl.prodGrupSele}"
+							required="true" requiredMessage="Seleccione un grupo de producto"
+							converter="omnifaces.SelectItemsConverter">
+							<f:selectItem itemLabel="Seleccione grupo ..." itemValue="" />
+							<f:selectItems value="#{prodGrupControl.prodGrups}"
+								var="prodGrup" itemLabel="#{prodGrup.descri}"
+								itemValue="#{prodGrup}" />
+						</p:selectOneMenu>
+
+					</h:panelGrid>
+				</p:panel>
+
+				<p:commandLink id="aceptarPgpcCopiarDialogo" styleClass="boton"
+					value="Aceptar" action="#{prodGrupControl.copiarPgpcs}" ajax="false"
+					oncomplete="handleLoginRequestCopiar(xhr, status, args)"/>
+
+				<p:commandLink id="cancelarPgpcCopiarDialogo" ajax="true"
+					styleClass="boton" value="Cancelar"
+					onclick="PF('pgpcCopiarDialogo').hide();" />
+			</h:form>
+		</p:dialog>
+
+		<script type="text/javascript">
+
+	    	function handleLoginRequestCopiar(xhr, status, args) {
+
+		        if(args.validationFailed) {
+	            	PF('pgpcCopiarDialogo').jq.effect("shake", {times:1}, 5);
+	        	}
+	        	else {
+		            PF('pgpcCopiarDialogo').hide();
+	        	}
+		    }
+	        
+        </script>
+
+	</ui:define>
+</ui:composition>

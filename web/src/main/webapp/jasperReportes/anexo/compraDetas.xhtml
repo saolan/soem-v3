@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte Anexo Compras Detalladas">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="ingresoFechaDesd" value="Fecha Desde" />
+							<p:calendar id="ingresoFechaDesd"
+								value="#{compraDetasReportControl.ingresoDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="ingresoFechaHast" value="Fecha Hasta" />
+							<p:calendar id="ingresoFechaHast"
+								value="#{compraDetasReportControl.ingresoHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="sucursalList" value="Sucursal"
+								 />
+							<p:selectManyMenu id="sucursalList"
+								value="#{compraDetasReportControl.sucursalIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								 required="true"
+								requiredMessage="Seleccione sucursales">
+
+								<f:selectItems value="#{compraDetasReportControl.sucursals}"
+									var="sucursal" itemLabel="#{sucursal.descri}"
+									itemValue="#{sucursal.sucursalId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="docuIngrList" value="Documento"
+								 />
+							<p:selectManyMenu id="docuIngrList"
+								value="#{compraDetasReportControl.docuIngrIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								 required="true"
+								requiredMessage="Seleccione Documentos">
+
+								<f:selectItems
+									value="#{compraDetasReportControl.docuIngrAnexos}"
+									var="docuIngr" itemLabel="#{docuIngr.documento.descri}"
+									itemValue="#{docuIngr.documentoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Proveedor Estado"
+								 />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{compraDetasReportControl.persProvEstado}"
+								required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio
+								value="#{compraDetasReportControl.formatoReporte}">
+								<f:selectItems
+									value="#{compraDetasReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar Compras"
+					action="#{compraDetasReportControl.descargar}" />
+
+				<p:commandLink id="descargarFp" ajax="false" styleClass="boton"
+					value="Descargar Formas Pago"
+					action="#{compraDetasReportControl.descargarFp}" />
+
+				<p:link value="Cancelar" outcome="compraDetas"
+					includeViewParams="false" styleClass="boton" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

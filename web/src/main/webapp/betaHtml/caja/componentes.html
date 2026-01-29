@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Página general</title>
+<link rel="stylesheet" href="../styles.css">
+
+</head>
+<body>
+	<h1>Lista de Cajas</h1>
+
+	<form>
+		<input name="q"> <input type="submit">
+	</form>
+
+	<form action="cajaCrud.html">
+		<input name="q"> <input type="submit">
+	</form>
+
+	<form action="cajaCrud.html" method="post">
+		<input name="q"> <input type="submit">
+	</form>
+
+	<form action="cajaCrud.html" method="post"
+		enctype="application/x-www-form-urlencoded">
+		<input name="q"> <input type="submit">
+	</form>
+
+	<form action="cajaCrud.html" method="post"
+		enctype="multipart/form-data">
+		<input name="q"> <input type="submit">
+	</form>
+
+	<form action="cajaList.html" method="POST"
+		enctype="application/x-www-form-urlencoded">
+
+		Nombre: <input id="nombre" type="text" name="customerName"><br />
+		Correo: <input type="email" name="customerEmail"><br />
+		Teléfono: <input type="tel" name="customerPhone"> <input
+			type="radio" name="phoneType" value="cell">Celular <input
+			type="radio" name="phoneType" value="work">Oficina <input
+			type="radio" name="phoneType" value="home">Casa <br />
+		Contactame: <input type="checkbox" name="okToContact" value="phone">
+		by phone <input type="checkbox" name="okToContact" value="email">
+		by email <br /> <input type="hidden" name="source"
+			value="Pasa en un elemento oculto en al pagina NO USAR PARA CLAVES O DATOS DE SEGURIDAD">
+		Your feedback:<br>
+
+		<textarea name="feedbackText" cols="40" rows="3"></textarea>
+
+		<br /> Feedback type: <select name="feedbackType" multiple="multiple"
+			size="6">
+			<optgroup label="Stores">
+				<option value="webstore">Web Store</option>
+				<option value="store">Physical Store</option>
+			</optgroup>
+			<option value="webtech">Website Issue</option>
+			<option value="general">General Feedback</option>
+
+		</select> <br /> Severity: <input type="range" min="1" max="10"
+			name="severityRange"><br /> Severity: <input type="number"
+			min="1" max="10" name="severity"><br /> Issue date: <input
+			type="date" name="issueDate"><br /> Issue time: <input
+			type="time" name="issueTime"><br /> <input type="submit"
+			value="SendContact">
+	</form>
+
+
+	<form action="contact.html" method="POST"
+		enctype="application/x-www-form-urlencoded">
+		<fieldset>
+			<legend>Contact Information</legend>
+			<label for="nameField">Your name: </label> <input id="nameField"
+				type="text" name="customerName"><br /> Your email: <input
+				type="email" name="customerEmail"><br /> Your phone: <input
+				type="tel" name="customerPhone"> <label><input
+				type="radio" name="phoneType" value="cell">Cell</label> <label><input
+				type="radio" name="phoneType" value="work">Work</label> <label><input
+				type="radio" name="phoneType" value="home">Home</label> <br /> Ok
+			to contact me: <input type="checkbox" name="okToContact"
+				value="phone"> by phone <input type="checkbox"
+				name="okToContact" value="email"> by email <br />
+		</fieldset>
+
+		<input type="hidden" name="source" value="ContactForm"> <br />
+		<fieldset>
+			<legend>Feedback</legend>
+
+			<textarea tabindex="1" name="feedbackText" cols="40" rows="3"></textarea>
+			<br /> Feedback type: <select tabindex="2" name="feedbackType"
+				multiple="multiple" size="6">
+				<optgroup label="Stores">
+					<option value="webstore">Web Store</option>
+					<option value="store">Physical Store</option>
+				</optgroup>
+				<option value="webtech">Website Issue</option>
+				<option value="general">General Feedback</option>
+			</select> <br /> Severity: <input tabindex="3" type="range" min="1" max="10"
+				name="severityRange"><br /> Severity: <input tabindex="4"
+				type="number" min="1" max="10" name="severity"><br /> Issue
+			date: <input tabindex="5" type="date" name="issueDate"><br />
+			Issue time: <input tabindex="6" type="time" name="issueTime"><br />
+		</fieldset>
+		<input type="submit" value="SendContact">
+	</form>
+
+	<form action="contact.html" method="POST"
+		enctype="application/x-www-form-urlencoded">
+		<fieldset>
+			<legend>Contact Information</legend>
+			<p>
+				<label for="nameField">*Your name: </label> <input id="nameField"
+					type="text" maxlength="75" name="customerName">
+			</p>
+			<p>
+				<label for="customerEmail">Your email: </label> <input type="email"
+					name="customerEmail" id="customerEmail">
+			</p>
+			<p>
+				<label for="customerPhone">Your phone: </label> <input type="tel"
+					pattern="\(\d{3}\) \d{3}-\d{4}" name="customerPhone"
+					id="customerPhone">
+			</p>
+			<p>
+				<label>Phone type: </label>
+			</p>
+
+			<label><input type="radio" name="phoneType" value="cell">Cell</label>
+			<label><input type="radio" name="phoneType" value="work">Work</label>
+			<label><input type="radio" name="phoneType" value="home">Home</label>
+			<p>
+				Ok to contact me: <label><input type="checkbox"
+					name="okToContact" value="phone"> by phone</label> <label><input
+					type="checkbox" name="okToContact" value="email"> by email</label>
+
+			</p>
+		</fieldset>
+
+		<input type="hidden" name="source" value="ContactForm">
+		<fieldset>
+			<legend>Feedback</legend>
+			<p>
+				<textarea required tabindex="1" name="feedbackText" cols="40"
+					rows="3"></textarea>
+			</p>
+			<p>
+				<label for="feedbackType">Feedback type: </label><select
+					tabindex="2" name="feedbackType" multiple="multiple" size="6"
+					id="feedbackType">
+					<optgroup label="Stores">
+						<option value="webstore">Web Store</option>
+						<option value="store">Physical Store</option>
+					</optgroup>
+					<option value="webtech">Website Issue</option>
+					<option value="general">General Feedback</option>
+				</select>
+			</p>
+
+			<p>
+				<label for="severityRange">Severity: </label> <input tabindex="3"
+					type="range" min="1" max="10" name="severityRange"
+					id="severityRange">
+			</p>
+			<p>
+				<label for="severity">Severity: </label> <input tabindex="4"
+					type="number" min="1" max="10" name="severity" id="severity">
+				
+			</p>
+			<p>
+				<label for="issueDate">Issue date: </label> <input tabindex="5"
+					type="date" name="issueDate" id="issueDate">
+			</p>
+			<p>
+				<label for="issueTime">Issue time: </label> <input tabindex="6"
+					type="time" name="issueTime" id="issueTime">
+			</p>
+
+		</fieldset>
+		<input type="submit" value="SendContact">
+	</form>
+
+	<table>
+		<caption>Wired Brain Nutrition Information</caption>
+		<thead>
+			<tr>
+				<th rowspan="2">Drink</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th colspan="2">Carbohydrates</th>
+
+			</tr>
+			<tr>
+				<!--<th>Drink</th>-->
+				<th>Serving Size</th>
+				<th>Calories</th>
+				<th>Fat (g)</th>
+				<th>Protein (g)</th>
+				<th>Sugar (g)</th>
+				<th>Fiber (g)</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Hot Cocoa</td>
+				<td>8 oz</td>
+				<td>250</td>
+				<td>5</td>
+				<td>2</td>
+				<td>25</td>
+				<td>0</td>
+			</tr>
+			<tr>
+				<td>Mocha</td>
+				<td>8 oz</td>
+				<td>250</td>
+				<td>5</td>
+				<td>2</td>
+				<td>25</td>
+				<td>0</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td>Max</td>
+				<td></td>
+				<td>250</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tfoot>
+	</table>
+
+	<!-- Termina el efecto de float de los elementos anteriores  -->
+	<div style="clear: both"></div>
+</body>
+</html>

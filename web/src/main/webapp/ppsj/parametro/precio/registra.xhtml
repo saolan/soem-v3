@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="precioId" value='#{precioControl.id}' />
+		<f:event type="preRenderView" listener="#{precioControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Precio - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="codigo" value="Código" />
+					<p:inputText id="codigo" value="#{precioControl.precio.codigo}"  
+						required="true" requiredMessage="Ingrese código" />
+						
+					<p:outputLabel for="descripcion" value="Descripción" />
+					<p:inputText id="descripcion" value="#{precioControl.precio.descri}" styleClass="cajaTextoDescri" 
+						required="true" requiredMessage="Ingrese descripción" />
+
+					<p:outputLabel for="alcancList" value="Alcance" />
+					<p:selectOneMenu id="alcancList" value="#{precioControl.precio.alcanc}"
+						required="true" requiredMessage="Seleccione alcance">
+						 <f:selectItem itemLabel="Total" itemValue="0" />
+						 <f:selectItem itemLabel="Parcial" itemValue="1" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="factor" value="Factor" />
+					<p:inputText id="factor" value="#{precioControl.precio.factor}"  
+						required="true" requiredMessage="Ingrese factor" />
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{precioControl.precio.estado}" required="true"
+						requiredMessage="Ingrese estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{precioControl.grabar}"
+					rendered="#{(precioControl.id != null and precioControl.rolPermiso.get(6001)) or 
+					(precioControl.id == null and precioControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{precioControl.eliminar}"  
+					rendered="#{precioControl.id != null and precioControl.rolPermiso.get(6002)}"/>
+
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Cargar Compra"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar" />
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="claveAcce" value="Clave Acceso" />
+					<p:inputText id="claveAcce"
+						value="#{cargarCompraControl.claveAcce}"
+						styleClass="cajaTextoDescri" />
+
+					<p:selectOneMenu id="documentoList"
+						value="#{cargarCompraControl.docuIngr}"
+						converter="omnifaces.SelectItemsConverter" required="true"
+						requiredMessage="Ingrese Documento">
+						<f:selectItems value="#{cargarCompraControl.docuIngrs}"
+							var="docuIngr" itemLabel="#{docuIngr.documento.descri}"
+							itemValue="#{docuIngr}" />
+					</p:selectOneMenu>
+
+
+					<p:selectOneMenu id="dimmList" value="#{cargarCompraControl.dimm}"
+						converter="omnifaces.SelectItemsConverter" style="width:340px;"
+						required="false" requiredMessage="Ingrese sustento tributario">
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{cargarCompraControl.dimms}" var="dimm"
+							itemLabel="#{dimm.codigo} - #{dimm.descri}" itemValue="#{dimm}" />
+					</p:selectOneMenu>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="Descargar" value="Descargar Compra"
+					styleClass="boton" action="#{cargarCompraControl.descargarXml}" />
+
+				<p:commandLink id="cargar" value="Cargar Compra" styleClass="boton"
+					action="#{cargarCompraControl.generarDocumento}" 
+					update="ingresoDetaList" />
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="/inicio" />
+
+			</div>
+
+			<div style="float: right; width: 60%;">
+
+				<p:dataTable id="ingresoDetaList"
+					emptyMessage="No se encontro datos" editable="true" editMode="cell"
+					scrollable="true" scrollHeight="333"
+					value="#{cargarCompraControl.ingrDetas}" var="_ingrDeta"
+					rowKey="#{_ingrDeta.ingrDetaId}"
+					rowStyleClass="#{_ingrDeta.producto.controlMaxMin eq 'maximo' ? 'stockMaximo' : _ingrDeta.producto.controlMaxMin eq 'minimo' ? 'stockMinimo' : null}">
+
+
+
+					<p:column headerText="Producto"
+						rendered="#{!variablesSesion.mostrarCodigoIngrDeta}">
+						<h:outputText id="descri" value="#{_ingrDeta.producto.descri}" />
+					</p:column>
+
+					<p:column headerText="Producto"
+						rendered="#{variablesSesion.mostrarCodigoIngrDeta}">
+						<h:outputText id="descriCodigo"
+							value="#{_ingrDeta.producto.descri}~#{_ingrDeta.producto.codigoBarra}" />
+					</p:column>
+
+					<p:column headerText="Cantidad"
+						style="width:50px;text-align: right">
+						<p:inputText id="cantidInput" value="#{_ingrDeta.cantid}"
+							style="width:100%;text-align: right"
+							onfocus="this.setSelectionRange(0, this.value.length)">
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="Costo" style="width:60px;text-align: right">
+						<p:inputText id="costoInput" value="#{_ingrDeta.costo}"
+							style="width:100%;text-align: right"
+							onfocus="this.setSelectionRange(0, this.value.length)">
+						</p:inputText>
+
+					</p:column>
+
+					<p:column headerText="Precio/Presen"
+						style="width:80px;text-align: left">
+
+						<p:commandLink id="abrirDialogo"
+							value="#{_ingrDeta.precio.descri}"
+							onclick="PF('seleccionPrecioDialogo').show();">
+
+						</p:commandLink>
+
+					</p:column>
+
+					<p:column headerText="Precio" style="width:60px;text-align: right"
+						rendered="#{ingresoControl.rolPermiso.get(4380)}">
+						<h:outputText id="precioConImpu"
+							value="#{_ingrDeta.precioConImpu}" />
+					</p:column>
+
+					<p:column headerText="Desc.%" style="width:50px;text-align: right"
+						rendered="#{ingresoControl.rolPermiso.get(4381)}">
+						<p:inputText id="descueInput" value="#{_ingrDeta.descue}"
+							style="width:100%;text-align: right"
+							onfocus="this.setSelectionRange(0, this.value.length)">
+
+						</p:inputText>
+					</p:column>
+
+					<p:column id="impuestoPorcenCol" headerText="Iva %"
+						style="width:35px;text-align: right">
+						<h:outputText id="impuestoPorcen"
+							value="#{_ingrDeta.producto.dimm.porcen}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column id="totalCol" headerText="Total"
+						style="width:60px;text-align: right">
+						<h:outputText id="total" value="#{_ingrDeta.total}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column id="totalPrecioCol" headerText="Total Precio"
+						style="width:60px;text-align: right"
+						rendered="#{ingresoControl.rolPermiso.get(4383)}">
+						<h:outputText id="totalPrecio"
+							value="#{_ingrDeta.totalPrecioConImpu}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

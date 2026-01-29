@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="retencionId" value='#{retencControl.id}' />
+		<f:event type="preRenderView" listener="#{retencControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar"
+					outcome="/ppsj/ingreso/retencion/lista" styleClass="boton" />
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{retencControl.descargar}"
+					rendered="#{retencControl.rolPermiso.get(4106) and retencControl.id != null}" />
+
+				<p:commandLink id="descargarRide" ajax="false" styleClass="boton"
+					value="Descargar Ride" action="#{retencControl.descargarRide}"
+					rendered="#{retencControl.rolPermiso.get(4106) and retencControl.id != null}" />
+
+				<p:commandLink id="reenviarCorreo" ajax="false" styleClass="boton"
+					value="Enviar Correo" action="#{retencControl.reenviarCorreo}"
+					rendered="#{retencControl.rolPermiso.get(4106) and retencControl.id != null}" />
+			</div>
+
+			<p:panel id="explora" header="Retención - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="proveedor" value="Proveedor"
+								style="margin-right:5px" />
+							<h:outputText id="proveedor"
+								value="#{retencControl.retencion.ingreso.persProv.persona.apelli} #{retencControl.retencion.ingreso.persProv.persona.nombre}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="facturaNume" value="Factura&#160;Número"
+								style="margin-right:5px" />
+							<h:outputText id="facturaNume"
+								value="#{retencControl.retencion.ingreso.numero}" />
+
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="numero" value="Retención&#160;Número" />
+							<p:inputText id="serie1"
+								value="#{retencControl.retencion.serie1}" style="width:20%;"
+								required="true" requiredMessage="Ingrese serie1" />
+
+							<p:inputText id="serie2"
+								value="#{retencControl.retencion.serie2}" style="width:20%;"
+								required="true" requiredMessage="Ingrese serie2" />
+
+							<p:inputText id="numero" style="width:20%;"
+								value="#{retencControl.retencion.numero}" required="true"
+								requiredMessage="Ingrese numero" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Fecha&#160;Emisión" />
+							<p:calendar id="fechaEmis"
+								value="#{retencControl.retencion.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Fecha&#160;Autorización" />
+							<p:calendar id="fechaAuto"
+								value="#{retencControl.retencion.fechaAuto}"
+								pattern="dd-MM-yyyy HH:mm" required="true"
+								requiredMessage="Ingrese fecha" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="autori" value="Autorización" />
+							<p:inputText id="autori"
+								value="#{retencControl.retencion.autori}" required="true"
+								requiredMessage="Ingrese autorizacion" />
+
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="nota" value="Nota" />
+							<p:inputText id="nota" value="#{retencControl.retencion.nota}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="documeElec" value="Docum.Electrónico" />
+							<p:selectBooleanCheckbox id="documeElec"
+								value="#{retencControl.retencion.documeElec}" required="true"
+								requiredMessage="Ingrese compra Id" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

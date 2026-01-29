@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="documentoId" value='#{documentoControl.id}' />
+		<f:event type="preRenderView" listener="#{documentoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Documento - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="descripcion" value="Descripción" />
+					<p:inputText id="descripcion" value="#{documentoControl.documento.descri}" 
+						required="true" requiredMessage="Ingrese descripción" />
+						
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero" value="#{documentoControl.documento.numero}" 
+						required="true" requiredMessage="Ingrese número" />
+
+					<p:outputLabel for="format" value="Formato" />
+					<p:inputText id="format" value="#{documentoControl.documento.format}" 
+						required="true" requiredMessage="Ingrese formato impresión" />
+
+					<p:outputLabel for="copias" value="Copias" />
+					<p:inputText id="copias" value="#{documentoControl.documento.copias}" 
+						required="true" requiredMessage="Ingrese número de copias" />
+
+					<p:outputLabel for="factor" value="Factor Inventario" />
+					<p:inputText id="factor" value="#{documentoControl.documento.factor}" 
+						required="true" requiredMessage="Ingrese factor inventario" />
+
+					<p:outputLabel for="contab" value="Contabiliza" />
+					<p:selectBooleanCheckbox id="contab" value="#{documentoControl.documento.contab}" 
+						required="true" requiredMessage="Ingrese contabilización" />
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{documentoControl.documento.estado}" 
+						required="true" requiredMessage="Ingrese estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{documentoControl.grabar}" 
+					rendered="#{(documentoControl.id != null and documentoControl.rolPermiso.get(6001)) or 
+					(documentoControl.id == null and documentoControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{documentoControl.eliminar}" 
+					rendered="#{documentoControl.id != null and documentoControl.rolPermiso.get(6002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

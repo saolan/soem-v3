@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="prodSubpId" value='#{prodSubpControl.id}' />
+		<f:viewParam name="productoId" value='#{prodSubpControl.productoId}' />
+		<f:viewParam name="paginaRuta" value='#{prodSubpControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{prodSubpControl.recuperar}" />
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Soem - SubProductos" />
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{prodSubpControl.grabar}"
+					rendered="#{(prodSubpControl.id != null and prodSubpControl.rolPermiso.get(5001)) or 
+					(prodSubpControl.id == null and prodSubpControl.rolPermiso.get(5000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{prodSubpControl.eliminar}"
+					rendered="#{prodSubpControl.id != null and prodSubpControl.rolPermiso.get(5002)}" />
+
+				<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+					action="#{prodSubpControl.cancelar}" />
+			</div>
+
+			<p:panel id="panelRegistrar" header="SubProducto - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="productoList" value="Producto" />
+							<p:selectOneMenu id="productoList"
+								value="#{prodSubpControl.prodSubp.producto}"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="Seleccione Producto">
+								<f:selectItems value="#{prodSubpControl.productos}"
+									var="producto" itemLabel="#{producto.descri}"
+									itemValue="#{producto}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="subProductoList" value="SubProducto" />
+							<p:selectOneMenu id="subProductoList"
+								value="#{prodSubpControl.prodSubp.subProducto}"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="Seleccione SubProducto">
+								<f:selectItem itemLabel="Seleccione Producto..." itemValue="" />
+								<f:selectItems value="#{prodSubpControl.subProductos}"
+									var="subProducto" itemLabel="#{subProducto.descri}"
+									itemValue="#{subProducto}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel for="cantid" value="Cantidad" />
+							<p:inputText id="cantid"
+								value="#{prodSubpControl.prodSubp.cantid}" required="true"
+								requiredMessage="Ingrese Cantidad" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

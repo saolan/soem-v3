@@ -1,0 +1,425 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="paginaProd" value='#{tomaFisiControl.paginaProd}' />
+
+		<f:viewParam name="tomaFisiId" value='#{tomaFisiControl.id}' />
+		<f:event type="preRenderView" listener="#{tomaFisiControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+<style type="text/css">
+.ui-panelgrid td {
+	background-color: #feeebd !important;
+}
+
+.ui-panelgrid .ui-panelgrid-cell {
+	padding: 2px 3px;
+}
+
+.ui-datatable tbody tr {
+	background-image: none !important;
+}
+</style>
+
+		<h:form id="tomaFisiForm">
+
+			<p:focus for="panelBuscar" />
+			<p:defaultCommand target="buscarProductos" scope="panelBuscar" />
+
+			<div>
+				<div>
+					<h:panelGroup id="barraBotones">
+						<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+							action="#{tomaFisiControl.grabar}" />
+
+						<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+							action="#{tomaFisiControl.eliminar}"
+							rendered="#{tomaFisiControl.id != null and tomaFisiControl.rolPermiso.get(5050)}">
+							<p:confirm message="Esta seguro de eliminar la toma física?"
+								icon="pi pi-exclamation-triangle" />
+						</p:commandLink>
+
+						<p:commandLink id="procesar" value="Procesar" styleClass="boton"
+							onclick="PF('procesarDialogo').show();"
+							rendered="#{tomaFisiControl.id != null and tomaFisiControl.rolPermiso.get(5051) 
+							and !tomaFisiControl.tomaFisi.estado.equals('PR')}">
+						</p:commandLink>
+
+						<p:commandLink id="pstf" value="Crear PSTF" styleClass="boton"
+							action="#{tomaFisiControl.crearPSTF}"
+							update="tomaFisiForm:tomaFisiDetaList"
+							rendered="#{tomaFisiControl.id != null and tomaFisiControl.rolPermiso.get(5053) and tomaFisiControl.tomaFisiDetas.size() == 0}">
+							<p:confirm
+								message="Esta seguro de crear una toma física general?"
+								icon="pi pi-exclamation-triangle" />
+						</p:commandLink>
+
+						<p:commandLink id="descargar" ajax="false" styleClass="boton"
+							value="Descargar" action="#{tomaFisiControl.descargar}"
+							rendered="#{tomaFisiControl.id != null and tomaFisiControl.rolPermiso.get(5052)}" />
+
+						<p:link styleClass="boton" type="link" value="Cancelar"
+							outcome="lista" />
+					</h:panelGroup>
+				</div>
+			</div>
+
+			<div style="float: right; width: 60%;">
+
+				<p:panel id="panelRegistrar" header="Toma Física">
+
+					<p:panelGrid id="grid2" styleClass="ui-noborder"
+						style="margin-top:20px; ">
+						<p:row>
+
+							<p:column>
+								<p:outputLabel for="fechaRegi" value="Fecha" />
+							</p:column>
+							<p:column>
+								<p:calendar id="fechaRegi" pattern="dd-MM-yyyy"
+									inputStyle="width:70px"
+									value="#{tomaFisiControl.tomaFisi.fechaRegi}" required="true"
+									requiredMessage="Ingrese Fecha">
+									<p:ajax event="dateSelect" listener="#{tomaFisiControl.grabar}" />
+								</p:calendar>
+							</p:column>
+
+							<p:column>
+								<p:outputLabel for="numero" value="Número" />
+							</p:column>
+							<p:column>
+								<p:inputText id="numero" required="true"
+									requiredMessage="Ingrese Número"
+									value="#{tomaFisiControl.tomaFisi.numero}" style="width:70px;">
+									<p:ajax event="blur" listener="#{tomaFisiControl.grabar}"
+										update="barraBotones" />
+								</p:inputText>
+							</p:column>
+
+							<p:column>
+								<p:outputLabel for="tomaFisiId" value="Num.Control" />
+							</p:column>
+							<p:column>
+								<p:inputText id="tomaFisiId"
+									value="#{tomaFisiControl.tomaFisi.tomaFisiId}" disabled="true"
+									style="width:70px;" />
+							</p:column>
+							<p:column>
+								<p:outputLabel for="estado" value="Estado" />
+							</p:column>
+							<p:column>
+								<p:inputText id="estado"
+									value="#{tomaFisiControl.tomaFisi.estado}" disabled="true"
+									style="width:70px;" />
+							</p:column>
+
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel for="nota" value="Nota" />
+							</p:column>
+							<p:column>
+								<p:inputText id="nota" value="#{tomaFisiControl.tomaFisi.nota}">
+									<p:ajax event="blur" listener="#{tomaFisiControl.grabar}" />
+								</p:inputText>
+							</p:column>
+							<p:column>
+								<p:outputLabel for="refere" value="Referencia" />
+							</p:column>
+							<p:column>
+								<p:inputText id="refere"
+									value="#{tomaFisiControl.tomaFisi.refere}" disabled="true" />
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+
+			<div style="float: left; width: 40%;">
+
+				<p:panel id="panelBuscar" header="Productos">
+
+					<h:panelGrid columns="4">
+
+						<p:outputLabel for="buscarProdCodigoBarra" value="Código Barra" />
+						<p:inputText id="buscarProdCodigoBarra"
+							value="#{tomaFisiControl.prodPrec.producto.codigoBarra}"
+							required="false" style="width:110px;">
+							<f:validateBean for="buscarProdCodigoBarra" disabled="true" />
+						</p:inputText>
+
+						<p:outputLabel for="buscarProdCodigo" value="Código" />
+						<p:inputText id="buscarProdCodigo"
+							onfocus="this.setSelectionRange(0, this.value.length)"
+							value="#{tomaFisiControl.prodPrec.producto.codigo}"
+							required="false" style="width:110px;" tabindex="2">
+							<f:validateBean for="buscarProdCodigo" disabled="true" />
+						</p:inputText>
+
+						<p:outputLabel for="buscarProdDescri" value="Descripción" />
+						<p:inputText id="buscarProdDescri"
+							value="#{tomaFisiControl.prodPrec.producto.descri}"
+							required="false"
+							onfocus="this.setSelectionRange(0, this.value.length)"
+							style="width:110px;">
+							<f:validateBean for="buscarProdDescri" disabled="true" />
+						</p:inputText>
+
+						<p:commandLink id="buscarProductos"
+							action="#{tomaFisiControl.buscarProdPrecs(0)}"
+							update="prodPrecList,tomaFisiForm:tomaFisiDetaList,buscarProdCodigoBarra,paginadorProductos">
+							<h:graphicImage library="img" name="lupa1.png" width="14px" />
+						</p:commandLink>
+
+					</h:panelGrid>
+
+				</p:panel>
+
+				<p:dataTable id="prodPrecList"
+					style="margin-bottom:3px; margin-top:-6px;"
+					emptyMessage="No se encontro datos"
+					value="#{tomaFisiControl.prodPrecs}" var="_prodPrec">
+
+					<p:column headerText="Cod.Barra"
+						style="width:120px;text-align: left">
+						<p:commandLink id="agregarProduc" title="Agregar producto"
+							value="#{_prodPrec.producto.codigoBarra}"
+							action="#{tomaFisiControl.agregarProducto}" ajax="true"
+							update="tomaFisiForm:tomaFisiDetaList">
+
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{tomaFisiControl.productoId}" />
+
+							<f:setPropertyActionListener value="#{_prodPrec}"
+								target="#{tomaFisiControl.prodPrecSele}" />
+
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Descripción">
+						<p:commandLink id="agregarDescri" title="Agregar producto"
+							value="#{_prodPrec.producto.descri}"
+							action="#{tomaFisiControl.agregarProducto}" ajax="true"
+							update="tomaFisiForm:tomaFisiDetaList">
+
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{tomaFisiControl.productoId}" />
+
+							<f:setPropertyActionListener value="#{_prodPrec}"
+								target="#{tomaFisiControl.prodPrecSele}" />
+
+						</p:commandLink>
+					</p:column>
+
+				</p:dataTable>
+
+				<div align="center">
+					<h:panelGroup id="paginadorProductos">
+
+						<p:commandButton value="&lt; Anterior" ajax="true"
+							update="tomaFisiForm:prodPrecList,paginadorProductos"
+							rendered="#{tomaFisiControl.paginaProd gt 0}"
+							action="#{tomaFisiControl.buscarProdPrecs(1)}">
+							<f:param name="paginaProd"
+								value="#{tomaFisiControl.paginaProd - 1}" />
+						</p:commandButton>
+
+						<p:commandButton value="Siguiente &gt;" ajax="true"
+							update="tomaFisiForm:prodPrecList,paginadorProductos"
+							rendered="#{(tomaFisiControl.paginaProd + 1) * tomaFisiControl.filasProductos lt tomaFisiControl.contadorRegProd}"
+							action="#{tomaFisiControl.buscarProdPrecs(1)}">
+							<f:param name="paginaProd"
+								value="#{tomaFisiControl.paginaProd + 1}" />
+						</p:commandButton>
+
+					</h:panelGroup>
+				</div>
+			</div>
+
+			<div style="float: right; width: 60%;">
+
+				<p:remoteCommand name="modificarCelda" />
+
+				<p:dataTable id="tomaFisiDetaList"
+					emptyMessage="No se encontro datos" editable="true" editMode="cell"
+					style="margin-top:-6px;" scrollable="true" scrollHeight="397"
+					value="#{tomaFisiControl.tomaFisiDetas}" var="_tomaFisiDeta"
+					rowKey="#{_tomaFisiDeta.tomaFisiDetaId}">
+
+					<p:ajax event="cellEdit" oncomplete="modificarCelda()"
+						listener="#{tomaFisiControl.modificarCelda}" />
+
+					<p:column style="width:50px;text-align: center" headerText="Op.">
+
+						<p:panelGrid columns="2" styleClass="ui-noborder">
+
+							<p:commandLink styleClass="ui-icon ui-icon-trash"
+								title="eliminar" ajax="true"
+								update="tomaFisiForm:tomaFisiDetaList,tomaFisiForm:panelBuscar"
+								action="#{tomaFisiControl.eliminarTomaFisiDeta}">
+
+								<f:setPropertyActionListener value="#{_tomaFisiDeta}"
+									target="#{tomaFisiControl.tomaFisiDetaSele}" />
+
+							</p:commandLink>
+
+						</p:panelGrid>
+
+					</p:column>
+
+					<p:column headerText="Producto">
+						<h:outputText id="descri" value="#{_tomaFisiDeta.producto.descri}" />
+					</p:column>
+
+					<p:column id="costoActu" headerText="Cost.Prom"
+						style="width:60px;text-align: right"
+						rendered="#{tomaFisiControl.rolPermiso.get(5060)}">
+						<h:outputText id="costoActuOutput"
+							value="#{_tomaFisiDeta.costoActu}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Cant.Actu"
+						style="width:50px;text-align: right"
+						rendered="#{tomaFisiControl.rolPermiso.get(5062)}">
+						<h:outputText id="cantidActuOutput"
+							value="#{_tomaFisiDeta.cantidActu}">
+							<f:convertNumber pattern="#0.0000" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column id="costoCont" headerText="Cost.Conteo"
+						style="width:60px;text-align: right"
+						rendered="#{tomaFisiControl.rolPermiso.get(5061)}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText id="costoContOutput"
+									value="#{_tomaFisiDeta.costoCont}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="costoContInput"
+									value="#{_tomaFisiDeta.costoCont}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column headerText="Cant.Cont"
+						style="width:50px;text-align: right">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText id="cantidContOutput"
+									value="#{_tomaFisiDeta.cantidCont}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="cantidContInput"
+									value="#{_tomaFisiDeta.cantidCont}" style="width:100%">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+				</p:dataTable>
+			</div>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Si" type="button"
+					styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+				<p:commandButton value="No" type="button"
+					styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+			</p:confirmDialog>
+		</h:form>
+
+		<p:dialog id="procesarDialogo" widgetVar="procesarDialogo"
+			header="Procesar Toma Física" modal="true" resizable="false"
+			focus="procesarForm:cancelarProcesarDialogo" closable="false">
+
+			<h:form id="procesarForm">
+			
+				<p:panel id="panelProcesar" style="margin-bottom:10px; ">
+
+					<h:panelGrid id="gridProcesar" columns="2">
+
+						<p:outputLabel for="fechaProc" value="Fecha Procesar" />
+						<p:calendar id="fechaProc" pattern="dd-MM-yyyy"
+							inputStyle="width:70px"
+							value="#{tomaFisiControl.tomaFisi.fechaProc}" required="true"
+							requiredMessage="Ingrese Fecha">
+						</p:calendar>
+
+						<p:outputLabel value="Documento Ingreso" />
+						<p:selectOneMenu id="documentoIngresoList"
+							value="#{tomaFisiControl.docuIngrIngreso}"
+							converter="omnifaces.SelectItemsConverter">
+							<f:selectItem itemLabel="Seleccione documento ..." itemValue="" />
+							<f:selectItems value="#{tomaFisiControl.docuIngrIngresos}"
+								var="docuIngrIngreso"
+								itemLabel="#{docuIngrIngreso.documento.descri}"
+								itemValue="#{docuIngrIngreso}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Nota Ingreso" />
+						<p:inputText id="notaIngreso" styleClass="cajaTextoDescri"
+							value="#{tomaFisiControl.notaIngreso}" />
+
+						<p:outputLabel value="Documento Egreso" />
+						<p:selectOneMenu id="documentoEgresoList"
+							value="#{tomaFisiControl.docuIngrEgreso}"
+							converter="omnifaces.SelectItemsConverter">
+							<f:selectItem itemLabel="Seleccione documento ..." itemValue="" />
+							<f:selectItems value="#{tomaFisiControl.docuIngrEgresos}"
+								var="docuIngrEgreso"
+								itemLabel="#{docuIngrEgreso.documento.descri}"
+								itemValue="#{docuIngrEgreso}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Nota Egreso" />
+						<p:inputText id="notaEgreso" styleClass="cajaTextoDescri"
+							value="#{tomaFisiControl.notaEgreso}" />
+
+					</h:panelGrid>
+				</p:panel>
+
+				<p:commandLink id="aceptarProcesarDialogo" styleClass="boton"
+					value="Aceptar" action="#{tomaFisiControl.procesar}"
+					oncomplete="handleLoginRequestConvertir(xhr, status, args)" />
+
+				<p:commandLink id="cancelarProcesarDialogo" ajax="true"
+					styleClass="boton" value="Cancelar"
+					onclick="PF('procesarDialogo').hide();" />
+			</h:form>
+		</p:dialog>
+
+		<script type="text/javascript">
+
+	    	function handleLoginRequestConvertir(xhr, status, args) {
+		        if(!args.procesarDialogo) {
+	            	PF('procesarDialogo').jq.effect("shake", {times:1}, 5);
+	        	}
+	        	else {
+		            PF('procesarDialogo').hide();
+	        	}
+		    }
+	        
+        </script>
+
+	</ui:define>
+</ui:composition>

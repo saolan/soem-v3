@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cajaId" value='#{cajaControl.id}' />
+		<f:event type="preRenderView" listener="#{cajaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<div class="barraBotones">
+			<p:link id="aceptar" value="Aceptar" outcome="lista"
+				styleClass="boton" />
+		</div>
+
+		<p:panel id="explora" header="Caja - Explorar">
+
+			<div class="card ui-fluid">
+				<div class="formgrid grid">
+
+					<div class="field col-12 md:col-2">
+						<p:outputLabel for="@next" value="Sucursal" />
+						<p:inputText value="#{cajaControl.caja.sucursal.descri}"
+							readonly="true" />
+					</div>
+
+					<div class="field col-12 md:col-2">
+						<p:outputLabel for="@next" value="Codigo" />
+						<p:inputText value="#{cajaControl.caja.codigo}" readonly="true" />
+					</div>
+
+					<div class="field col-12 md:col-2">
+						<p:outputLabel for="@next" value="Descripción" />
+						<p:inputText value="#{cajaControl.caja.descri}" readonly="true" />
+					</div>
+
+					<div class="field col-12 md:col-2" style="margin-top: 29px;">
+						<p:selectBooleanCheckbox value="#{cajaControl.caja.estado}"
+							itemLabel="Estado" disabled="true" />
+					</div>
+				</div>
+			</div>
+		</p:panel>
+
+		<h:form>
+
+			<div class="card product">
+				<p:dataView id="cajaList" emptyMessage="No se encontro datos"
+					rendered="#{cajaControl.rolPermiso.get(1003)}"
+					value="#{cajaControl.cajaDocuEgres}" var="_cajaDocuEgre">
+
+					<f:facet name="header">
+						<h:outputText value="Documentos - Secuenciales" />
+					</f:facet>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<span class="product-category">#{_cajaDocuEgre.caja.descri}</span>
+								<div class="product-name">#{_cajaDocuEgre.docuEgre.documento.descri}</div>
+							</div>
+
+							<div class="product-list-detail">
+								#{_cajaDocuEgre.serie1}-#{_cajaDocuEgre.serie2}-#{_cajaDocuEgre.numero}
+							</div>
+
+							<div class="product-list-action">
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{cajaDocuEgreControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_cajaDocuEgre.cajaDocuEgreId}"
+										target="#{cajaDocuEgreControl.id}" />
+									<f:setPropertyActionListener value="#{cajaControl.caja.cajaId}"
+										target="#{cajaDocuEgreControl.cajaId}" />
+									<f:setPropertyActionListener value="/ppsj/caja/caja/explora"
+										target="#{cajaDocuEgreControl.paginaRuta}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<div class="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+					action="#{cajaDocuEgreControl.nuevo}">
+					<f:setPropertyActionListener value="#{cajaControl.caja.cajaId}"
+						target="#{cajaDocuEgreControl.cajaId}" />
+					<f:setPropertyActionListener value="/ppsj/caja/caja/explora"
+						target="#{cajaDocuEgreControl.paginaRuta}" />
+				</p:commandLink>
+
+			</div>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

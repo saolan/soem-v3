@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:event type="preRenderView"
+			listener='#{ventaProdUtilReportControl.buscarRolSucus}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte - Ventas Productos">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoBarraDesd"
+								value="Código Barra Desde" />
+							<p:inputText id="productoCodigoBarraDesd"
+								value="#{ventaProdUtilReportControl.productoDesd.codigoBarra}"
+								required="false">
+								<f:validateBean for="productoCodigoBarraDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoBarraHast"
+								value="Código Barra Hasta" />
+							<p:inputText id="productoCodigoBarraHast"
+								value="#{ventaProdUtilReportControl.productoHast.codigoBarra}"
+								required="false">
+								<f:validateBean for="productoCodigoBarraHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoDesd" value="Código Desde" />
+							<p:inputText id="productoCodigoDesd"
+								value="#{ventaProdUtilReportControl.productoDesd.codigo}"
+								required="false">
+								<f:validateBean for="productoCodigoDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoCodigoHast" value="Código Hasta" />
+							<p:inputText id="productoCodigoHast"
+								value="#{ventaProdUtilReportControl.productoHast.codigo}"
+								required="false">
+								<f:validateBean for="productoCodigoHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoDescriDesd" value="Descripción Desde" />
+							<p:inputText id="productoDescriDesd"
+								value="#{ventaProdUtilReportControl.productoDesd.descri}"
+								required="false">
+								<f:validateBean for="productoDescriDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="productoDescriHasta"
+								value="Descripción Hasta" />
+							<p:inputText id="productoDescriHasta"
+								value="#{ventaProdUtilReportControl.productoHast.descri}"
+								required="false">
+								<f:validateBean for="productoDescriHasta" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="cantidMini" value="Cantidad Mínima" />
+							<p:inputText id="cantidMini"
+								value="#{ventaProdUtilReportControl.cantidMini}" required="true"
+								requiredMessage="Ingrese cantidad mínima">
+								<f:validateBean for="cantidMini" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="cantidMaxi" value="Cantidad Máxima" />
+							<p:inputText id="cantidMaxi"
+								value="#{ventaProdUtilReportControl.cantidMaxi}" required="true"
+								requiredMessage="Ingrese cantidad máxima">
+								<f:validateBean for="cantidMaxi" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaDesd" value="Fecha Desde" />
+							<p:calendar id="egresoFechaDesd"
+								value="#{ventaProdUtilReportControl.egresoDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaHast" value="Fecha Hasta" />
+							<p:calendar id="egresoFechaHast"
+								value="#{ventaProdUtilReportControl.egresoHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="sucursalList" value="Sucursal"
+								 />
+							<p:selectManyMenu id="sucursalList"
+								value="#{ventaProdUtilReportControl.sucursalIds}"
+								showCheckbox="true" converter="omnifaces.SelectItemsConverter"
+								required="true" requiredMessage="Seleccione Sucursal">
+
+								<f:selectItems value="#{ventaProdUtilReportControl.sucursals}"
+									var="sucursal" itemLabel="#{sucursal.descri}"
+									itemValue="#{sucursal.sucursalId}" />
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="docuEgreList" value="Documento"
+								 />
+							<p:selectManyMenu id="docuEgreList"
+								value="#{ventaProdUtilReportControl.docuEgreIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								>
+
+								<f:selectItems value="#{ventaProdUtilReportControl.docuEgres}"
+									var="docuEgre" itemLabel="#{docuEgre.documento.descri}"
+									itemValue="#{docuEgre.documentoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="tipo" value="Tipo Reporte" />
+							<p:selectOneRadio id="tipo"
+								value="#{ventaProdUtilReportControl.nombreReporte}">
+								<f:selectItem itemLabel="Detalle" itemValue="ventasProdUtilDeta" />
+								<f:selectItem itemLabel="Total" itemValue="ventasProdUtil" />
+							</p:selectOneRadio>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio
+								value="#{ventaProdUtilReportControl.formatoReporte}">
+								<f:selectItems
+									value="#{ventaProdUtilReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{ventaProdUtilReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="ventasProdUtil"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

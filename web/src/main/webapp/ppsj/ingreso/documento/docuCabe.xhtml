@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{ingresoDocuControl.pagina}' />
+		<f:event type="preRenderView" listener='#{ingresoDocuControl.buscarDocuIngrs()}' />
+		<f:event type="preRenderView" listener='#{ingresoDocuControl.buscarPersProvs}' />
+		<f:event type="preRenderView" listener='#{ingresoDocuControl.buscarDimms()}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="cabecera" style="margin-bottom:10px" header="Panel Documento">
+
+				<h:panelGrid columns="2" >
+				
+					<p:outputLabel value="Documento" />
+					<p:selectOneMenu id="documentoList" value="#{ingresoDocuControl.docuIngr}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{ingresoDocuControl.docuIngrs}" var="docuIngre" 
+							itemLabel="#{docuIngre.documento.descri}" itemValue="#{docuIngre}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Proveedor" />				
+					<p:selectOneMenu id="proveedorList" value="#{ingresoDocuControl.persProv}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{ingresoDocuControl.persProvs}" var="persProv" 
+							itemLabel="#{persProv.persona.apelli}" itemValue="#{persProv}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Dimm" />				
+					<p:selectOneMenu id="dimmList" value="#{ingresoDocuControl.dimm}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{ingresoDocuControl.dimms}" var="dimm" 
+							itemLabel="#{dimm.descri}" itemValue="#{dimm}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Fecha Emisión" />
+					<p:calendar id="fechaEmision" value="#{ingresoDocuControl.ingreso.fechaEmis}" pattern="dd-MM-yyyy" 
+						required="false" requiredMessage="Ingrese fecha"/>
+
+					<p:outputLabel value="Número" />
+					<p:inputText id="numero" value="#{ingresoDocuControl.ingreso.numero}" 
+						required="true" requiredMessage="Ingrese Número" />
+					
+					<p:inputText id="serie1" value="#{ingresoDocuControl.ingreso.serie1}" 
+						required="true" requiredMessage="Ingrese serie" />
+						
+					<p:inputText id="serei2" value="#{ingresoDocuControl.ingreso.serie2}" 
+						required="true" requiredMessage="Ingrese serie" />
+					
+					<p:outputLabel value="Autorización" />
+					<p:inputText id="autorizacion" value="#{ingresoDocuControl.ingreso.autori}" 
+						required="true" requiredMessage="Ingrese autorización" />
+
+					<p:outputLabel value="Clave Acceso" />
+					<p:inputText id="claveAcceso" value="#{ingresoDocuControl.ingreso.claveAcce}" 
+						required="true" requiredMessage="Ingrese clave acceso" />
+					
+					<p:outputLabel value="Descuento" />
+					<p:inputText id="descuento" value="#{ingresoDocuControl.ingreso.descue}"
+						required="true" requiredMessage="Ingrese Descuento" />
+					
+					<p:outputLabel value="Cuotas" />
+					<p:inputText id="cuotas" value="#{ingresoDocuControl.ingreso.numeroCuot}" 
+					required="true" requiredMessage="Ingrese número cuotas" />
+					
+					<p:outputLabel value="Días Plazo" />
+					<p:inputText id="diasPlazo" value="#{ingresoDocuControl.ingreso.diasPlaz}" 
+						required="true" requiredMessage="Ingrese días plazo" />
+										
+					<p:outputLabel value="Nota" />
+					<p:inputText id="nota" value="#{ingresoDocuControl.ingreso.nota}" />
+
+					<p:outputLabel value="Total Documento" />
+					<p:outputLabel value="#{ingresoDocuControl.totalDocumento()}" />
+					
+					<h:column/>
+
+				</h:panelGrid>
+
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" ajax="false" value="Grabar" styleClass="boton" action="#{ingresoDocuControl.grabar}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="pagar" ajax="false" value="Pagar" styleClass="boton" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="imprimir" ajax="false" value="imprimir" styleClass="boton"/>
+
+				<p:spacer height="2" />
+				
+				<p:commandLink id="retencion" ajax="false" value="Generar Retención" styleClass="boton"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" includeViewParams="false"
+					styleClass="boton" /> <!-- outcome="lista"  -->
+
+				<p:defaultCommand target="grabar" />
+
+			</div>
+						
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{ingresoDocuControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

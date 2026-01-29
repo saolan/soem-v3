@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{prodCostControl.pagina}' />
+		<f:event type="preRenderView" listener='#{prodCostControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Producto Costo - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{prodCostControl.nuevo}" 
+					rendered="#{prodCostControl.rolPermiso.get(5000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/inventario/prodCost/lista"
+							target="#{prodCostControl.paginaRuta}" />
+				</p:commandLink>					
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{prodCostControl.iniciarPagina}" 
+					ajax="true" update="prodCostList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="prodCostList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{prodCostControl.prodCosts}" var="_prodCost">
+
+				<f:facet name="header">
+					<h:outputText value="Productos - Costos" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{prodCostControl.modificar}">
+							<f:setPropertyActionListener value="#{_prodCost.prodCostId}"
+								target="#{prodCostControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/inventario/prodCost/lista"
+								target="#{prodCostControl.paginaRuta}" />								
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{prodCostControl.explorar}">
+							<f:setPropertyActionListener value="#{_prodCost.prodCostId}"
+								target="#{prodCostControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Producto">
+					<h:outputText id="producto" value="#{_prodCost.producto.descri}" />
+				</p:column>
+
+				<p:column headerText="Costo Ultimo">
+					<h:outputText id="costoUlti" value="#{_prodCost.costoUlti}" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Costo Conteo">
+					<h:outputText id="costoCont" value="#{_prodCost.costoCont}" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{prodCostControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

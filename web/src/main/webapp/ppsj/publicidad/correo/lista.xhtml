@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{publicidadControl.pagina}' />
+		<f:event type="preRenderView" listener='#{publicidadControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:commandLink id="buscar" ajax="false" value="Buscar"
+				styleClass="boton" action="#{publicidadControl.iniciarPagina}" />
+
+			<p:spacer height="2" />
+
+			<p:commandLink id="procesarTodos" ajax="false" value="Procesar Todos"
+				styleClass="boton" action="#{publicidadControl.procesar}" />
+
+			<p:spacer height="2" />
+
+			<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+				styleClass="boton" />
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

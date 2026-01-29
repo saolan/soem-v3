@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{docuMoviIngrControl.pagina}' />
+		<f:event type="preRenderView" listener='#{docuMoviIngrControl.buscar}' />
+	</f:metadata>
+	
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Documento Movimiento Ingreso - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+
+					<p:inputText id="descri" value="#{docuMoviIngrControl.docuMoviIngr.documento.descri}" styleClass="cajaTextoDescri" 
+						required="false">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{docuMoviIngrControl.docuMoviIngr.documento.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{docuMoviIngrControl.rolPermiso.get(6000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" update="docuMoviIngrList" 
+					styleClass="boton" action="#{docuMoviIngrControl.iniciarPagina}" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="docuMoviIngrList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{docuMoviIngrControl.docuMoviIngrs}" var="_docuMoviIngr">
+
+				<f:facet name="header">
+					<h:outputText value="Documentos Movimientos Ingresos" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" 
+							action="#{docuMoviIngrControl.modificar}">
+							<f:setPropertyActionListener value="#{_docuMoviIngr.documentoId}"
+								target="#{docuMoviIngrControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar"
+							action="#{docuMoviIngrControl.explorar}">
+							<f:setPropertyActionListener value="#{_docuMoviIngr.documentoId}"
+								target="#{docuMoviIngrControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+				
+				<p:column headerText="Descripción">
+					<h:outputText id="descri" value="#{_docuMoviIngr.documento.descri}" />
+				</p:column>
+				
+				<p:column headerText="Tipo">
+					<h:outputText id="tipo" value="#{_docuMoviIngr.tipo}" />
+				</p:column>
+				
+				<p:column headerText="Factor">
+					<h:outputText id="factor" value="#{_docuMoviIngr.documento.factor}" />
+				</p:column>
+
+				<p:column headerText="Genera Contabilidad">
+					<h:selectBooleanCheckbox id="generaConta" value="#{_docuMoviIngr.documento.contab}" disabled="true"/>
+				</p:column>
+				
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{docuMoviIngrControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

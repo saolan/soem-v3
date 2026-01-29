@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="formPagoId" value='#{formPagoControl.id}' />
+		<f:event type="preRenderView" listener="#{formPagoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Forma Pago - Panel Explorar"
+				style="margin-bottom:5px">
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{formPagoControl.formPago.descri}" styleClass="cajaTextoDescri" />
+					
+					<p:outputLabel value="Referencia" />
+					<p:inputText value="#{formPagoControl.formPago.refere}" />
+										
+					<p:outputLabel value="Tipo" />
+					<p:inputText  value="#{formPagoControl.formPago.tipo}" />
+								
+					<p:outputLabel value="Código SRI" />
+					<p:inputText value="#{formPagoControl.formPago.dimm.codigo}" />
+								
+					<p:outputLabel value="Módulo" />
+					<p:inputText value="#{formPagoControl.formPago.modulo}" />
+
+					<p:outputLabel value="Banco" />
+					<p:inputText  value="#{formPagoControl.formPago.tipo2}" />
+					
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{formPagoControl.formPago.estado}" />
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+		
+		<p:tabView rendered="#{formPagoControl.rolPermiso.get(6003)}">
+
+			<p:tab title="Asignación de cuentas contables">
+
+				<h:form>
+
+			<p:dataTable id="formPagoPlanCuenList" emptyMessage="No se encontro datos"
+				value="#{formPagoControl.formPagoPlanCuens}" var="_formPagoPlanCuen"
+				style="margin-bottom:3px">
+
+				<p:column style="width:50px;text-align: center" headerText="Operación">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{formPagoPlanCuenControl.modificar}">
+							<f:setPropertyActionListener value="#{_formPagoPlanCuen.fppcId}"
+								target="#{formPagoPlanCuenControl.id}" />
+							<f:setPropertyActionListener value="#{formPagoControl.formPago.formPagoId}"
+								target="#{formPagoPlanCuenControl.formPagoId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/formPago/explora"
+								target="#{formPagoPlanCuenControl.paginaRuta}" />
+																
+						</p:commandLink>
+
+				</p:column>
+
+				<p:column headerText="Forma Pago">
+					<h:outputText id="formPago" value="#{_formPagoPlanCuen.formPago.descri}" />
+				</p:column>
+				
+				<p:column headerText="Cuenta Código">
+					<h:outputText id="planCuenCodigo" value="#{_formPagoPlanCuen.planCuen.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Cuenta Descripción">
+					<h:outputText id="planCuenDescri" value="#{_formPagoPlanCuen.planCuen.descri}" />
+				</p:column>
+
+				<p:column headerText="Tipo Transacción">
+					<h:outputText id="tipoTran" value="#{_formPagoPlanCuen.tipoTran}" />
+				</p:column>
+
+			</p:dataTable>
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{formPagoPlanCuenControl.nuevo}">
+							<f:setPropertyActionListener value="#{formPagoControl.formPago.formPagoId}"
+								target="#{formPagoPlanCuenControl.formPagoId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/formPago/explora"
+								target="#{formPagoPlanCuenControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>		
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="documentoId" value='#{docuIngrControl.id}' />
+		<f:event type="preRenderView" listener="#{docuIngrControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Documento Compra - Panel Datos"
+				style="margin-bottom:10px; ">
+
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{docuIngrControl.docuIngr.documento.descri}" styleClass="cajaTextoDescri"
+						required="true" requiredMessage="Ingrese descripción" />
+
+					<p:outputLabel for="format" value="Formato&#160;Impresión" />
+					<p:inputText id="format" value="#{docuIngrControl.docuIngr.documento.format}" styleClass="cajaTextoDescri" 
+						required="true" requiredMessage="Ingrese formato impresión" />
+
+					<p:outputLabel for="formatRide" value="Formato&#160;Ride" />
+					<p:inputText id="formatRide" value="#{docuIngrControl.docuIngr.forma2}" styleClass="cajaTextoDescri" 
+						required="true" requiredMessage="Ingrese formato ride" />
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero" value="#{docuIngrControl.docuIngr.documento.numero}" 
+						required="true" requiredMessage="Ingrese número" />
+
+					<p:outputLabel for="factor" value="Factor" />
+					<p:inputText id="factor" value="#{docuIngrControl.docuIngr.documento.factor}" 
+						required="true" requiredMessage="Ingrese factor" />
+						
+					<p:outputLabel for="ambienList" value="Ambiente" />
+					<p:selectOneMenu id="ambienList" value="#{docuIngrControl.docuIngr.ambien}">
+						<f:selectItems value="#{docuIngrControl.dimmAmbiens}" var="dimm" 
+							itemLabel="#{dimm.descri}" itemValue="#{dimm.codigo}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel for="tipoEmisList" value="Tipo&#160;Emisión" />
+					<p:selectOneMenu id="tipoEmisList" value="#{docuIngrControl.docuIngr.tipoEmis}">
+						<f:selectItems value="#{docuIngrControl.dimmTipoEmiss}" var="dimm" 
+							itemLabel="#{dimm.descri}" itemValue="#{dimm.codigo}"/>
+					</p:selectOneMenu>	
+					
+					<p:outputLabel value="Tipo&#160;Comprobante ATS." />
+					<p:selectOneMenu id="dimmListAts" value="#{docuIngrControl.docuIngr.tipoComp}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{docuIngrControl.dimmTipoComps}" var="dimm" 
+							itemLabel="#{dimm.codigo} - #{dimm.descri}" itemValue="#{dimm.codigo}"/>
+					</p:selectOneMenu>
+										
+					<p:outputLabel value="Tipo&#160;Comprobante FE." />
+					<p:selectOneMenu id="dimmList" value="#{docuIngrControl.docuIngr.dimm}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{docuIngrControl.dimms}" var="dimm" 
+							itemLabel="#{dimm.codigo} - #{dimm.descri}" itemValue="#{dimm}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel for="documeElec" value="Documento&#160;Electrónico" />
+    				<p:selectOneMenu id="documeElec" value="#{docuIngrControl.docuIngr.documeElec}" converter="omnifaces.SelectItemsConverter">
+	    				<f:selectItems value="#{docuIngrControl.tipoDocuElecs}" var="tipoDocuElec"  
+    						itemValue="#{tipoDocuElec.descri}" itemLabel="#{tipoDocuElec.descri}" />
+        			</p:selectOneMenu>
+
+					<p:outputLabel for="tipoRete" value="Tipo&#160;Retención" />
+    				<p:selectOneMenu id="tipoRete" value="#{docuIngrControl.docuIngr.tipoRete}" converter="omnifaces.SelectItemsConverter"
+    					required="true" requiredMessage="Ingrese tipo de retención">
+	    				<f:selectItems value="#{docuIngrControl.tipoRetes}" var="tipoRete"  
+    						itemValue="#{tipoRete.descri}" itemLabel="#{tipoRete.descri}" />
+        			</p:selectOneMenu>
+        			
+        			<p:outputLabel for="codigoTipoRete" value="Código&#160;Tipo&#160;Retención" />
+					<p:inputText id="codigoTipoRete" value="#{docuIngrControl.docuIngr.codigoTipoCompRete}" 
+						required="true" requiredMessage="Ingrese código tipo retención" />
+
+					<p:outputLabel value="Documento&#160;Contable" />
+					<p:selectOneMenu id="documentoList" value="#{docuIngrControl.docuIngr.documento.documento}" converter="omnifaces.SelectItemsConverter"
+						required="false" >
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{docuIngrControl.docuTrans}" var="docuTran" 
+							itemLabel="#{docuTran.documento.descri}" itemValue="#{docuTran.documento}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel for="contab" value="Genera&#160;Contabilidad" />
+					<p:selectBooleanCheckbox id="contab" value="#{docuIngrControl.docuIngr.documento.contab}" 
+						required="true" requiredMessage="Ingrese genera contabilidad" />
+
+					<p:outputLabel for="enviaCorreo" value="Envia&#160;Correo" />
+					<p:selectBooleanCheckbox id="enviaCorreo" value="#{docuIngrControl.docuIngr.documento.enviaCorreo}" 
+						required="true" requiredMessage="Ingrese si envia correo" />
+						
+					<p:outputLabel for="afectaCost" value="Afecta&#160;Costo" />
+					<p:selectBooleanCheckbox id="afectaCost" value="#{docuIngrControl.docuIngr.afectaCost}" 
+						required="true" requiredMessage="Ingrese afecta costo" />
+												
+					<p:outputLabel for="generaAnex" value="Genera&#160;anexo" />
+					<p:selectBooleanCheckbox id="generaAnex" value="#{docuIngrControl.docuIngr.generaAnex}" 
+						required="true" requiredMessage="Ingrese genera anexo" />
+
+					<p:outputLabel for="generaCxp" value="Genera&#160;Cxp" />
+					<p:selectBooleanCheckbox id="generaCxp" value="#{docuIngrControl.docuIngr.generaCxp}" 
+						required="true" requiredMessage="Ingrese genera Cxp" />
+
+					<p:outputLabel for="generaImpu" value="Genera&#160;Impuestos" />
+					<p:selectBooleanCheckbox id="generaImpu" value="#{docuIngrControl.docuIngr.generaImpu}" 
+						required="true" requiredMessage="Ingrese genera Impuestos" />
+        									
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{docuIngrControl.docuIngr.documento.estado}" 
+						required="true" requiredMessage="Ingrese documento estado" />
+
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{docuIngrControl.grabar}" 
+					rendered="#{(docuIngrControl.id != null and docuIngrControl.rolPermiso.get(6001)) or 
+					(docuIngrControl.id == null and docuIngrControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{docuIngrControl.eliminar}" 
+					rendered="#{docuIngrControl.id != null and docuIngrControl.rolPermiso.get(6002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

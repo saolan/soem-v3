@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{rolMenuControl.pagina}' />
+		<f:event type="preRenderView" listener='#{rolMenuControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Rol Menú - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+					<p:outputLabel for="rol" value="Rol" />
+					<p:inputText id="rol"
+						value="#{rolMenuControl.rolMenu.rol.descri}" required="false">
+						<f:validateBean for="rol" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="menu" value="Ménu" />
+					<p:inputText id="menu"
+						value="#{rolMenuControl.rolMenu.menu.descri}" required="false">
+						<f:validateBean for="menu" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="acceso" value="Acceso" />
+					<p:selectBooleanCheckbox id="acceso"
+						value="#{rolMenuControl.rolMenu.acceso}" required="false">
+						<f:validateBean for="acceso" disabled="true" />
+					</p:selectBooleanCheckbox>
+					
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{rolMenuControl.rolPermiso.get(7000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{rolMenuControl.iniciarPagina}" 
+					ajax="true" update="rolMenuList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="rolMenuList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{rolMenuControl.rolMenus}" var="_rolMenu">
+
+				<f:facet name="header">
+					<h:outputText value="Roles - Menús" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{rolMenuControl.modificar}">
+							<f:setPropertyActionListener value="#{_rolMenu.rolMenuId}"
+								target="#{rolMenuControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{rolMenuControl.explorar}">
+							<f:setPropertyActionListener value="#{_rolMenu.rolMenuId}"
+								target="#{rolMenuControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Rol">
+					<h:outputText id="rol" value="#{_rolMenu.rol.descri}" />
+				</p:column>
+				
+				<p:column headerText="Menú">
+					<h:outputText id="menu" value="#{_rolMenu.menu.descri}" />
+				</p:column>
+
+				<p:column headerText="Acceso">
+					<h:selectBooleanCheckbox id="estado" value="#{_rolMenu.acceso}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{rolMenuControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

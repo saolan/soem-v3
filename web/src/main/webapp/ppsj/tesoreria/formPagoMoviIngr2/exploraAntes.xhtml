@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="formPagoMoviIngrId" value='#{formPagoMoviIngrControl.id}' />
+		<f:event type="preRenderView" listener="#{formPagoMoviIngrControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Pago - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Proveedor" />
+					<p:inputText
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.persona.apelli} #{formPagoMoviIngrControl.formPagoMoviIngr.persona.nombre}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Documento" />
+					<p:inputText
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.docuMoviIngr.documento.descri}" />
+
+					<p:outputLabel value="Forma&#160;Pago" />
+					<p:inputText
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.formPago.descri}" />
+
+					<p:outputLabel value="Fecha" />
+					<p:inputText
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.fecha}" />
+
+					<p:outputLabel value="Total" />
+					<p:inputText
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.total}">
+						
+					</p:inputText>
+
+					<p:outputLabel value="Nota" />
+					<p:inputText
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.nota}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.estado}" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+
+		<p:tabView rendered="#{formPagoMoviIngrControl.rolPermiso.get(8103)}"  >
+
+			<p:tab title="Cuentas Por Pagar" >
+
+				<h:form>
+
+					<p:dataTable id="cxpList"
+						emptyMessage="No se encontro datos" value="#{formPagoMoviIngrControl.cxps}"
+						var="_cxp">
+
+						<p:column style="width:80px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-suitcase"
+									title="Pagar" action="#{pagoDetaControl.seleccionarCxp}">
+									<f:setPropertyActionListener value="#{_cxp.cxpId}"
+										target="#{pagoDetaControl.cxpId}" />
+									<f:setPropertyActionListener
+										value="#{formPagoMoviIngrControl.formPagoMoviIngr.fpmiId}"
+										target="#{pagoDetaControl.fpmiId}" />
+
+								</p:commandLink>
+								
+
+							</p:panelGrid>
+
+						</p:column>
+
+<!-- 						<p:column headerText="Proveedor Apellido">
+							<h:outputText id="apelli" value="#{_cxp.ingreso.persProv.persona.apelli}" />
+						</p:column>
+
+						<p:column headerText="Proveedor Nombre">
+							<h:outputText id="nombre" value="#{_cxp.ingreso.persProv.persona.nombre}" />
+						</p:column> -->
+
+						<p:column headerText="Fecha Documento">
+							<h:outputText id="fecha" value="#{_cxp.ingreso.fechaEmis}" />
+						</p:column>
+
+						<p:column headerText="Fecha Vencimiento">
+							<h:outputText id="fechaVenc" value="#{_cxp.fechaVenc}" />
+						</p:column>
+
+						<p:column headerText="Número Documento">
+							<h:outputText id="numero" value="#{_cxp.ingreso.numero}" />
+						</p:column>
+
+						<p:column headerText="Total">
+							<h:outputText id="total" value="#{_cxp.total}" />
+						</p:column>
+						
+						<p:column headerText="Abono">
+							<h:outputText id="abono" value="#{_cxp.abono}" />
+						</p:column>
+						
+						<p:column headerText="Saldo">
+							<h:outputText id="saldo" value="#{_cxp.saldo}" />
+						</p:column>
+
+						<p:column headerText="Estado">
+							<h:selectBooleanCheckbox id="estado" value="#{_cxp.estado}" />
+						</p:column>
+
+					</p:dataTable>
+
+				</h:form>
+
+			</p:tab>
+
+			<p:tab title="Detalle Pago">
+
+				<h:form>
+
+					<p:dataTable id="pagoDetaList"
+						emptyMessage="No se encontro datos"
+						value="#{formPagoMoviIngrControl.pagoDetas}" var="_pagoDeta">
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{pagoDetaControl.modificar}">
+									<f:setPropertyActionListener value="#{_pagoDeta.pagoDetaId}"
+										target="#{pagoDetaControl.id}" />
+									<f:setPropertyActionListener
+										value="#{formPagoMoviIngrControl.formPagoMoviIngr.fpmiId}"
+										target="#{pagoDetaControl.fpmiId}" />
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Fecha Emisión">
+							<h:outputText id="pagoFechaEmis" value="#{_pagoDeta.cxp.ingreso.fechaEmis}" />
+						</p:column>
+
+						<p:column headerText="Fecha Vencimiento">
+							<h:outputText id="pagoFechaVenc" value="#{_pagoDeta.cxp.fechaVenc}" />
+						</p:column>
+						
+						<p:column headerText="Número Documento">
+							<h:outputText id="pagonumero" value="#{_pagoDeta.cxp.ingreso.numero}" />
+						</p:column>
+												
+						<p:column headerText="Total Cxp">
+							<h:outputText id="pagototal" value="#{_pagoDeta.cxp.total}" />
+						</p:column>
+						
+						<p:column headerText="Cxp Estado">
+							<h:selectBooleanCheckbox id="cxpEstado" value="#{_pagoDeta.cxp.estado}" />
+						</p:column>
+						
+						<p:column headerText="Total Pago">
+							<h:outputText id="total" value="#{_pagoDeta.total}">
+								
+							</h:outputText>
+						</p:column>
+
+					</p:dataTable>
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>
+
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,211 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<!-- <f:viewParam name="ingresoId" value='#{retencControl.ingresoId}' /> -->
+		<f:viewParam name="retencionId" value='#{retencControl.id}' />
+		<f:event type="preRenderView" listener="#{retencControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form id="retencForm">
+
+			<p:panel id="panelRegistrar" header="Retención - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="proveedor" value="Proveedor" style="font-size: 125%;"/>
+					<h:outputText id="proveedor" value="#{retencControl.retencion.ingreso.persProv.persona.apelli} #{retencControl.retencion.ingreso.persProv.persona.nombre}" 
+						style="font-size: 125%;" />
+					
+					
+					<p:outputLabel for="facturaNume" value="Factura&#160;Número" style="font-size: 125%;"/>
+					<h:outputText id="facturaNume" value="#{retencControl.retencion.ingreso.numero}" 
+						style="font-size: 125%;" />
+												
+					
+					<p:outputLabel for="numero" value="Retención&#160;Número" />
+					<p:column>
+						<p:inputText id="serie1" value="#{retencControl.retencion.serie1}" style="width:30px;"
+							required="true" requiredMessage="Ingrese serie1" />
+					
+						<p:inputText id="serie2" value="#{retencControl.retencion.serie2}" style="width:30px;"
+							required="true" requiredMessage="Ingrese serie2" />
+					
+						<p:inputText id="numero" value="#{retencControl.retencion.numero}" 
+							required="true" requiredMessage="Ingrese numero" />	
+					</p:column>
+
+					<p:outputLabel value="Fecha&#160;Emisión" />
+					<p:calendar id="fechaEmis" value="#{retencControl.retencion.fechaEmis}" pattern="dd-MM-yyyy" 
+						required="true" requiredMessage="Ingrese fecha"/>
+
+					<p:outputLabel value="Fecha&#160;Autorización" />
+					<p:calendar id="fechaAuto" value="#{retencControl.retencion.fechaAuto}" pattern="dd-MM-yyyy HH:mm" 
+						required="true" requiredMessage="Ingrese fecha"/>
+
+					<p:outputLabel for="autori" value="Autorización" />
+					<p:inputText id="autori" value="#{retencControl.retencion.autori}" style="width:400px;"
+						required="true" requiredMessage="Ingrese autorizacion" />
+
+					<p:outputLabel for="claveAcce" value="Clave&#160;Acceso" />
+					<p:inputText id="claveAcce" value="#{retencControl.retencion.claveAcce}" style="width:400px;"
+						required="true" requiredMessage="Ingrese clave acceso" />
+						
+					<p:outputLabel for="nota" value="Nota" />
+					<p:inputText id="nota" value="#{retencControl.retencion.nota}" style="width:400px;"/>
+
+					<p:outputLabel for="documeElec" value="Docum.Electrónico" />
+					<p:selectBooleanCheckbox id="documeElec" value="#{retencControl.retencion.documeElec}" 
+						required="true" requiredMessage="Ingrese compra Id" />
+				</h:panelGrid>		
+				
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{retencControl.grabar}" 
+					rendered="#{(retencControl.id != null and retencControl.rolPermiso.get(4101)) or 
+					(retencControl.id == null and retencControl.rolPermiso.get(4100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{retencControl.eliminar}" 
+					rendered="#{retencControl.id != null and retencControl.rolPermiso.get(4102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="/ppsj/ingreso/retencion/lista" />
+					
+			</div>
+
+			<p:remoteCommand name="modificarCelda" update="reteDetaList, totalRetencion" />
+			
+			<p:dataTable id="reteDetaList" style="margin-top:5px;margin-bottom:7px" emptyMessage="No se encontro datos"
+				editable="true" editMode="cell" 
+				value="#{retencControl.reteDetas}" var="_reteDeta" rowKey="#{_reteDeta.reteDetaId}" >
+								
+				<f:facet name="header">
+					<h:outputText value="Detalle Retención" />
+				</f:facet>
+
+				<p:ajax event="cellEdit" oncomplete="modificarCelda()" listener="#{retencControl.modificarCelda}" />
+
+				<p:column style="width:50px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="3" layout="grid">
+						
+						<p:commandLink styleClass="ui-icon ui-icon-trash" title="eliminar" 
+							ajax="true" update="retencForm:reteDetaList, retencForm:totalRetencion"
+							action="#{retencControl.eliminarReteDeta}" >
+							<f:setPropertyActionListener value="#{_reteDeta}" target="#{retencControl.reteDetaSele}" />
+						</p:commandLink>
+												
+					</p:panelGrid>
+
+				</p:column>
+				
+				<p:column headerText="Ejercicio Fiscal">
+						
+					<h:outputText id="fecha" value="#{_reteDeta.ejerciFisc}">
+						<f:convertDateTime type="localDate" pattern="MM/yyyy" />
+					</h:outputText>
+					
+				</p:column>
+
+				<p:column headerText="Impuesto">
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:outputText id="impuesOutput" value="#{_reteDeta.impues}" />
+						</f:facet>
+						<f:facet name="input">
+							<p:inputText id="impuesInput" value="#{_reteDeta.impues}" style="width:100%" />
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+
+				<p:column headerText="Código Impuesto">
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:outputText id="codigoImpuOutput" value="#{_reteDeta.codigoImpu}" />
+						</f:facet>
+						<f:facet name="input">
+							<p:inputText id="codigoImpuInput" value="#{_reteDeta.codigoImpu}" style="width:100%" />
+						</f:facet>
+					</p:cellEditor>				
+					
+				</p:column>
+				
+				<p:column headerText="Base Imponible" style="text-align: right" >
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:outputText id="baseOutput" value="#{_reteDeta.base}">
+								<f:convertNumber pattern="#0.00" locale="en-US"/>
+							</h:outputText>
+						</f:facet>
+						<f:facet name="input">
+							<p:inputText id="baseInput" value="#{_reteDeta.base}" style="width:100%" />
+						</f:facet>
+					</p:cellEditor>
+					
+				</p:column>
+				
+				<p:column headerText="% Retención" style="text-align: right" >
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:outputText id="porcenOutput" value="#{_reteDeta.porcen}" >
+								<f:convertNumber pattern="#0.00" locale="en-US"/>
+							</h:outputText>
+						</f:facet>
+						<f:facet name="input">
+							<p:inputText id="porcenInput" value="#{_reteDeta.porcen}" style="width:100%" >
+								<f:convertNumber pattern="#0.00" locale="en-US"/>
+							</p:inputText>
+							
+						</f:facet>
+					</p:cellEditor>
+					
+				</p:column>
+				
+				<p:column id="totalCol" headerText="Valor Retenido" style="text-align: right" >
+					<h:outputText id="total" value="#{_reteDeta.reteDetaTotal}">
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</h:outputText>
+				</p:column>
+				
+			</p:dataTable>
+			
+			<p:commandLink id="agregarBtn" title="Agregar Detalle Retencion" value="Agregar Detalle" styleClass="boton" 
+				style="float:left;"   
+				action="#{retencControl.agregarReteDeta}" ajax="true" update="reteDetaList, totalRetencion" >
+
+			</p:commandLink>
+
+			<p:panel id="totalRetencion" emptyMessage="Total" style="width:200px;float:right;" >
+					
+				<h:outputText value="Total: "/>
+				<h:outputText id="valueColumna" value="#{retencControl.retencionTotal}" style="float:right">
+			 		<f:convertNumber pattern="#0.00" locale="en-US"/>
+				</h:outputText>
+			
+			</p:panel>
+			
+		</h:form>
+		
+	</ui:define>
+	
+</ui:composition>

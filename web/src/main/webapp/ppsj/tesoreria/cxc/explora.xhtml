@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cxcId" value='#{cxcControl.id}' />
+		<f:event type="preRenderView" listener="#{cxcControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="explora" header="Cuentas Por Cobrar - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-12">
+							<p:outputLabel
+								value="#{cxcControl.cxc.egreso.persClie.persona.apelli} #{cxcControl.cxc.egreso.persClie.persona.nombre}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Doc.Número" />
+							<p:inputText
+								value="#{cxcControl.cxc.egreso.serie1}-#{cxcControl.cxc.egreso.serie2}-#{cxcControl.cxc.egreso.numero}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Fecha Emisión" />
+							<p:calendar readonly="true"
+								value="#{cxcControl.cxc.egreso.fechaEmis}" pattern="dd-MM-yyyy">
+							</p:calendar>
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Fecha Vencimiento" />
+							<p:calendar readonly="true" value="#{cxcControl.cxc.fechaVenc}"
+								pattern="dd-MM-yyyy">
+							</p:calendar>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Total" />
+							<p:inputText value="#{cxcControl.cxc.total}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Abono" />
+							<p:inputText value="#{cxcControl.cxc.abono}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Saldo" />
+							<p:inputText value="#{cxcControl.cxc.saldo}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:selectBooleanCheckbox value="#{cxcControl.cxc.estado}" itemLabel="Estado" disabled="true"/>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+		</h:form>
+
+		<div class="card product">
+
+			<p:dataView id="cobroDetaList" emptyMessage="No se encontro datos"
+				value="#{cxcControl.cobrDetas}" var="_cobrDeta"
+				rendered="#{cxcControl.cobrDetas.size() != null and cxcControl.rolPermiso.get(8003)}">
+
+				<f:facet name="header">
+					<h:outputText value="Detalle Cobros" />
+				</f:facet>
+
+				<p:dataViewListItem>
+					<div class="product-list-item">
+
+						<div class="product-list-detail">
+							<p:outputLabel value="Número" style="margin-right:5px"></p:outputLabel>
+							<h:outputText id="cobrNumero"
+								value="#{_cobrDeta.fpmeFormPago.formPagoMoviEgre.numero}" />
+						</div>
+
+						<div class="product-list-detail">
+							<h:outputText id="fechaCobr"
+								value="#{_cobrDeta.fpmeFormPago.formPagoMoviEgre.fecha}" />
+						</div>
+
+						<div class="product-list-detail">
+							<h:outputText id="formPago"
+								value="#{_cobrDeta.fpmeFormPago.formPago.descri}" />
+						</div>
+
+						<div class="product-list-detail">
+							<h:outputText id="total" value="#{_cobrDeta.total}">
+								<f:convertNumber pattern="$0.00" locale="en-US" />
+							</h:outputText>
+						</div>
+
+						<div class="product-list-detail">
+							<h:selectBooleanCheckbox id="cxpEstado"
+								value="#{_cobrDeta.cxc.estado}" />
+						</div>
+					</div>
+				</p:dataViewListItem>
+			</p:dataView>
+		</div>
+	</ui:define>
+</ui:composition>

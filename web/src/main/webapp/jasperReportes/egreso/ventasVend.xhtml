@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte - Ventas Vendedores">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persVendApelliDesd" value="Apellido Desde" />
+							<p:inputText id="persVendApelliDesd"
+								value="#{ventaVendReportControl.persVendDesd.persona.apelli}"
+								required="false">
+								<f:validateBean for="persVendApelliDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persVendApelliHast" value="Apellido Hasta" />
+							<p:inputText id="persVendApelliHast"
+								value="#{ventaVendReportControl.persVendHast.persona.apelli}"
+								required="false">
+								<f:validateBean for="persVendApelliHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persVendCedulaDesd"
+								value="Cédula / Ruc Desde" />
+							<p:inputText id="persVendCedulaDesd"
+								value="#{ventaVendReportControl.persVendDesd.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persVendCedulaDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persVendCedulaHast"
+								value="Cédula / Ruc Hasta" />
+							<p:inputText id="persVendCedulaHast"
+								value="#{ventaVendReportControl.persVendHast.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persVendCedulaHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaDesd" value="Fecha Desde" />
+							<p:calendar id="egresoFechaDesd"
+								value="#{ventaVendReportControl.egresoDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="egresoFechaHast" value="Fecha Hasta" />
+							<p:calendar id="egresoFechaHast"
+								value="#{ventaVendReportControl.egresoHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="sucursalList" value="Sucursal"
+								 />
+							<p:selectManyMenu id="sucursalList"
+								value="#{ventaVendReportControl.sucursalIds}"
+								showCheckbox="true" converter="omnifaces.SelectItemsConverter"
+								required="true" requiredMessage="Seleccione Sucursal">
+
+								<f:selectItems value="#{ventaVendReportControl.sucursals}"
+									var="sucursal" itemLabel="#{sucursal.descri}"
+									itemValue="#{sucursal.sucursalId}" />
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="docuEgreList" value="Documento"
+								 />
+							<p:selectManyMenu id="docuEgreList"
+								value="#{ventaVendReportControl.docuEgreIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								>
+
+								<f:selectItems value="#{ventaVendReportControl.docuEgres}"
+									var="docuEgre" itemLabel="#{docuEgre.documento.descri}"
+									itemValue="#{docuEgre.documentoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Vendedor Estado"
+								 />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{ventaVendReportControl.persVendEstado}"
+								required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato" />
+							<p:selectOneRadio
+								value="#{ventaVendReportControl.formatoReporte}">
+								<f:selectItems value="#{ventaVendReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{ventaVendReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="ventasVend"
+					includeViewParams="false" styleClass="boton" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

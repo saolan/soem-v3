@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte Caja - Movimientos">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="cajaList" value="Sucursal-Caja"
+								 />
+							<p:selectManyMenu id="cajaList"
+								value="#{cajaMoviReportControl.cajaIds}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" 
+								required="true" requiredMessage="Seleccione caja">
+
+								<f:selectItems value="#{cajaMoviReportControl.cajas}" var="caja"
+									itemLabel="#{caja.sucursal.descri} - #{caja.descri}"
+									itemValue="#{caja.cajaId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persCajeList" value="Cajero"
+								 />
+							<p:selectManyMenu id="persCajeList"
+								value="#{cajaMoviReportControl.persCajeIds}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" >
+
+								<f:selectItems value="#{cajaMoviReportControl.persCajes}"
+									var="persCaje" itemLabel="#{persCaje.persona.apelli}"
+									itemValue="#{persCaje.personaId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="docuCajaList" value="Documento"
+								 />
+							<p:selectManyMenu id="docuCajaList"
+								value="#{cajaMoviReportControl.docuCajaIds}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" >
+
+								<f:selectItems value="#{cajaMoviReportControl.docuCajas}"
+									var="docuCaja" itemLabel="#{docuCaja.documento.descri}"
+									itemValue="#{docuCaja.documentoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="formPagoList" value="Forma Pago"
+								 />
+							<p:selectManyMenu id="formPagoList"
+								value="#{cajaMoviReportControl.formPagoIds}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" >
+
+								<f:selectItems value="#{cajaMoviReportControl.formPagos}"
+									var="formPago" itemLabel="#{formPago.descri}"
+									itemValue="#{formPago.formPagoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="cajaMoviFechaDesde" value="Fecha Desde"
+								 />
+							<p:calendar id="cajaMoviFechaDesde"
+								value="#{cajaMoviReportControl.cajaMoviDesde.fecha}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="cajaMoviFechaHasta" value="Fecha Hasta"
+								 />
+							<p:calendar id="cajaMoviFechaHasta"
+								value="#{cajaMoviReportControl.cajaMoviHasta.fecha}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Caja Estado"
+								 />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{cajaMoviReportControl.cajaEstado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio value="#{cajaMoviReportControl.formatoReporte}">
+								<f:selectItems value="#{cajaMoviReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{cajaMoviReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="cajaMovis"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

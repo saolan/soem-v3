@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargarEnXml" />
+
+			<p:panel id="panel" header="Anexo Transaccional">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-12" style="text-align: center;">
+							<p:outputLabel
+								value="Se reportaran facturas de Compra y Retenciones"
+								style="text-align:center" />
+						</div>
+
+						<div class="field col-12 md:col-12" style="text-align: center;">
+							<p:outputLabel
+								value="Antes de emitir este reporte procese todos los documentos."
+								style="text-align:center" />
+						</div>
+
+						<div class="field col-12 md:col-12" style="text-align: center;">
+							<p:outputLabel value="Los documentos con estado Grabado (GR), no se procesara en el reporte"
+								style="text-align:center" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="ingresoFechaDesd" value="Fecha Desde" />
+							<p:calendar id="ingresoFechaDesd"
+								value="#{atsSriControl.fechaDesd}" pattern="dd-MM-yyyy"
+								required="true" requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="ingresoFechaHast" value="Fecha Hasta" />
+							<p:calendar id="ingresoFechaHast"
+								value="#{atsSriControl.fechaHast}" pattern="dd-MM-yyyy"
+								required="true" requiredMessage="Ingrese fecha hasta" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargarEnXml" ajax="false" styleClass="boton"
+					value="Descargar Xml" action="#{atsSriControl.generarXmlAtsSri}" />
+
+				<p:link value="Cancelar" outcome="atsSri" includeViewParams="false"
+					styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

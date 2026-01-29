@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{persParaControl.pagina}' />
+		<f:event type="preRenderView" listener='#{persParaControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Persona Parametro - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="descri" value="Descripcion" />
+					<p:inputText id="descri" value="#{persParaControl.persPara.descri}" required="false"
+						styleClass="persParaTextoDescri">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{persParaControl.rolPermiso.get(6000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{persParaControl.iniciarPagina}" 
+					ajax="true" update="persParaList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="persParaList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{persParaControl.persParas}" var="_persPara">
+
+				<f:facet name="header">
+					<h:outputText value="Lista persParas" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{persParaControl.modificar}">
+							<f:setPropertyActionListener value="#{_persPara.persParaId}"
+								target="#{persParaControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{persParaControl.explorar}">
+							<f:setPropertyActionListener value="#{_persPara.persParaId}"
+								target="#{persParaControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Descripción">
+					<h:outputText id="descri" value="#{_persPara.descri}" />
+				</p:column>
+
+				<p:column headerText="Prioridad">
+					<h:outputText id="codigo" value="#{_persPara.priori}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{persParaControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

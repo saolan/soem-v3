@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cmfpId" value='#{cajaMoviFormPagoControl.id}' />
+		<f:viewParam name="cajaMoviId" value='#{cajaMoviFormPagoControl.cajaMoviId}' />
+		<f:event type="preRenderView" listener="#{cajaMoviFormPagoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Movimiento Caja Forma Pago - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+<!-- 			En este grid se despliega como combo -->
+
+				<h:panelGrid id="grid" columns="2">
+	
+					<p:outputLabel for="formPagoList" value="Forma Pago" />				
+					<p:selectOneMenu id="formPagoList" value="#{cajaMoviFormPagoControl.cajaMoviFormPago.formPago}" converter="omnifaces.SelectItemsConverter"
+						required="true" requiredMessage="Seleccione forma de pago">
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{cajaMoviFormPagoControl.formPagos}" var="formPago" 
+							itemLabel="#{formPago.descri}" itemValue="#{formPago}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel for="total" value="Total" />
+					<p:inputText id="total" value="#{cajaMoviFormPagoControl.cajaMoviFormPago.total}"  
+						required="true" requiredMessage="Ingrese total">
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</p:inputText>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{cajaMoviFormPagoControl.grabar}" 
+					rendered="#{(cajaMoviFormPagoControl.id != null and cajaMoviFormPagoControl.rolPermiso.get(1101)) or 
+					(cajaMoviFormPagoControl.id == null and cajaMoviFormPagoControl.rolPermiso.get(1100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{cajaMoviFormPagoControl.eliminar}" 
+					rendered="#{cajaMoviFormPagoControl.id != null and cajaMoviFormPagoControl.rolPermiso.get(1102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="/ppsj/caja/cajaMovi/explora?faces-redirect=true&amp;cajaMoviId=#{cajaMoviFormPagoControl.cajaMoviId}" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

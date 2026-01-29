@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="menuId" value='#{menuControl.id}' />
+		<f:event type="preRenderView" listener="#{menuControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Menú - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="menuId" value="Menú Id" />
+					<p:inputText id="menuId" value="#{menuControl.menu.menuId}"
+						required="true" requiredMessage="Ingrese menú Id" />
+
+					<p:outputLabel for="descripcion" value="Descripción" />
+					<p:inputText id="descripcion" value="#{menuControl.menu.descri}" styleClass="cajaTextoDescri"
+						required="true" requiredMessage="Ingrese descripción" />
+
+					<p:outputLabel for="paginaRuta" value="Ruta" />
+					<p:inputText id="paginaRuta" value="#{menuControl.menu.paginaRuta}" styleClass="cajaTextoDescri"  />
+						
+					<p:outputLabel for="menuNiveList" value="Nivel" />				
+					<p:selectOneMenu id="menuNiveList" value="#{menuControl.menu.menuNive}" converter="omnifaces.SelectItemsConverter"
+						required="true">
+						<f:selectItems value="#{menuControl.menuNives}" var="menuNive" 
+							itemLabel="#{menuNive.descri}" itemValue="#{menuNive}"/>
+					</p:selectOneMenu>
+						
+					<p:outputLabel for="detall" value="Detalle" />
+					<p:selectBooleanCheckbox id="detall" value="#{menuControl.menu.detall}" 
+						required="true" requiredMessage="Ingrese detalle" />
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado" value="#{menuControl.menu.estado}" required="true"
+						requiredMessage="Ingrese estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{menuControl.grabar}" 
+					rendered="#{(menuControl.id != null and menuControl.rolPermiso.get(7001)) or 
+					(menuControl.id == null and menuControl.rolPermiso.get(7000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{menuControl.eliminar}" 
+					rendered="#{menuControl.id != null and menuControl.rolPermiso.get(7002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

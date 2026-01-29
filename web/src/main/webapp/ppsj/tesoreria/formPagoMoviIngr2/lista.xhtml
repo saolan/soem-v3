@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{formPagoMoviIngrControl.pagina}' />
+		<f:event type="preRenderView"
+			listener='#{formPagoMoviIngrControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:3px"
+				header="Pago - Depósito - Panel Busqueda">
+
+				<p:focus context="panelBuscar" />
+
+				<h:panelGrid columns="6">
+
+					<p:outputLabel for="cedulaRuc"
+						value="Proveedor&#160;Cédula&#160;/&#160;Ruc" />
+					<p:inputText id="cedulaRuc"
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.persona.cedulaRuc}"
+						required="false">
+						<f:validateBean for="cedulaRuc" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="apelli" value="Apellido" />
+					<p:inputText id="apelli"
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.persona.apelli}"
+						required="false">
+						<f:validateBean for="apelli" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="nombre" value="Nombre" />
+					<p:inputText id="nombre"
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.persona.nombre}"
+						required="false">
+						<f:validateBean for="nombre" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="numero" value="Número&#160;Doc." />
+					<p:inputText id="numero"
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.numero}"
+						required="false">
+						<f:validateBean for="numero" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="fecha" value="Fecha" />
+					<p:calendar id="fecha"
+						value="#{formPagoMoviIngrControl.formPagoMoviIngr.fecha}"
+						pattern="dd-MM-yyyy" required="false">
+						<f:validateBean for="fecha" disabled="true" />
+					</p:calendar>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<p:link value="Nuevo" outcome="registra" styleClass="boton"
+				rendered="#{formPagoMoviIngrControl.rolPermiso.get(8100)}" />
+
+			<p:spacer height="2" />
+
+			<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+				action="#{formPagoMoviIngrControl.iniciarPagina}" ajax="false"
+				update="formPagoMoviIngrList" />
+
+			<p:spacer height="2" />
+
+			<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+				styleClass="boton" />
+
+			<p:defaultCommand target="buscar" />
+
+			<p:dataTable id="formPagoMoviIngrList" style="margin-top:3px;"
+				emptyMessage="No se encontro datos"
+				value="#{formPagoMoviIngrControl.formPagoMoviIngrs}"
+				var="_formPagoMoviIngr">
+
+				<p:column style="width:80px;text-align: center"
+					headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{formPagoMoviIngrControl.modificar}">
+							<f:setPropertyActionListener value="#{_formPagoMoviIngr.fpmiId}"
+								target="#{formPagoMoviIngrControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{formPagoMoviIngrControl.explorar}">
+							<f:setPropertyActionListener value="#{_formPagoMoviIngr.fpmiId}"
+								target="#{formPagoMoviIngrControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Proveedor">
+					<h:outputText id="apelli"
+						value="#{_formPagoMoviIngr.persona.apelli} #{_formPagoMoviIngr.persona.nombre}" />
+				</p:column>
+
+				<p:column headerText="Documento" style="width:100px;">
+					<h:outputText id="docuMoviIngr"
+						value="#{_formPagoMoviIngr.docuMoviIngr.documento.descri}" />
+				</p:column>
+
+				<p:column headerText="Número" style="width:80px;">
+					<h:outputText id="numero" value="#{_formPagoMoviIngr.numero}" />
+				</p:column>
+
+				<p:column headerText="Forma&#160;Pago" style="width:100px;">
+					<h:outputText id="formaPago"
+						value="#{_formPagoMoviIngr.formPago.descri}" />
+				</p:column>
+
+				<p:column headerText="Fecha" style="width:80px;">
+					<h:outputText id="fecha" value="#{_formPagoMoviIngr.fecha}" />
+				</p:column>
+
+				<p:column headerText="Total" style="width:80px; text-align:right">
+					<h:outputText id="total" value="#{_formPagoMoviIngr.total}">
+						<f:convertNumber pattern="#0.00" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Estado" style="width:60px;">
+					<h:outputText id="estado" value="#{_formPagoMoviIngr.estado}" />
+				</p:column>
+			</p:dataTable>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{formPagoMoviIngrControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

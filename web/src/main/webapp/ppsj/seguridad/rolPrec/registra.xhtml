@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="rolPrecId" value='#{rolPrecControl.id}' />
+		<f:viewParam name="rolId" value='#{rolPrecControl.rolId}' />
+		<f:viewParam name="paginaRuta" value='#{rolPrecControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{rolPrecControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Rol Precio - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+				
+					<p:outputLabel for="sucursalList" value="Sucursal:" />
+					<p:selectOneMenu id="sucursalList" value="#{rolPrecControl.rolPrec.sucursal}" converter="omnifaces.SelectItemsConverter"
+						required="true" requiredMessage="Seleccione Sucursal">
+						<f:selectItem itemLabel="Seleccione sucursal..." itemValue="" />
+						<f:selectItems value="#{rolPrecControl.sucursals}" var="sucursal" 
+							itemLabel="#{sucursal.descri}" itemValue="#{sucursal}"/>
+					</p:selectOneMenu>
+								
+					<p:outputLabel for="rolList" value="Rol" />
+					<p:selectOneMenu id="rolList" value="#{rolPrecControl.rolPrec.rol}" converter="omnifaces.SelectItemsConverter"
+						required="true" requiredMessage="Seleccione Rol">
+						<f:selectItem itemLabel="Seleccione Rol..." itemValue="" />
+						<f:selectItems value="#{rolPrecControl.rols}" var="rol" 
+							itemLabel="#{rol.descri}" itemValue="#{rol}" />
+					</p:selectOneMenu>
+				
+					<p:outputLabel for="precioList" value="Precio" />
+					<p:selectOneMenu id="precioList" value="#{rolPrecControl.rolPrec.precio}" converter="omnifaces.SelectItemsConverter"
+						required="true" requiredMessage="Seleccione Precio">
+						<f:selectItem itemLabel="Seleccione Precio..." itemValue="" />
+						<f:selectItems value="#{rolPrecControl.precios}" var="precio" 
+							itemLabel="#{precio.descri}" itemValue="#{precio}"/>
+					</p:selectOneMenu>					
+
+					<p:outputLabel for="predet" value="Predeterminado" />
+					<p:selectBooleanCheckbox id="predet" value="#{rolPrecControl.rolPrec.predet}" required="true"
+						requiredMessage="Ingrese valor predeterminado" />
+
+					<p:outputLabel for="acceso" value="Acceso" />
+					<p:selectBooleanCheckbox id="acceso" value="#{rolPrecControl.rolPrec.acceso}" required="true"
+						requiredMessage="Ingrese acceso" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{rolPrecControl.grabar}" 
+					rendered="#{(rolPrecControl.id != null and rolPrecControl.rolPermiso.get(7001)) or 
+					(rolPrecControl.id == null and rolPrecControl.rolPermiso.get(7000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{rolPrecControl.eliminar}" 
+					rendered="#{rolPrecControl.id != null and rolPrecControl.rolPermiso.get(7002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{rolPrecControl.cancelar}"	/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

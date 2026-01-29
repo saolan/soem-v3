@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="planCuenId" value='#{planCuenControl.id}' />
+		<f:event type="preRenderView" listener="#{planCuenControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{planCuenControl.grabar}"
+					rendered="#{(planCuenControl.id != null and planCuenControl.rolPermiso.get(2001)) or 
+					(planCuenControl.id == null and planCuenControl.rolPermiso.get(2000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{planCuenControl.eliminar}"
+					rendered="#{planCuenControl.id != null and planCuenControl.rolPermiso.get(2002)}" />
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+
+				<p:defaultCommand target="grabar" />
+			</div>
+
+			<p:panel id="panelRegistrar" header="Plan Cuenta - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel for="planCuenList" value="Cuenta Superior" />
+							<p:selectOneMenu id="planCuenList"
+								value="#{planCuenControl.planCuen.planCuen}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItem itemLabel="Seleccione Cuenta de nivel superior..."
+									itemValue="" />
+								<f:selectItems value="#{planCuenControl.planCuenSupes}"
+									var="planCuen"
+									itemLabel="#{planCuen.codigo} - #{planCuen.descri}"
+									itemValue="#{planCuen}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel for="codigo" value="Código" />
+							<p:inputText id="codigo"
+								value="#{planCuenControl.planCuen.codigo}" required="true"
+								requiredMessage="Ingrese código" />
+
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel for="descripcion" value="Descripción" />
+							<p:inputText id="descripcion"
+								value="#{planCuenControl.planCuen.descri}"
+								styleClass="cajaTextoDescri" required="true"
+								requiredMessage="Ingrese descripción" />
+
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel for="planCuenNiveList" value="Nivel" />
+							<p:selectOneMenu id="planCuenNiveList"
+								value="#{planCuenControl.planCuen.planCuenNive}"
+								converter="omnifaces.SelectItemsConverter" required="true">
+								<f:selectItems value="#{planCuenControl.planCuenNives}"
+									var="planCuenNive" itemLabel="#{planCuenNive.descri}"
+									itemValue="#{planCuenNive}" />
+							</p:selectOneMenu>
+
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel for="detall" value="Detalle" />
+							<p:selectBooleanCheckbox id="detall"
+								value="#{planCuenControl.planCuen.detall}" required="true"
+								requiredMessage="Ingrese detalle" />
+
+						</div>
+
+						<div class="field col-12 md:col-3">
+							<p:outputLabel for="estado" value="Estado" />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{planCuenControl.planCuen.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

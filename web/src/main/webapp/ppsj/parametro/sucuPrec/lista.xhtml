@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{sucuPrecControl.pagina}' />
+		<f:event type="preRenderView" listener='#{sucuPrecControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Sucursal Precio - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="acceso" value="Acceso" />
+					<p:selectBooleanCheckbox id="acceso"
+						value="#{sucuPrecControl.sucuPrec.acceso}" required="false">
+						<f:validateBean for="acceso" disabled="true" />
+					</p:selectBooleanCheckbox>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+					
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{sucuPrecControl.nuevo}" 
+					rendered="#{sucuPrecControl.rolPermiso.get(6000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/parametro/sucuPrec/lista"
+							target="#{sucuPrecControl.paginaRuta}" />
+				</p:commandLink>
+					
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{sucuPrecControl.iniciarPagina}" 
+					ajax="true" update="sucuPrecList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="sucuPrecList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{sucuPrecControl.sucuPrecs}" var="_sucuPrec">
+
+				<f:facet name="header">
+					<h:outputText value="Sucursales - Precios" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{sucuPrecControl.modificar}">
+							<f:setPropertyActionListener value="#{_sucuPrec.sucuPrecId}"
+								target="#{sucuPrecControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/sucuPrec/lista"
+								target="#{sucuPrecControl.paginaRuta}" />								
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{sucuPrecControl.explorar}">
+							<f:setPropertyActionListener value="#{_sucuPrec.sucuPrecId}"
+								target="#{sucuPrecControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Sucursal">
+					<h:outputText id="sucursal" value="#{_sucuPrec.sucursal.descri}" />
+				</p:column>
+
+				<p:column headerText="Bodega">
+					<h:outputText id="bodega" value="#{_sucuPrec.precio.descri}" />
+				</p:column>
+
+				<p:column headerText="Acceso">
+					<h:selectBooleanCheckbox id="acceso" value="#{_sucuPrec.acceso}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{sucuPrecControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

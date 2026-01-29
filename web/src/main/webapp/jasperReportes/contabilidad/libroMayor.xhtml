@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="paginaPlanCuen"
+			value='#{libroMayorReportControl.paginaPlanCuen}' />
+	</f:metadata>
+
+
+	<ui:define name="main">
+
+		<h:form id="libroMayorForm">
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="buscarPlanCuen"
+				scope="seleccionCuentaDialogo" />
+
+			<p:panel id="panel" header="Reporte - Libro Mayor">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="transaccionFechaDesd" value="Fecha Desde" />
+							<p:calendar id="transaccionFechaDesd"
+								value="#{libroMayorReportControl.transaccionDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="transaccionFechaHast" value="Fecha Hasta" />
+							<p:calendar id="transaccionFechaHast"
+								value="#{libroMayorReportControl.transaccionHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="planCuenDesd" value="Cuenta Desde" />
+
+							<div class="ui-inputgroup">
+								<p:inputText id="planCuenDesd"
+									value="#{libroMayorReportControl.planCuenDesd.codigo}"
+									required="false">
+									<f:validateBean for="planCuenDesd" disabled="true" />
+								</p:inputText>
+
+								<p:commandLink id="abrirDialogoDesde"
+									style=" font-size: 130%; font-weight: bold; color: blue; text-decoration: underline;"
+									action="#{libroMayorReportControl.buscarPlanCuenDesd}"
+									onclick="PF('seleccionCuentaDialogo').show();"
+									update="panelBuscarCuenta,planCuenList">
+									<h:graphicImage library="img" name="lupa1.png" width="14px" />
+								</p:commandLink>
+							</div>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="planCuenHast" value="Cuenta Hasta" />
+
+							<div class="ui-inputgroup">
+								<p:inputText id="planCuenHast"
+									value="#{libroMayorReportControl.planCuenHast.codigo}"
+									required="false">
+									<f:validateBean for="planCuenHast" disabled="true" />
+								</p:inputText>
+
+								<p:commandLink id="abrirDialogoHasta"
+									style=" font-size: 130%; font-weight: bold; color: blue; text-decoration: underline;"
+									action="#{libroMayorReportControl.buscarPlanCuenHast}"
+									onclick="PF('seleccionCuentaDialogo').show();"
+									update="panelBuscarCuenta,planCuenList">
+									<h:graphicImage library="img" name="lupa1.png" width="14px" />
+								</p:commandLink>
+							</div>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato" />
+							<p:selectOneRadio
+								value="#{libroMayorReportControl.formatoReporte}">
+								<f:selectItems
+									value="#{libroMayorReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{libroMayorReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="libroMayor"
+					includeViewParams="false" styleClass="boton" />
+
+			</div>
+
+			<p:dialog id="seleccionCuentaDialogo"
+				widgetVar="seleccionCuentaDialogo" position="270,120" width="60%"
+				header="Buscar y Seleccionar Cuenta" modal="true" resizable="false"
+				focus="codigo">
+
+				<p:focus context="panelBuscarCuenta" />
+
+				<p:panel id="panelBuscarCuenta" style="margin-bottom:5px;">
+
+					<h:panelGrid columns="2">
+
+						<h:panelGrid columns="1">
+							<p:outputLabel for="codigo" value="Código" />
+							<p:inputText id="codigo"
+								value="#{libroMayorReportControl.planCuenBuscar.codigo}"
+								required="false">
+								<f:validateBean for="codigo" disabled="true" />
+							</p:inputText>
+						</h:panelGrid>
+
+						<h:panelGrid columns="1">
+							<p:outputLabel for="descri" value="Descripción" />
+							<p:inputText id="descri"
+								value="#{libroMayorReportControl.planCuenBuscar.descri}"
+								required="false">
+								<f:validateBean for="descri" disabled="true" />
+							</p:inputText>
+						</h:panelGrid>
+
+					</h:panelGrid>
+				</p:panel>
+
+				<p:commandLink id="buscarPlanCuen" value="Buscar" styleClass="boton"
+					action="#{libroMayorReportControl.buscarPlanCuens(0)}"
+					update="planCuenList,panelBuscarCuenta,paginadorPlanCuens" />
+
+				<p:dataTable id="planCuenList" style="margin-top:10px;"
+					emptyMessage="No se encontro datos" selectionMode="single"
+					rowKey="#{_planCuen.planCuenId}"
+					value="#{libroMayorReportControl.planCuens}" var="_planCuen">
+
+					<p:ajax event="rowSelect"
+						listener="#{libroMayorReportControl.onRowSelect}"
+						update="libroMayorForm:planCuenDesd,libroMayorForm:planCuenHast" />
+
+					<f:facet name="header">
+						<h:outputText value="Plan Cuenta" />
+					</f:facet>
+
+					<p:column headerText="Codigo" style="width:80px; text-align:left">
+						<h:outputText id="codigo" value="#{_planCuen.codigo}" />
+					</p:column>
+
+					<p:column headerText="Descripción" style="text-align:left">
+						<h:outputText id="descri" value="#{_planCuen.descri}" />
+					</p:column>
+
+				</p:dataTable>
+
+				<div align="center">
+
+					<h:panelGroup id="paginadorPlanCuens">
+
+						<p:commandButton value="Anterior" ajax="true"
+							update="libroMayorForm:planCuenList,panelBuscarCuenta,paginadorPlanCuens"
+							rendered="#{libroMayorReportControl.paginaPlanCuen gt 0}"
+							action="#{libroMayorReportControl.buscarPlanCuens(1)}">
+							<f:param name="paginaPlanCuen"
+								value="#{libroMayorReportControl.paginaPlanCuen - 1}" />
+						</p:commandButton>
+
+						<p:commandButton value="Siguiente" ajax="true"
+							update="libroMayorForm:planCuenList,panelBuscarCuenta,paginadorPlanCuens"
+							rendered="#{(libroMayorReportControl.paginaPlanCuen + 1) * libroMayorReportControl.filasPagina lt libroMayorReportControl.contadorRegPlanCuen}"
+							action="#{libroMayorReportControl.buscarPlanCuens(1)}">
+							<f:param name="paginaPlanCuen"
+								value="#{libroMayorReportControl.paginaPlanCuen + 1}" />
+						</p:commandButton>
+
+					</h:panelGroup>
+
+				</div>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

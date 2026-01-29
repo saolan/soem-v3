@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="persVendId" value='#{persVendControl.id}' />
+		<f:viewParam name="personaId" value='#{persVendControl.personaId}' />
+		<f:viewParam name="paginaRuta" value='#{persVendControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{persVendControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Vendedor - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="cedula" value="Cédula" />
+					<p:inputText id="cedula"
+						value="#{persVendControl.persVend.persona.cedulaRuc}" required="true"
+						requiredMessage="Ingrese cédula o RUC" />
+
+					<p:outputLabel for="apellido" value="Apellido" />
+					<p:inputText id="apellido"
+						value="#{persVendControl.persVend.persona.apelli}" required="true" styleClass="cajaTextoDescri"
+						requiredMessage="Ingrese apellido" />
+
+					<p:outputLabel for="nombre" value="Nombre" />
+					<p:inputText id="nombre"
+						value="#{persVendControl.persVend.persona.nombre}" required="true" styleClass="cajaTextoDescri"
+						requiredMessage="Ingrese nombre" />
+
+					<p:outputLabel for="estadoUsua" value="Estado Usuario" />
+					<p:selectBooleanCheckbox id="estadoUsua" value="#{persVendControl.persVend.estado}" required="true"
+						requiredMessage="Ingrese estado" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{persVendControl.grabar}" 
+					rendered="#{(persVendControl.id != null and persVendControl.rolPermiso.get(3001)) or 
+					(persVendControl.id == null and persVendControl.rolPermiso.get(3000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{persVendControl.eliminar}" 
+					rendered="#{persVendControl.id != null and persVendControl.rolPermiso.get(3002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{persVendControl.cancelar}"	/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

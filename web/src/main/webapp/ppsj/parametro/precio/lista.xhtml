@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{precioControl.pagina}' />
+		<f:event type="preRenderView" listener='#{precioControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Precio - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="codigo" value="Código" />
+					<p:inputText id="codigo" value="#{precioControl.precio.codigo}" required="false">
+						<f:validateBean for="codigo" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="descri" value="Descripcion" />
+					<p:inputText id="descri" value="#{precioControl.precio.descri}" required="false"
+						styleClass="cajaTextoDescri">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{precioControl.precio.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{precioControl.rolPermiso.get(6000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{precioControl.iniciarPagina}" 
+					ajax="true" update="precioList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="precioList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{precioControl.precios}" var="_precio">
+
+				<f:facet name="header">
+					<h:outputText value="Precios" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{precioControl.modificar}">
+							<f:setPropertyActionListener value="#{_precio.precioId}"
+								target="#{precioControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{precioControl.explorar}">
+							<f:setPropertyActionListener value="#{_precio.precioId}"
+								target="#{precioControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Código">
+					<h:outputText id="codigo" value="#{_precio.codigo}" />
+				</p:column>
+
+				<p:column headerText="Descripción">
+					<h:outputText id="descri" value="#{_precio.descri}" />
+				</p:column>
+
+				<p:column headerText="Alcance">
+					<h:outputText id="alcance" value="#{_precio.alcanc == 0? 'Total' : 'Parcial'}" />
+				</p:column>
+
+				<p:column headerText="Factor">
+					<h:outputText id="factor" value="#{_precio.factor}" />
+				</p:column>
+
+				<p:column headerText="Estado">
+					<h:selectBooleanCheckbox id="estado" value="#{_precio.estado}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{precioControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

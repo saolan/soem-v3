@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="sucuBodeId" value='#{sucuBodeControl.id}' />
+		<f:viewParam name="bodegaId" value='#{sucuBodeControl.bodegaId}' />
+		<f:viewParam name="paginaRuta" value='#{sucuBodeControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{sucuBodeControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Sucursal Bodega - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="bodegaList" value="Bodega" />
+					<p:selectOneMenu id="bodegaList" value="#{sucuBodeControl.sucuBode.bodega}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{sucuBodeControl.bodegas}" var="bodega" 
+							itemLabel="#{bodega.descri}" itemValue="#{bodega}"/>
+					</p:selectOneMenu>					
+
+					<p:outputLabel for="sucursalList" value="Sucursal" />
+					<p:selectOneMenu id="sucursalList" value="#{sucuBodeControl.sucuBode.sucursal}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{sucuBodeControl.sucursales}" var="sucursal" 
+							itemLabel="#{sucursal.descri}" itemValue="#{sucursal}"/>
+					</p:selectOneMenu>					
+
+					<p:outputLabel for="acceso" value="Acceso" />
+					<p:selectBooleanCheckbox id="acceso" value="#{sucuBodeControl.sucuBode.acceso}" required="true"
+						requiredMessage="Ingrese acceso" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{sucuBodeControl.grabar}"
+					rendered="#{(sucuBodeControl.id != null and sucuBodeControl.rolPermiso.get(6001)) or 
+					(sucuBodeControl.id == null and sucuBodeControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{sucuBodeControl.eliminar}"  
+					rendered="#{sucuBodeControl.id != null and sucuBodeControl.rolPermiso.get(6002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{sucuBodeControl.cancelar}"	/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

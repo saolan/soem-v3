@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="ingresoId" value='#{ingresoControl.id}' />
+		<f:event type="preRenderView" listener="#{ingresoControl.recuperar}" />
+		<f:event type="preRenderView"
+			listener="#{ingresoControl.buscarIngrDetas}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+			<p:panel id="explora" header="Ingreso - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Documento" />
+							<p:inputText
+								value="#{ingresoControl.ingreso.docuIngr.documento.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Número" />
+							<p:inputText value="#{ingresoControl.ingreso.numero}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Fecha" />
+							<p:inputText value="#{ingresoControl.ingreso.fechaEmis}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Proveedor Apellido" />
+							<p:inputText
+								value="#{ingresoControl.ingreso.persProv.persona.apelli}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Proveedor Nombre" />
+							<p:inputText
+								value="#{ingresoControl.ingreso.persProv.persona.nombre}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Total" />
+							<p:inputText value="#{ingresoControl.ingreso.total}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Trans.Documento" />
+							<p:inputText
+								value="#{ingresoControl.ingreso.transaccion.docuTran.documento.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Trans.Número" />
+							<p:inputText value="#{ingresoControl.ingreso.transaccion.numero}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Trans.Fecha" />
+							<p:inputText
+								value="#{ingresoControl.ingreso.transaccion.fechaEmis}" />
+						</div>
+
+						<div class="field col-12 md:col-4">
+							<p:outputLabel value="Trans.Estado" />
+							<p:inputText value="#{ingresoControl.ingreso.transaccion.estado}" />
+						</div>
+
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

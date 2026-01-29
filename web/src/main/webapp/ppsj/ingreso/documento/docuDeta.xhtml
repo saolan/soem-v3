@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{ingresoDocuControl.pagina}' />
+		<f:viewParam name="ingresoId" value='#{ingresoDocuControl.id}' />
+		
+		<f:event type="preRenderView" listener='#{ingresoDocuControl.buscar}' />
+		<f:event type="preRenderView" listener='#{ingresoDocuControl.recuperar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div id="barraBotones" style="margin-bottom:10px;">
+
+				<p:link value="Cabecera" outcome="docuCabe" styleClass="boton" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" ajax="false" value="Buscar"
+					styleClass="boton" action="#{ingresoDocuControl.iniciarPagina}" />
+					
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" includeViewParams="false"
+					styleClass="boton" /> <!-- outcome="lista"  -->
+
+				<p:defaultCommand target="buscar" />
+
+			</div>
+
+			<div style="margin-top:10px; float: right; width:30%; ">
+			
+			<p:panel id="panelBuscar" style="margin-bottom:10px;" header="Producto - Panel Busqueda">
+
+				<p:focus context="panelBuscar" />
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="codigo" value="Código" />
+					<p:inputText id="codigo"
+						value="#{ingresoDocuControl.producto.codigo}" required="false">
+						<f:validateBean for="codigo" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="codigoBarra" value="Código Barra" />
+					<p:inputText id="codigoBarra"
+						value="#{ingresoDocuControl.producto.codigoBarra}" required="false">
+						<f:validateBean for="codigoBarra" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="descri" value="Descripcion" />
+					<p:inputText id="descri"
+						value="#{ingresoDocuControl.producto.descri}" required="false">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<p:dataTable id="productoList" style="margin-bottom:10px;"
+				emptyMessage="No se encontro datos"
+				value="#{ingresoDocuControl.productos}" var="_producto">
+
+				<f:facet name="header">
+					<h:outputText value="Lista Productos" />
+				</f:facet>
+
+				<p:column headerText="Descripción">
+					<p:commandLink title="Agregar producto" action="#{ingresoDocuControl.agregarProducto}" ajax="true"  
+						value="#{_producto.descri}" >
+
+						<f:setPropertyActionListener value="#{_producto.productoId}"
+							target="#{ingresoDocuControl.productoId}" />
+					</p:commandLink>
+				</p:column>
+
+			</p:dataTable>
+			</div>
+
+			<div style="margin-top:10px; float:left; width:69%;">
+			
+			<p:panel id="total"  header="Total Documento">
+			
+			
+			<p:outputLabel value="Total Documento" />
+			<p:outputLabel value="#{ingresoDocuControl.totalDocumento()}"  />
+
+			</p:panel>
+			
+			<p:dataTable id="ingrDetaList" style="margin-top:10px;" emptyMessage="No se encontro datos" 
+				value="#{ingresoDocuControl.productosAgregados()}" var="_ingrDeta">
+								
+				<f:facet name="header">
+					<h:outputText value="Productos agregados" />
+				</f:facet>
+
+				<p:column style="width:100px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="3" layout="grid">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil" title="Modificar" ajax="false">
+							<f:setPropertyActionListener value="#{_ingrDeta.ingrDetaId}"
+								target="#{ingresoDocuControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"  title="Explorar" ajax="false">
+							<f:setPropertyActionListener value="#{_ingrDeta.ingrDetaId}"
+								target="#{ingresoDocuControl.id}" />
+						</p:commandLink>
+						
+						<p:commandLink styleClass="ui-icon ui-icon-trash" title="eliminar" ajax="false">
+						</p:commandLink>
+						
+
+					</p:panelGrid>
+
+				</p:column>
+				
+				<p:column headerText="Producto">
+					<h:outputText id="descri" value="#{_ingrDeta.producto.descri}" />
+				</p:column>
+				
+				<p:column headerText="Cantidad">
+					<h:outputText id="cantid" value="#{_ingrDeta.cantid}" />
+				</p:column>
+				
+				<p:column headerText="Promoción">
+					<h:outputText id="promoc" value="#{_ingrDeta.promoc}" />
+				</p:column>
+
+				<p:column headerText="Costo">
+					<h:outputText id="costo" value="#{_ingrDeta.costo}" />
+				</p:column>
+				
+				<p:column headerText="Descuento">
+					<h:outputText id="descue" value="#{_ingrDeta.descue}" />
+				</p:column>
+				
+				<p:column headerText="Total">
+					<h:outputText id="total" value="#{_ingrDeta.total}" />
+				</p:column>
+			</p:dataTable>
+			
+			</div>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{ingresoDocuControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

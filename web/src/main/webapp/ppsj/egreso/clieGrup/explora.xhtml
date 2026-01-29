@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="clieGrupId" value='#{clieGrupControl.id}' />
+		<f:event type="preRenderView" listener="#{clieGrupControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<div class="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="explora" header="Grupo Cliente - Explorar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Descripción" />
+							<p:inputText value="#{clieGrupControl.clieGrup.descri}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Nota" />
+							<p:inputText value="#{clieGrupControl.clieGrup.nota}" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox itemLabel="Estado"
+								value="#{clieGrupControl.clieGrup.estado}" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+		</h:form>
+
+
+		<h:form>
+
+			<div class="card product">
+
+				<p:dataView id="clieGrupPlanCuenList"
+					emptyMessage="No se encontro datos"
+					rendered="#{clieGrupControl.rolPermiso.get(3003)}"
+					value="#{clieGrupControl.clieGrupPlanCuens}"
+					var="_clieGrupPlanCuen">
+					
+					<f:facet name="header">
+						<h:outputText value="Cuentas Contables" />
+					</f:facet>
+
+					<p:dataViewListItem>
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<span class="product-category">#{_clieGrupPlanCuen.planCuen.codigo}</span>
+								<div class="product-name">#{_clieGrupPlanCuen.planCuen.descri}</div>
+							</div>
+
+							<div class="product-list-detail">
+								#{_clieGrupPlanCuen.documento.descri}</div>
+
+							<div class="product-list-detail">
+								#{_clieGrupPlanCuen.tipoTran}</div>
+
+							<div class="product-list-action">
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{clieGrupPlanCuenControl.modificar}">
+									<f:setPropertyActionListener
+										value="#{_clieGrupPlanCuen.cgpcId}"
+										target="#{clieGrupPlanCuenControl.id}" />
+									<f:setPropertyActionListener
+										value="#{clieGrupControl.clieGrup.clieGrupId}"
+										target="#{clieGrupPlanCuenControl.clieGrupId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/egreso/clieGrup/explora"
+										target="#{clieGrupPlanCuenControl.paginaRuta}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<div class="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+					action="#{clieGrupPlanCuenControl.nuevo}">
+					<f:setPropertyActionListener
+						value="#{clieGrupControl.clieGrup.clieGrupId}"
+						target="#{clieGrupPlanCuenControl.clieGrupId}" />
+					<f:setPropertyActionListener value="/ppsj/egreso/clieGrup/explora"
+						target="#{clieGrupPlanCuenControl.paginaRuta}" />
+				</p:commandLink>
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

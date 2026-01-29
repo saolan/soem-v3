@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{prodPrecControl.pagina}' />
+		<f:event type="preRenderView" listener='#{prodPrecControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:5px"
+				header="Producto Precio - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="4">
+
+					<p:outputLabel for="codigoBarra" value="Código&#160;Barra" />
+					<p:inputText id="codigoBarra" value="#{prodPrecControl.prodPrec.producto.codigoBarra}" required="false">
+						<f:validateBean for="codigoBarra" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="codigo" value="Código" />
+					<p:inputText id="codigo" value="#{prodPrecControl.prodPrec.producto.codigo}" required="false"
+						styleClass="productoTextoCodigo">
+						<f:validateBean for="codigo" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{prodPrecControl.prodPrec.producto.descri}" required="false" >
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="tipoList" value="Tipo" />				
+					<p:selectOneRadio id="tipoList" value="#{prodPrecControl.prodPrec.producto.prodGrup.tipo}" 
+						required="true" >
+						<f:selectItems value="#{productoControl.parametros}" var="parametro" 
+							itemLabel="#{parametro.descri}" itemValue="#{parametro.descri}"/>
+					</p:selectOneRadio>					
+
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{prodPrecControl.prodPrec.producto.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{prodPrecControl.nuevo}" 
+					rendered="false">
+						<f:setPropertyActionListener
+							value="/ppsj/inventario/prodPrec/lista"
+							target="#{prodPrecControl.paginaRuta}" />
+				</p:commandLink>					
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{prodPrecControl.iniciarPagina}" 
+					ajax="false" update="prodPrecList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="prodPrecList" style="margin-top:5px;" emptyMessage="No se encontro datos"
+				value="#{prodPrecControl.prodPrecs}" var="_prodPrec">
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{prodPrecControl.modificar}">
+							<f:setPropertyActionListener value="#{_prodPrec.prodPrecId}"
+								target="#{prodPrecControl.id}" />
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{prodPrecControl.productoId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/inventario/prodPrec/lista"
+								target="#{prodPrecControl.paginaRuta}" />								
+						</p:commandLink>
+						
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{prodPrecControl.explorar}">
+							<f:setPropertyActionListener value="#{_prodPrec.prodPrecId}"
+								target="#{prodPrecControl.id}" />
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{prodPrecControl.productoId}" />
+						
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Producto">
+					<h:outputText id="producto" value="#{_prodPrec.producto.descri}" />
+				</p:column>
+
+				<p:column headerText="Código Barra" style="width:120px;text-align: left">
+					<h:outputText id="codigoBarra" value="#{_prodPrec.producto.codigoBarra}" />
+				</p:column>
+
+				<p:column headerText="Sucursal" style="width:120px;text-align: left">
+					<h:outputText id="sucursal" value="#{_prodPrec.sucursal.descri}" />
+				</p:column>
+
+				<p:column headerText="Precio Código" style="width:60px;text-align: left">
+					<h:outputText id="precioCodigo" value="#{_prodPrec.precio.codigo}" />
+				</p:column>
+
+				<p:column headerText="Precio Descripción" style="width:100px;text-align: left">
+					<h:outputText id="precioDescri" value="#{_prodPrec.precio.descri}" />
+				</p:column>
+
+				<p:column headerText="Utilidad" style="width:70px;text-align: right">
+					<h:outputText id="utili" value="#{_prodPrec.utilid}" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Factor" style="width:50px;text-align: right">
+					<h:outputText id="factor" value="#{_prodPrec.factor}" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Precio Sin Impuestos" style="width:90px;text-align: right">
+					<h:outputText id="preciosinImpu" value="#{_prodPrec.precioSinImpu}" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Precio Con Impuestos" style="width:90px;text-align: right">
+					<h:outputText id="precioConImpu" value="#{_prodPrec.precioConImpu}" >
+						<f:convertNumber pattern="#0.0000" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{prodPrecControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

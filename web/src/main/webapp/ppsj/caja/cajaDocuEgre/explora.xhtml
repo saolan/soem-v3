@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cajaDocuEgreId" value='#{cajaDocuEgreControl.id}' />
+		<f:event type="preRenderView" listener="#{cajaDocuEgreControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Caja Documento - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+								
+					<p:outputLabel value="Caja" />
+					<p:inputText value="#{cajaDocuEgreControl.cajaDocuEgre.caja.descri}" />
+
+					<p:outputLabel value="Documento" />
+					<p:inputText value="#{cajaDocuEgreControl.cajaDocuEgre.docuEgre.documento.descri}" />
+
+					<p:outputLabel value="Serie No.1" />
+					<p:inputText value="#{cajaDocuEgreControl.cajaDocuEgre.serie1}"/>
+					
+					<p:outputLabel value="Serie No.2" />
+					<p:inputText value="#{cajaDocuEgreControl.cajaDocuEgre.serie2}"/>
+					
+					<p:outputLabel value="Número" />
+					<p:inputText value="#{cajaDocuEgreControl.cajaDocuEgre.numero}"/>
+										
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+			</div>
+		</h:form>
+
+		<p:tabView rendered="#{cajaDocuEgreControl.rolPermiso.get(1003)}">
+
+			<p:tab title="Salida Archivo">
+
+				<h:form>
+
+					<p:dataTable id="saliArchList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos"
+						value="#{cajaDocuEgreControl.saliArchs}" var="_saliArch">
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="1" layout="grid">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{saliArchControl.modificar}">
+									<f:setPropertyActionListener value="#{_saliArch.saliArchId}"
+										target="#{saliArchControl.id}" />
+									<f:setPropertyActionListener
+										value="#{cajaDocuEgreControl.cajaDocuEgre.cajaDocuEgreId}"
+										target="#{saliArchControl.cajaDocuEgreId}" />
+									<f:setPropertyActionListener
+										value="/ppsj/caja/cajaDocuEgre/explora"
+										target="#{saliArchControl.paginaRuta}" />
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Salida">
+							<h:outputText id="salida" value="#{_saliArch.salida}" />
+						</p:column>
+
+						<p:column headerText="Formato">
+							<h:outputText id="formato" value="#{_saliArch.format}" />
+						</p:column>
+
+						<p:column headerText="Impresora">
+							<h:outputText id="impresora" value="#{_saliArch.impres}" />
+						</p:column>
+
+						<p:column headerText="Preseterminado">
+							<h:selectBooleanCheckbox id="predet" value="#{_saliArch.predet}" disabled="true" />
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{saliArchControl.nuevo}">
+							<f:setPropertyActionListener value="#{cajaDocuEgreControl.cajaDocuEgre.cajaDocuEgreId}"
+								target="#{saliArchControl.cajaDocuEgreId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/caja/cajaDocuEgre/explora"
+								target="#{saliArchControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>
+
+	</ui:define>
+</ui:composition>

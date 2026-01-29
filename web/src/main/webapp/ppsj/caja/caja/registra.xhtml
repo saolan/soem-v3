@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cajaId" value='#{cajaControl.id}' />
+		<f:event type="preRenderView" listener="#{cajaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{cajaControl.grabar}"
+					rendered="#{(cajaControl.id != null and cajaControl.rolPermiso.get(1001)) or 
+					(cajaControl.id == null and cajaControl.rolPermiso.get(1000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{cajaControl.eliminar}"
+					rendered="#{cajaControl.id != null and cajaControl.rolPermiso.get(1002)}" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+			</div>
+
+			<p:panel id="panelRegistrar" header="Caja - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="sucursalList" value="Sucursal" />
+							<p:selectOneMenu id="sucursalList"
+								value="#{cajaControl.caja.sucursal}"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="Seleccione Sucursal">
+								<f:selectItem itemLabel="Seleccione sucursal..." itemValue="" />
+								<f:selectItems value="#{cajaControl.sucursals}" var="sucursal"
+									itemLabel="#{sucursal.descri}" itemValue="#{sucursal}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="codigo" value="Código" />
+							<p:inputText id="codigo" value="#{cajaControl.caja.codigo}"
+								required="true" requiredMessage="Ingrese Código" />
+
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="descri" value="Descripción"
+								style="margin-right: 18px;" />
+							<p:inputText id="descri" value="#{cajaControl.caja.descri}"
+								required="true" requiredMessage="Ingrese Descripción" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+								value="#{cajaControl.caja.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

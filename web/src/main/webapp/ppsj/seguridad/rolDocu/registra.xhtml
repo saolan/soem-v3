@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="rolDocuId" value='#{rolDocuControl.id}' />
+		<f:viewParam name="rolId" value='#{rolDocuControl.rolId}' />
+		<f:viewParam name="paginaRuta" value='#{rolDocuControl.paginaRuta}' />
+		<f:event type="preRenderView" listener="#{rolDocuControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Rol Documento - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="rolList" value="Rol" />
+					<p:selectOneMenu id="rolList" value="#{rolDocuControl.rolDocu.rol}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{rolDocuControl.rols}" var="rol" 
+							itemLabel="#{rol.descri}" itemValue="#{rol}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="documentoList" value="Documento" />
+					<p:selectOneMenu id="documentoList" value="#{rolDocuControl.rolDocu.documento}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{rolDocuControl.documentos}" var="documento" 
+							itemLabel="#{documento.descri}" itemValue="#{documento}"/>
+					</p:selectOneMenu>					
+
+					<p:outputLabel for="@next" value="Grabar-Imprimir" />
+					<p:selectBooleanCheckbox value="#{rolDocuControl.rolDocu.grabarImpr}" required="true"
+						requiredMessage="Ingrese predeterminado" />
+					
+					<p:outputLabel for="predet" value="Predeterminado" />
+					<p:selectBooleanCheckbox id="predet" value="#{rolDocuControl.rolDocu.predet}" required="true"
+						requiredMessage="Ingrese predeterminado" />
+
+					<p:outputLabel for="acceso" value="Acceso" />
+					<p:selectBooleanCheckbox id="acceso" value="#{rolDocuControl.rolDocu.acceso}" required="true"
+						requiredMessage="Ingrese acceso" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{rolDocuControl.grabar}" 
+					rendered="#{(rolDocuControl.id != null and rolDocuControl.rolPermiso.get(7001)) or 
+					(rolDocuControl.id == null and rolDocuControl.rolPermiso.get(7000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{rolDocuControl.eliminar}" 
+					rendered="#{rolDocuControl.id != null and rolDocuControl.rolPermiso.get(7002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{rolDocuControl.cancelar}"	/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

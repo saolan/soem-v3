@@ -1,0 +1,250 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{docuElecControl.pagina}' />
+		<f:event type="preRenderView" listener='#{docuElecControl.buscar}' />
+
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="buscar" />
+			<p:focus context="panelBuscar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="buscar" ajax="false" value="Buscar"
+					styleClass="boton" action="#{docuElecControl.iniciarPagina}" />
+
+				<h:panelGroup id="panelProcesarTodos">
+					<p:commandLink id="procesarTodos" ajax="false"
+						value="Procesar Todos" styleClass="boton"
+						action="#{docuElecControl.procesarTodos}"
+						disabled="#{docuElecControl.bloquearBotonProcesarTodos}" />
+				</h:panelGroup>
+				
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="panelBuscar"
+				header="Documentos Electrónicos Reprocesar - Panel Busqueda">
+
+				<div class="card">
+
+					<div class="grid ui-fluid">
+
+						<div class="col-12 md:col-4">
+							<p:inputText id="numero" value="#{docuElecControl.egreso.numero}"
+								required="false" placeholder="Número">
+								<f:validateBean for="numero" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-4">
+							<p:calendar id="fechaDesde" pattern="dd-MM-yyyy"
+								value="#{docuElecControl.fechaDesde}" required="false"
+								placeholder="Fecha Desde">
+								<p:ajax event="dateSelect"
+									listener="#{docuElecControl.bloquearProcesarTodos}"
+									update="panelProcesarTodos" />
+								<f:validateBean for="fechaDesde" disabled="true" />
+							</p:calendar>
+						</div>
+
+						<div class="col-12 md:col-4">
+							<p:calendar id="fechaHasta" pattern="dd-MM-yyyy"
+								value="#{docuElecControl.fechaHasta}" required="false"
+								placeholder="Fecha Hasta">
+								<p:ajax event="dateSelect"
+									listener="#{docuElecControl.bloquearProcesarTodos}"
+									update="panelProcesarTodos" />
+								<f:validateBean for="fechaHasta" disabled="true" />
+							</p:calendar>
+						</div>
+
+						<div class="col-12 md:col-4">
+							<p:selectBooleanCheckbox id="reenviarEgresos"
+								itemLabel="Reenviar&#160;Ventas"
+								value="#{docuElecControl.reenviarEgresosRecibida}" />
+						</div>
+
+						<div class="col-12 md:col-4">
+							<p:selectBooleanCheckbox id="reenviarIngresos"
+								itemLabel="Reenviar&#160;Compras"
+								value="#{docuElecControl.reenviarIngresosRecibida}" />
+						</div>
+
+						<div class="col-12 md:col-4">
+
+							<p:selectBooleanCheckbox id="reenviarRetenciones"
+								itemLabel="Reenviar&#160;Retenciones"
+								value="#{docuElecControl.reenviarRetencionesRecibida}" />
+						</div>
+
+						<div class="col-12 md:col-4">
+							<p:selectBooleanCheckbox id="enviarCorreo"
+								itemLabel="Enviar&#160;Correo"
+								value="#{docuElecControl.enviarCorreo}" />
+						</div>
+
+						<div class="col-12 md:col-4">
+							<p:selectBooleanCheckbox id="sucursalSesion"
+								itemLabel="Sucursal&#160;Actual"
+								value="#{docuElecControl.buscarSucursalSesion}">
+								<p:ajax listener="#{docuElecControl.seleccionarSucursalSesion}"
+									event="change" />
+							</p:selectBooleanCheckbox>
+						</div>
+					</div>
+				</div>
+
+			</p:panel>
+
+			<p:tabView>
+
+				<p:tab title="Ventas">
+
+					<div class="card product">
+
+						<p:dataView id="egresoList" emptyMessage="No se encontro datos"
+							value="#{docuElecControl.egresos}" var="_egreso">
+
+							<f:facet name="header">
+								<h:outputText value="Ventas" />
+							</f:facet>
+
+							<p:dataViewListItem>
+
+								<div class="product-list-item">
+
+									<div class="product-list-detail">
+										<span><i class="pi pi-building" />#{_egreso.sucursal.descri}</span>
+										<div>#{_egreso.docuEgre.documento.descri}
+											#{_egreso.serie1}-#{_egreso.serie2}-#{_egreso.numero}</div>
+									</div>
+
+									<div class="product-list-detail">
+										<div>#{_egreso.persClie.persona.cedulaRuc}</div>
+										<div>#{_egreso.persClie.persona.apelli}
+											#{_egreso.persClie.persona.nombre}</div>
+									</div>
+
+									<div class="product-list-detail">
+										<h:outputText value="#{_egreso.fechaHoraEmis}">
+											<f:convertDateTime type="localDate"
+												pattern="dd-MM-yyyy HH:mm" />
+										</h:outputText>
+									</div>
+
+									<div class="product-list-detail">
+										<div>#{_egreso.estadoDocuElec}</div>
+										<div style="width: 100px;">#{_egreso.motivoRech}</div>
+									</div>
+								</div>
+							</p:dataViewListItem>
+						</p:dataView>
+					</div>
+				</p:tab>
+
+				<p:tab title="Compras">
+
+					<div class="card product">
+
+						<p:dataView id="ingresoList" emptyMessage="No se encontro datos"
+							value="#{docuElecControl.ingresos}" var="_ingreso">
+
+							<f:facet name="header">
+								<h:outputText value="Compras" />
+							</f:facet>
+
+							<p:dataViewListItem>
+								<div class="product-list-item">
+
+									<div class="product-list-detail">
+										<div>#{_ingreso.docuIngr.documento.descri}
+											#{_ingreso.serie1}-#{_ingreso.serie2}-#{_ingreso.numero}</div>
+									</div>
+
+									<div class="product-list-detail">
+										<div>#{_ingreso.persProv.persona.cedulaRuc}</div>
+										<div>#{_ingreso.persProv.persona.apelli}
+											#{_ingreso.persProv.persona.nombre}</div>
+									</div>
+
+									<div class="product-list-detail">
+										<h:outputText value="#{_ingreso.fechaHoraEmis}">
+											<f:convertDateTime type="localDate"
+												pattern="dd-MM-yyyy HH:mm" />
+										</h:outputText>
+									</div>
+
+									<div class="product-list-detail">
+										<div>#{_ingreso.estadoDocuElec}</div>
+										<div style="width: 100px;">#{_ingreso.motivoRech}</div>
+									</div>
+								</div>
+							</p:dataViewListItem>
+						</p:dataView>
+					</div>
+				</p:tab>
+
+				<p:tab title="Retenciones">
+
+					<div class="card product">
+
+						<p:dataView id="retencionList" emptyMessage="No se encontro datos"
+							value="#{docuElecControl.retencions}" var="_retencion">
+
+
+							<f:facet name="header">
+								<h:outputText value="Retenciones" />
+							</f:facet>
+
+							<p:dataViewListItem>
+								<div class="product-list-item">
+
+									<div class="product-list-detail">
+										<div>#{_retencion.ingreso.persProv.persona.cedulaRuc}</div>
+										<div>#{_retencion.ingreso.persProv.persona.apelli}
+											#{_retencion.ingreso.persProv.persona.nombre}</div>
+									</div>
+
+									<div class="product-list-detail">
+										<h:outputText value="#{_retencion.fechaHoraEmis}">
+											<f:convertDateTime type="localDate"
+												pattern="dd-MM-yyyy HH:mm" />
+										</h:outputText>
+									</div>
+
+									<div class="product-list-detail">
+										<div>#{_retencion.serie1}-#{_retencion.serie2}-#{_retencion.numero}</div>
+									</div>
+
+									<div class="product-list-detail">
+										<div>#{_retencion.estadoDocuElec}</div>
+										<div>#{_retencion.motivoRech}</div>
+									</div>
+								</div>
+							</p:dataViewListItem>
+						</p:dataView>
+					</div>
+
+				</p:tab>
+
+			</p:tabView>
+
+		</h:form>
+	</ui:define>
+
+
+
+</ui:composition>

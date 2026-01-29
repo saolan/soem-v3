@@ -1,0 +1,1857 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{ventaControl.pagina}' />
+		<f:viewParam name="paginaClie" value='#{ventaControl.paginaClie}' />
+		<f:viewParam name="paginaCxc" value='#{ventaControl.paginaCxc}' />
+		<f:viewParam name="egresoId" value='#{ventaControl.egresoId}' />
+
+		<f:event type="preRenderView"
+			listener='#{ventaControl.iniciarVentaCabe}' />
+		<f:event type="preRenderView"
+			listener='#{ventaControl.iniciarVentaDeta}' />
+	</f:metadata>
+
+	<ui:param name="pageTitle"
+		value="Soem #{ventaControl.variablesSesion.sucursal.descri} - Ventas Detalle" />
+
+	<ui:define name="main">
+
+		<style type="text/css">
+.ui-panelgrid td {
+	background-color: #feeebd !important;
+}
+
+.ui-panelgrid .ui-panelgrid-cell {
+	padding: 2px 3px;
+}
+
+.ui-datatable tbody tr {
+	background-image: none !important;
+}
+</style>
+
+		<h:form id="ventaForm">
+
+			<p:defaultCommand target="buscarProductos" />
+			<p:defaultCommand target="buscarPersClie"
+				scope="seleccionarClienteDialogo" />
+			<p:defaultCommand target="persClieRegisForm:grabar"
+				scope="persClieRegistrar" />
+			<p:defaultCommand target="buscarCxcs" scope="seleccionCxc" />
+
+			<div>
+
+				<div id="barraBotones"
+					style="float: left; width: 39%; text-align: left; border-style: none">
+
+					<p:panelGrid id="panelBotones" styleClass="ui-noborder">
+
+						<p:link value="Lista Ventas" outcome="/ppsj/egreso/egreso/lista"
+							styleClass="boton" includeViewParams="false" />
+
+						<p:commandLink id="grabar" styleClass="boton" ajax="false"
+							value="Grabar" action="#{ventaControl.grabar}"
+							rendered="#{ventaControl.estadoActual().equals('GR') and ventaControl.cajaMoviAbrioSesion.cajaMoviId != null}" />
+
+						<h:panelGroup id="panelGrabarimpr">
+							<p:commandLink id="grabarImpr" styleClass="boton" ajax="false"
+								value="Grabar-Imprimir" action="#{ventaControl.grabarImpr}"
+								rendered="#{ventaControl.estadoActual().equals('GR') 
+								and ventaControl.cajaMoviAbrioSesion.cajaMoviId != null 
+									and ventaControl.grabarImprimirEstado}" />
+						</h:panelGroup>
+
+						<p:commandLink id="abrirDialogo" styleClass="boton" value="Cobrar"
+							action="#{ventaControl.cargarFormPagoMoviEgre}"
+							onclick="PF('formaPagoDialogo').show();"
+							update="cliente,fpmeFormPagoList,cobradorList,documentoCobroList,total,totalReci,disponible,saldoCxc,cupo,fpmeFormPagoList"
+							rendered="#{!ventaControl.estadoActual().equals('AN') and 
+							ventaControl.rolPermiso.get(3105) and ventaControl.cajaMoviAbrioSesion.cajaMoviId != null}" />
+
+						<p:commandLink id="abrirDialogoConvertir" styleClass="boton"
+							value="Convertir" action="#{ventaControl.cargarDatosConvertir}"
+							onclick="PF('convertirDialogo').show();"
+							update="rolSucuConvertirList"
+							rendered="#{ventaControl.egresoId != null and ventaControl.rolPermiso.get(3112)}" />
+
+						<p:commandLink id="desProcesar" styleClass="boton" ajax="false"
+							value="DesProcesar" action="#{ventaControl.anular2}"
+							rendered="#{!ventaControl.estadoActual().equals('GR') and !ventaControl.egreso.estadoDocuElec.equals('AUTORIZADO') and 
+								ventaControl.rolPermiso.get(3108) and ventaControl.cajaMoviAbrioSesion.cajaMoviId != null}" />
+
+						<p:commandLink id="anular" styleClass="boton" ajax="false"
+							value="Anular" action="#{ventaControl.anular}"
+							rendered="#{ventaControl.egresoId != null and ventaControl.rolPermiso.get(3107)}" />
+
+						<h:commandLink id="descargar" action="#{ventaControl.descargar}" />
+						<input id="idDescargar" type="hidden"
+							value="#{ventaControl.idDescargar}" />
+
+					</p:panelGrid>
+				</div>
+
+				<div style="float: right; width: 60%;">
+
+					<h:panelGrid columns="2"
+						style="float: right; width: 20%;text-align: right; font-size: 130%;"
+						styleClass="ui-noborder">
+
+						<p:outputLabel for="totalDocumento" value="Total" />
+						<p:inputText id="totalDocumento"
+							value="#{ventaControl.totalDocumento}" readonly="true"
+							style="text-align: right;">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</p:inputText>
+					</h:panelGrid>
+					
+					<h:panelGrid columns="2"
+						style="float: left; text-align: left;" styleClass="ui-noborder">
+
+						<p:outputLabel style="width: 100%; text-align: left;  color: blue; " value="Doc. No Autorizados" />
+						<p:outputLabel id="docuNoAuto"
+							value="#{ventaControl.contadorDocuNoAuto}"	style="text-align: right; color: blue;">
+						</p:outputLabel>
+
+					</h:panelGrid>
+					
+				</div>
+			</div>
+
+			<div style="float: right; width: 60%;">
+
+				<p:panel id="cabecera"
+					header="#{ventaControl.cajaMoviAbrioSesion.sucursal.descri} - #{ventaControl.cajaMoviAbrioSesion.caja.descri} - #{ventaControl.cajaMoviAbrioSesion.persCaje.persona.apelli} #{ventaControl.cajaMoviAbrioSesion.persCaje.persona.nombre}">
+
+					<p:panelGrid styleClass="ui-noborder">
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Documento" />
+							</p:column>
+							<p:column>
+
+								<p:selectOneMenu id="documentoList"
+									value="#{ventaControl.egreso.docuEgre}"
+									converter="omnifaces.SelectItemsConverter"
+									disabled="#{ventaControl.egresoId != null}">
+									<p:ajax listener="#{ventaControl.alCambiarDocuEgre}"
+										event="change"
+										update="docuModifica,ventaForm:cxcSele,ventaForm:cxcList,panelGrabarimpr" />
+									<f:selectItems value="#{ventaControl.docuEgres}" var="docuEgre"
+										itemLabel="#{docuEgre.documento.descri}"
+										itemValue="#{docuEgre}" />
+								</p:selectOneMenu>
+							</p:column>
+
+							<p:column>
+
+								<p:outputLabel value="Fecha Emisión" />
+							</p:column>
+							<p:column>
+								<p:calendar id="fechaEmision"
+									value="#{ventaControl.egreso.fechaEmis}" pattern="dd-MM-yyyy"
+									required="true" requiredMessage="Ingrese fecha"
+									inputStyle="width:70px">
+									<p:ajax event="dateSelect" update="fechaEmision" />
+								</p:calendar>
+							</p:column>
+
+							<p:column>
+								<p:outputLabel value="Mesa"
+									rendered="#{ventaControl.activarMesa}" />
+							</p:column>
+
+							<p:column>
+								<p:selectOneMenu id="mesaList"
+									value="#{ventaControl.egreso.mesa}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Ingrese Mesa" style="width:50%;"
+									rendered="#{ventaControl.activarMesa}">
+									<f:selectItems value="#{ventaControl.mesas}" var="mesa"
+										itemLabel="#{mesa.descri}" itemValue="#{mesa}" />
+								</p:selectOneMenu>
+							</p:column>
+						</p:row>
+
+						<p:row>
+
+							<p:column>
+								<p:outputLabel value="Vendedor" />
+							</p:column>
+
+							<p:column>
+
+								<p:selectOneMenu id="vendedorList"
+									value="#{ventaControl.egreso.persVend}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Ingrese vendedor" style="width:50%;">
+									<f:selectItems value="#{ventaControl.persVends}" var="perVend"
+										itemLabel="#{perVend.persona.apelli} #{perVend.persona.nombre}"
+										itemValue="#{persVend}" />
+								</p:selectOneMenu>
+							</p:column>
+
+							<p:column>
+								<p:outputLabel value="Descuento" />
+							</p:column>
+
+							<p:column>
+								<p:inputText id="descuento"
+									validator="#{ventaControl.validarDescuento}"
+									value="#{ventaControl.egreso.descue}"
+									style="text-align: right;width:70px;" required="true"
+									requiredMessage="Ingrese Descuento"
+									disabled="#{ventaControl.egreso.descue.doubleValue() != 0 and ventaControl.rolPermiso.get(3180) }">
+									<p:ajax listener="#{ventaControl.calcularTotalEgres}"
+										event="blur" update="totalDocumento" />
+
+								</p:inputText>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Número" />
+							</p:column>
+							<p:column>
+								<p:inputText id="serie1" value="#{ventaControl.egreso.serie1}"
+									style="width:30px;" readonly="true" />
+								<p:inputText id="serie2" value="#{ventaControl.egreso.serie2}"
+									style="width:30px;" readonly="true" />
+								<p:inputText id="numero" value="#{ventaControl.egreso.numero}"
+									style="width:70px;" readonly="true" />
+							</p:column>
+
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:commandLink id="abrirBuscarCliente" value="Cliente"
+									style="font-size: 110%; font-weight: bold; color: blue; text-decoration: underline;"
+									onclick="PF('seleccionarClienteDialogo').show();" />
+							</p:column>
+
+							<p:column>
+								<p:outputLabel id="persClieApelli"
+									value="#{ventaControl.egreso.persClie.persona.apelli} 
+										   #{ventaControl.egreso.persClie.persona.nombre}"
+									styleClass="cajaTextoDescri"
+									style="width:300px;text-align: left" />
+							</p:column>
+
+							<p:column>
+								<p:commandLink id="abrirEgreNota" value="Nota"
+									action="#{ventaControl.buscarEgreNotas}"
+									update="egreNotaForm:egreNotaList"
+									style="font-size: 110%; font-weight: bold; color: blue; text-decoration: underline;"
+									onclick="PF('egreNotaDialogo').show();" />
+							</p:column>
+
+							<p:column colspan="3">
+								<p:inputText id="nota" value="#{ventaControl.egreso.nota}"
+									style="width:300px;" />
+							</p:column>
+
+						</p:row>
+
+						<p:row rendered="#{ventaControl.rolPermiso.get(3200)}">
+							<p:column>
+								<p:outputLabel value="Disponible"
+									style="width:100%;text-align:left" />
+							</p:column>
+
+							<p:column>
+								<p:inputText id="disponible1"
+									value="#{ventaControl.saldoDisponible}" readonly="true"
+									style="text-align: right;width:70px;">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:inputText>
+							</p:column>
+
+							<p:column>
+								<p:outputLabel value="Saldo Cxc"
+									style="width:100%;text-align: left" />
+							</p:column>
+
+							<p:column>
+								<p:inputText id="saldoCxc1" value="#{ventaControl.saldoCliente}"
+									readonly="true" style="text-align: right;width:70px;">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:inputText>
+							</p:column>
+
+							<p:column>
+								<p:outputLabel value="Cupo" style="width:100%;text-align: right" />
+							</p:column>
+
+							<p:column style="text-align: left">
+								<p:inputText id="cupo1"
+									value="#{ventaControl.egreso.persClie.cupo}" readonly="true"
+									style="text-align: right;width:70px;">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:inputText>
+							</p:column>
+						</p:row>
+
+					</p:panelGrid>
+
+					<h:panelGroup id="docuModifica">
+						<h:panelGrid columns="3"
+							rendered="#{ventaControl.egreso.docuEgre.dimm.codigo == '04' or ventaControl.egreso.docuEgre.dimm.codigo == '05'}">
+							<p:commandLink id="abrirDialogoCxc"
+								style="font-size: 110%; font-weight: bold; color: blue; text-decoration: underline; "
+								onclick="PF('seleccionCxc').show();">
+								<h:outputText value="Seleccione CXC " />
+								<h:graphicImage library="img" name="lupa1.png" width="14px" />
+							</p:commandLink>
+
+							<p:outputLabel id="cxcSele"
+								style="text-align: left; width:500px; font-size: 110%; font-weight: normal; width: 220px"
+								value="#{ventaControl.egreso.egreso.serie1} #{ventaControl.egreso.egreso.serie2} #{ventaControl.egreso.egreso.numero}" />
+
+							<p:commandLink id="eliminarCxc" value="Eliminar CXC"
+								style="font-size: 110%; font-weight: bold; color: blue; text-decoration: underline;"
+								action="#{ventaControl.elimnarCxc}"
+								rendered="#{ventaControl.cxcSele.cxcId != null}" ajax="true"
+								update="cxcSele, docuModifica" />
+
+						</h:panelGrid>
+
+					</h:panelGroup>
+
+				</p:panel>
+
+			</div>
+
+			<div style="float: left; width: 40%;">
+
+				<p:panel id="panelBuscar" header="Buscar Productos">
+
+					<p:focus for="#{ventaControl.ventaDetaAlCargar}" />
+
+					<h:panelGrid columns="6">
+
+						<p:outputLabel for="buscarProdCodigoBarra" value="Código Barra" />
+						<p:inputText id="buscarProdCodigoBarra"
+							onblur="moverCursor('ventaForm:buscarProdCodigoBarra','#{ventaControl.ventaDetaAlSeleProd}')"
+							value="#{ventaControl.prodPrec.producto.codigoBarra}"
+							required="false" style="width:110px;">
+							<f:validateBean for="buscarProdCodigoBarra" disabled="true" />
+						</p:inputText>
+
+						<p:outputLabel for="buscarProdCodigo" value="Código" />
+						<p:inputText id="buscarProdCodigo"
+							onfocus="this.setSelectionRange(0, this.value.length)"
+							value="#{ventaControl.prodPrec.producto.codigo}" required="false"
+							style="width:110px;" tabindex="2">
+							<f:validateBean for="buscarProdCodigo" disabled="true" />
+						</p:inputText>
+
+						<p:column />
+						<p:column />
+
+						<p:outputLabel for="buscarProdDescri" value="Descripción" />
+						<p:inputText id="buscarProdDescri"
+							value="#{ventaControl.prodPrec.producto.descri}" required="false"
+							onfocus="this.setSelectionRange(0, this.value.length)"
+							style="width:110px;">
+							<f:validateBean for="buscarProdDescri" disabled="true" />
+						</p:inputText>
+
+						<p:outputLabel for="tipoList" value="Tipo" />
+						<p:selectOneMenu id="tipoList"
+							value="#{ventaControl.prodPrec.producto.prodGrup.tipo}"
+							required="true">
+							<f:selectItems value="#{ventaControl.parametros}" var="parametro"
+								itemLabel="#{parametro.descri}" itemValue="#{parametro.descri}" />
+						</p:selectOneMenu>
+
+						<p:commandLink id="buscarProductos"
+							action="#{ventaControl.buscarProdPrecsBalanza(0)}"
+							update="prodPrecList,ventaForm:egresoDetaList,ventaForm:totalDocumento,panelBuscar,paginadorProductos">
+							<h:graphicImage library="img" name="lupa1.png" width="14px" />
+						</p:commandLink>
+
+					</h:panelGrid>
+
+				</p:panel>
+
+				<p:dataTable id="prodPrecList"
+					style="margin-bottom:3px; margin-top:-6px;"
+					emptyMessage="No se encontro datos"
+					value="#{ventaControl.prodPrecs}" var="_prodPrec">
+
+					<!-- columns="#{ventaControl.columnasProductos}" esto afecta a datagrid no a datatable -->
+
+					<p:column headerText="Stk" rendered="true"
+						style="width:16px;text-align: center">
+						<p:commandLink id="abrirDialogoInventario"
+							styleClass="ui-icon ui-icon-circle-zoomin"
+							title="Consultar Inventario"
+							onclick="PF('consultarInventarioDialogo').show();"
+							action="#{ventaControl.buscarKardTotaViews}"
+							update="ventaForm:karkTotaView">
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{ventaControl.productoId}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Pvp"
+						rendered="#{ventaControl.activarConsultaPrecio}"
+						style="width:16px;text-align: center">
+						<p:commandLink id="abriDialogoPrecio1"
+							styleClass="ui-icon 	ui-icon-plusthick" title="Consultar Precio"
+							onclick="PF('seleccionPrecioDialogo').show();"
+							action="#{ventaControl.buscarProdPrecs}"
+							update="ventaForm:prodPrec">
+
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{ventaControl.productoId}" />
+
+							<f:setPropertyActionListener value="#{_prodPrec}"
+								target="#{ventaControl.prodPrecSele}" />
+
+							<f:setPropertyActionListener value="#{0}"
+								target="#{ventaControl.origenPrecio}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Cod.Barra"
+						rendered="#{ventaControl.activarCodigoBarra}"
+						style="width:120px;text-align: left">
+						<p:commandLink id="agregarProduc" title="Agregar producto"
+							value="#{_prodPrec.producto.codigoBarra}"
+							oncomplete="moverCursor('agregarProduc','#{ventaControl.ventaDetaAlSeleProd}')"
+							action="#{ventaControl.agregarProducto}" ajax="true"
+							update="ventaForm:egresoDetaList,ventaForm:totalDocumento">
+
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{ventaControl.productoId}" />
+
+							<f:setPropertyActionListener value="#{_prodPrec}"
+								target="#{ventaControl.prodPrecSele}" />
+
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Descripción"
+						rendered="#{ventaControl.activarDescri}">
+						<p:commandLink id="agregarDescri" title="Agregar producto"
+							value="#{_prodPrec.producto.descri}"
+							oncomplete="moverCursor('agregarDescri','#{ventaControl.ventaDetaAlSeleProd}')"
+							action="#{ventaControl.agregarProducto}" ajax="true"
+							update="ventaForm:egresoDetaList,ventaForm:totalDocumento">
+
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{ventaControl.productoId}" />
+
+							<f:setPropertyActionListener value="#{_prodPrec}"
+								target="#{ventaControl.prodPrecSele}" />
+
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Img."
+						rendered="#{ventaControl.activarImagen}">
+						<p:commandLink id="agregarBtnImg" title="Agregar producto"
+							oncomplete="moverCursor('agregarBtnImg','#{ventaControl.ventaDetaAlSeleProd}')"
+							action="#{ventaControl.agregarProducto}" ajax="true"
+							update="ventaForm:egresoDetaList,ventaForm:totalDocumento">
+
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{ventaControl.productoId}" />
+
+							<f:setPropertyActionListener value="#{_prodPrec}"
+								target="#{ventaControl.prodPrecSele}" />
+
+							<p:graphicImage id="imagen" title="Imagen producto"
+								value="#{cargarImagenes.imagen}"
+								alt="#{_prodPrec.producto.descri}" height="100%" width="100%">
+								<f:param name="productoId"
+									value="#{_prodPrec.producto.productoId}" />
+
+							</p:graphicImage>
+
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Precio"
+						rendered="#{ventaControl.activarPrecio}"
+						style="width:15%;text-align: right">
+						<p:commandLink id="abriDialogoPrecio2" title="Consultar Precio"
+							onclick="PF('seleccionPrecioDialogo').show();"
+							action="#{ventaControl.buscarProdPrecs}"
+							update="ventaForm:prodPrec">
+
+							<h:outputText id="valor" value="#{_prodPrec.precioConImpu}">
+								<f:convertNumber pattern="#0.0000" locale="en-US" />
+							</h:outputText>
+
+							<f:setPropertyActionListener
+								value="#{_prodPrec.producto.productoId}"
+								target="#{ventaControl.productoId}" />
+
+							<f:setPropertyActionListener value="#{_prodPrec}"
+								target="#{ventaControl.prodPrecSele}" />
+
+							<f:setPropertyActionListener value="#{0}"
+								target="#{ventaControl.origenPrecio}" />
+
+						</p:commandLink>
+					</p:column>
+
+				</p:dataTable>
+
+				<div id="divPagina" align="center">
+					<h:panelGroup id="paginadorProductos">
+
+						<p:commandButton value="&lt; Anterior" ajax="true"
+							update="ventaForm:prodPrecList,paginadorProductos"
+							rendered="#{ventaControl.pagina gt 0}"
+							action="#{ventaControl.buscarProdPrecs(1)}">
+							<f:param name="pagina" value="#{ventaControl.pagina - 1}" />
+						</p:commandButton>
+
+						<p:commandButton value="Siguiente &gt;" ajax="true"
+							update="ventaForm:prodPrecList,paginadorProductos"
+							rendered="#{(ventaControl.pagina + 1) * ventaControl.filasProductos lt ventaControl.contadorReg}"
+							action="#{ventaControl.buscarProdPrecs(1)}">
+							<f:param name="pagina" value="#{ventaControl.pagina + 1}" />
+						</p:commandButton>
+
+					</h:panelGroup>
+				</div>
+			</div>
+
+			<div style="float: right; width: 60%;">
+
+				<p:dataTable id="egresoDetaList" emptyMessage="No se encontro datos"
+					editable="true" editMode="cell" style="margin-top:-6px;"
+					scrollable="true" scrollHeight="355"
+					value="#{ventaControl.egreDetaDataTable}" var="_egreDeta"
+					rowKey="#{_egreDeta.egreDetaId}"
+					rowStyleClass="#{_egreDeta.producto.controlMaxMin eq 'maximo' ? 'stockMaximo' : _egreDeta.producto.controlMaxMin eq 'minimo' ? 'stockMinimo' : null}">
+
+					<p:ajax event="cellEdit" oncomplete="modificarCelda()"
+						listener="#{ventaControl.modificarCelda}" />
+
+					<p:column style="width:50px;text-align: center" headerText="Op.">
+
+						<p:panelGrid columns="2" styleClass="ui-noborder">
+
+							<p:commandLink styleClass="ui-icon ui-icon-trash"
+								title="eliminar" ajax="true"
+								update="ventaForm:egresoDetaList,ventaForm:totalDocumento,ventaForm:panelBuscar"
+								action="#{ventaControl.eliminarEgreDeta}">
+								<f:setPropertyActionListener value="#{_egreDeta}"
+									target="#{ventaControl.egreDetaSele}" />
+
+							</p:commandLink>
+
+							<p:commandLink styleClass="ui-icon ui-icon-comment"
+								title="Agregar Nota" ajax="true"
+								update="ventaForm:egreDetaDetalle"
+								onclick="PF('egreDetaNotaDialogo').show();">
+								<f:setPropertyActionListener value="#{_egreDeta}"
+									target="#{ventaControl.egreDetaSele}" />
+							</p:commandLink>
+
+						</p:panelGrid>
+
+					</p:column>
+
+					<p:column headerText="Producto"
+						rendered="#{!variablesSesion.mostrarCodigoEgreDeta}">
+						<h:outputText id="descri" value="#{_egreDeta.producto.descri}" />
+					</p:column>
+
+					<p:column headerText="Producto"
+						rendered="#{variablesSesion.mostrarCodigoEgreDeta}">
+						<h:outputText id="descriCodigo"
+							value="#{_egreDeta.producto.descri}~#{_egreDeta.producto.codigo}" />
+					</p:column>
+
+					<p:column headerText="Cantidad"
+						style="width:50px;text-align: right">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText id="cantidOutput" value="#{_egreDeta.cantid}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="cantidInput" value="#{_egreDeta.cantid}"
+									style="width:100%">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column headerText="Precio/Presen"
+						style="width:80px;text-align: left">
+
+						<p:commandLink id="abrirDialogo"
+							value="#{_egreDeta.precio.descri}"
+							onclick="PF('seleccionPrecioDialogo').show();"
+							action="#{ventaControl.buscarProdPrecs}"
+							update="ventaForm:prodPrec">
+
+							<f:setPropertyActionListener
+								value="#{_egreDeta.producto.productoId}"
+								target="#{ventaControl.productoId}" />
+
+							<f:setPropertyActionListener value="#{_egreDeta}"
+								target="#{ventaControl.egreDetaSele}" />
+						</p:commandLink>
+
+					</p:column>
+
+					<p:column id="precioConImpuCol" headerText="PVP"
+						style="width:60px;text-align: right">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText id="precioConImpuOutput"
+									value="#{_egreDeta.precioConImpu}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="precioConImpuInput"
+									value="#{_egreDeta.precioConImpu}"
+									readonly="#{!ventaControl.rolPermiso.get(3111)}">
+									<f:convertNumber pattern="#0.0000" locale="en-US" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+
+					</p:column>
+
+					<p:column headerText="Descto" style="width:50px;text-align: right">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText id="descueOutput" value="#{_egreDeta.descue}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="descueInput" value="#{_egreDeta.descue}"
+									rendered="true" style="width:100%" />
+							</f:facet>
+						</p:cellEditor>
+
+					</p:column>
+
+					<p:column id="totalConImpuCol" headerText="Total"
+						style="width:60px;text-align: right">
+						<h:outputText id="totalConImpu" value="#{_egreDeta.totalConImpu}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+
+			</div>
+
+			<p:dialog id="selecionPrecio" widgetVar="seleccionPrecioDialogo"
+				width="50%" header="Seleccione Precio" modal="true"
+				resizable="false">
+				<p:ajax event="close" update="ventaForm:panelBuscar" />
+
+				<p:dataTable id="prodPrec" style="margin-bottom:5px;"
+					emptyMessage="No se encontro datos"
+					value="#{ventaControl.prodPrecSeles}" var="_prodPrecs">
+
+					<p:column headerText="Código">
+						<p:commandLink id="prodPrecCodigo"
+							value="#{_prodPrecs.precio.codigo}"
+							onclick="PF('seleccionPrecioDialogo').hide();"
+							action="#{ventaControl.seleccionarPrecio}"
+							update="ventaForm:egresoDetaList,ventaForm:totalDocumento,ventaForm:panelBuscar">
+							<f:setPropertyActionListener value="#{_prodPrecs}"
+								target="#{ventaControl.prodPrecSele}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Descripción">
+						<p:commandLink id="prodPrecSele"
+							value="#{_prodPrecs.precio.descri}"
+							onclick="PF('seleccionPrecioDialogo').hide();"
+							action="#{ventaControl.seleccionarPrecio}"
+							update="ventaForm:egresoDetaList,ventaForm:totalDocumento,ventaForm:panelBuscar">
+							<f:setPropertyActionListener value="#{_prodPrecs}"
+								target="#{ventaControl.prodPrecSele}" />
+						</p:commandLink>
+
+					</p:column>
+
+					<p:column headerText="Factor Inventario">
+						<h:outputText value="#{_prodPrecs.factor}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Precio">
+						<p:commandLink id="prodPrecSele1"
+							value="#{_prodPrecs.precioConImpu}"
+							onclick="PF('seleccionPrecioDialogo').hide();"
+							action="#{ventaControl.seleccionarPrecio}"
+							update="ventaForm:egresoDetaList,ventaForm:totalDocumento">
+							<f:setPropertyActionListener value="#{_prodPrecs}"
+								target="#{ventaControl.prodPrecSele}" />
+						</p:commandLink>
+					</p:column>
+
+				</p:dataTable>
+
+			</p:dialog>
+
+			<p:dialog id="consultarInventario"
+				widgetVar="consultarInventarioDialogo" width="70%"
+				header="Consulta Inventario" modal="true" resizable="false">
+				<p:ajax event="close" update="ventaForm:panelBuscar" />
+
+				<p:dataTable id="karkTotaView" style="margin-bottom:5px;"
+					emptyMessage="No se encontro datos"
+					value="#{ventaControl.kardTotaViews}" var="_kardTotaView">
+
+					<p:column headerText="Sucursal"
+						style="width:200px;text-align: left">
+						<h:outputText value="#{_kardTotaView.sucuDescri}" />
+					</p:column>
+
+					<p:column headerText="Producto">
+						<h:outputText value="#{_kardTotaView.prodDescri}" />
+					</p:column>
+
+					<p:column headerText="Stock" style="width:80px;text-align: right">
+						<h:outputText value="#{_kardTotaView.cantidSald}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+			</p:dialog>
+
+			<p:dialog id="egreDetaNota" widgetVar="egreDetaNotaDialogo"
+				header="Descripción Adicional" modal="true" resizable="false">
+
+				<p:outputPanel id="egreDetaDetalle" style="text-align:center;">
+
+					<p:panelGrid columns="1" layout="grid">
+						<h:outputText value="#{ventaControl.egreDetaSele.producto.descri}" />
+
+						<p:inputTextarea rows="10" cols="80" counter="contador"
+							maxlength="1000" counterTemplate="Caracteres disponibles {0}"
+							autoResize="false" value="#{ventaControl.egreDetaSele.nota}">
+						</p:inputTextarea>
+
+						<h:outputText id="contador" />
+						<br />
+						<p:commandLink id="aceptarEgreDetaNotaDialogo" ajax="false"
+							styleClass="boton" value="Aceptar"
+							onclick="PF('egreDetaNotaDialogo').hide();" />
+
+					</p:panelGrid>
+
+				</p:outputPanel>
+			</p:dialog>
+
+			<p:dialog id="controlStock" widgetVar="controlStockDialogo"
+				width="50%" closable="false" modal="true" resizable="false"
+				focus="aceptarcontrolStockDialogo">
+
+				<p:panel id="controlStockInfo">
+
+					<div align="center">
+						<h:outputText value="#{ventaControl.prodPrecSele.producto.descri}"
+							style="font-weight:bold" />
+						<br /> <br />
+						<h:outputText value="No tiene suficiente inventario" />
+					</div>
+
+				</p:panel>
+
+				<div align="center" style="margin-top: 15px;">
+					<p:commandButton id="aceptarcontrolStockDialogo" ajax="false"
+						styleClass="boton" value="Aceptar"
+						onclick="PF('controlStockDialogo').hide();" />
+				</div>
+
+			</p:dialog>
+
+			<p:dialog id="saldoMenorQueUno" widgetVar="saldoMenorQueUnoDialogo"
+				width="50%" closable="false" modal="true" resizable="false"
+				focus="aceptarSaldoMenorQueUnoDialogo">
+
+				<p:panel id="saldoMenorQueUnoInfo">
+
+					<div align="center">
+						<h:outputText value="#{ventaControl.prodPrecSele.producto.descri}"
+							style="font-weight:bold" />
+						<br /> <br />
+						<h:outputText
+							value="El saldo del producto es menor que 1, verifique cantidad, precio y total" />
+					</div>
+
+				</p:panel>
+
+				<div align="center" style="margin-top: 15px;">
+					<p:commandButton id="aceptarSaldoMenorQueUnoDialogo" ajax="false"
+						styleClass="boton" value="Aceptar"
+						onclick="PF('saldoMenorQueUnoDialogo').hide();" />
+				</div>
+
+			</p:dialog>
+
+			<p:dialog id="descuentoNoAutorizado"
+				widgetVar="descuentoNoAutorizadoDialogo" width="50%"
+				closable="false" modal="true" resizable="false"
+				focus="aceptarDescuentoNoAutorizado">
+
+				<p:panel id="aceptarDescuentoNoAutorizadoInfo">
+
+					<div align="center">
+						<h:outputText value="Descuento es mayor que el autorizado" />
+					</div>
+
+				</p:panel>
+
+				<div align="center" style="margin-top: 15px;">
+					<p:commandButton id="aceptarDescuentoNoAutorizado" ajax="false"
+						styleClass="boton" value="Aceptar"
+						onclick="PF('descuentoNoAutorizadoDialogo').hide();" />
+				</div>
+
+			</p:dialog>
+
+			<p:dialog id="prodNoExiste" widgetVar="prodNoExisteDialogo"
+				width="50%" closable="false" modal="true" resizable="false"
+				focus="aceptarProdNoExisteDialogo">
+
+				<p:panel id="prodNoExisteInfo">
+
+					<div align="center">
+						<h:outputText value="Producto no existe" />
+					</div>
+
+				</p:panel>
+
+				<div align="center" style="margin-top: 15px;">
+					<p:commandButton id="aceptarProdNoExisteDialogo" ajax="false"
+						styleClass="boton" value="Aceptar"
+						onclick="PF('prodNoExisteDialogo').hide();" />
+				</div>
+
+			</p:dialog>
+
+
+			<p:dialog id="formaPago" widgetVar="formaPagoDialogo" width="950px"
+				onHide="moverCursor('seleccionCxc','#{ventaControl.ventaDetaAlSeleProd}')"
+				focus="procesarDialogo" resizable="false" header="Cobro"
+				modal="true">
+
+				<div style="float: left; border-style: none">
+
+					<p:panelGrid style="margin-top:40px; margin-bottom:5px;"
+						styleClass="ui-noborder">
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Cliente" style="font-size:115%" />
+							</p:column>
+
+							<p:column colspan="4">
+								<p:outputLabel id="cliente"
+									value="#{ventaControl.formPagoMoviEgre.persona.apelli} #{ventaControl.formPagoMoviEgre.persona.nombre}"
+									style="width:100%;text-align: left;font-size:115%" />
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Disponible"
+									style="width:100%;text-align:left" />
+							</p:column>
+
+							<p:column>
+								<p:outputLabel id="disponible"
+									value="#{ventaControl.saldoDisponible}" disabled="true"
+									style="text-align:right;width:100px;">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:outputLabel>
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Saldo Cxc"
+									style="width:100%;text-align:left" />
+							</p:column>
+
+							<p:column>
+								<p:outputLabel id="saldoCxc"
+									value="#{ventaControl.saldoCliente}" disabled="true"
+									style="text-align:right;width:100px;">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:outputLabel>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Cupo" style="width:100%;text-align: left" />
+							</p:column>
+
+							<p:column>
+								<p:outputLabel id="cupo"
+									value="#{ventaControl.egreso.persClie.cupo}" disabled="true"
+									style="text-align:right;width:100px;">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:outputLabel>
+							</p:column>
+
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel value="Documento"
+									style="width:100%;text-align: left" />
+							</p:column>
+
+							<p:column>
+								<p:selectOneMenu id="documentoCobroList"
+									value="#{ventaControl.formPagoMoviEgre.docuMoviEgre}"
+									converter="omnifaces.SelectItemsConverter" required="false"
+									requiredMessage="Seleccione documento">
+									<p:ajax event="change"
+										listener="#{ventaControl.filtrarFormPago}"
+										update="fpmeFormPagoList" />
+									<f:selectItems value="#{ventaControl.docuMoviEgres}"
+										var="docuMoviEgre"
+										itemLabel="#{docuMoviEgre.documento.descri}"
+										itemValue="#{docuMoviEgre}" />
+								</p:selectOneMenu>
+							</p:column>
+
+							<p:column>
+								<p:outputLabel value="Cobrador"
+									style="width:100%;text-align: left" />
+							</p:column>
+
+							<p:column colspan="3">
+								<p:selectOneMenu id="cobradorList"
+									value="#{ventaControl.formPagoMoviEgre.persCobr}"
+									converter="omnifaces.SelectItemsConverter" required="false"
+									requiredMessage="Seleccione cobrador">
+
+									<f:selectItems value="#{ventaControl.persCobrs}" var="persCobr"
+										itemLabel="#{persCobr.persona.apelli} #{persCobr.persona.nombre}"
+										itemValue="#{persCobr}" />
+								</p:selectOneMenu>
+							</p:column>
+
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel for="refere" value="Referencia"
+									style="width:100%;text-align: left" />
+							</p:column>
+							<p:column>
+								<p:inputText id="refere"
+									validator="#{ventaControl.validarRefere}"
+									value="#{ventaControl.formPagoMoviEgre.refere}"
+									required="false" style="width:200px;" />
+							</p:column>
+							<p:column>
+								<p:outputLabel for="notaCobro" value="Nota"
+									style="width:100%;text-align: left" />
+							</p:column>
+							<p:column colspan="3">
+
+								<p:inputText id="notaCobro"
+									value="#{ventaControl.formPagoMoviEgre.nota}" required="false"
+									style="width:200px;" />
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+				</div>
+
+
+				<div
+					style="float: right; text-align: left; border-style: none; margin-top: 20px;">
+					<p:panelGrid styleClass="ui-noborder">
+						<p:row>
+							<p:column>
+								<p:outputLabel for="total" value="Total"
+									style="width:100%;text-align: left" />
+							</p:column>
+
+							<p:column>
+								<p:inputText id="total"
+									value="#{ventaControl.formPagoMoviEgre.total}" readonly="true"
+									style="width:200px; font-size:200%; text-align:right">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:inputText>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel for="totalReci" value="Total Recibido"
+									style="width:100%;text-align: left" />
+							</p:column>
+
+							<p:column>
+								<p:inputText id="totalReci"
+									value="#{ventaControl.formPagoMoviEgre.totalReci}"
+									style="width:200px; font-size: 200%; text-align:right"
+									readonly="true">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:inputText>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel for="cambio" value="Cambio"
+									style="width:100%;text-align: left" />
+							</p:column>
+
+							<p:column>
+								<p:inputText id="cambio" value="#{ventaControl.cambio}"
+									readonly="true"
+									style="width:200px; font-size: 200%; text-align:right">
+									<f:convertNumber pattern="#0.00" locale="en-US" />
+								</p:inputText>
+							</p:column>
+
+						</p:row>
+					</p:panelGrid>
+				</div>
+
+				<div
+					style="float: right; width: 100%; text-align: left; border-style: none">
+
+					<p:dataTable id="fpmeFormPagoList" style="font-size:120%"
+						emptyMessage="No se encontro datos" editable="true"
+						editMode="cell" scrollable="true" scrollHeight="200"
+						value="#{ventaControl.fpmeFormPagos}" var="_fpmeFormPago"
+						rowKey="#{_fpmeFormPago.fpmeFormPagoId}">
+
+						<f:facet name="header">
+							<p:commandLink value="+ Formas de Pago" ajax="true"
+								update="fpmeFormPagoList,ventaForm:cambio,ventaForm:totalReci"
+								action="#{ventaControl.crearFilaFpmeFormPago}">
+							</p:commandLink>
+
+						</f:facet>
+
+						<p:column style="width:10px;text-align: center" headerText="Op.">
+
+							<p:panelGrid columns="1" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-trash"
+									title="eliminar" ajax="true"
+									action="#{ventaControl.eliminarFilaFpmeFormPago}"
+									update="fpmeFormPagoList,ventaForm:cambio,ventaForm:totalReci">
+									<f:setPropertyActionListener value="#{_fpmeFormPago}"
+										target="#{ventaControl.fpmeFormPagoSele}" />
+
+								</p:commandLink>
+
+							</p:panelGrid>
+						</p:column>
+
+						<p:column headerText="Forma Pago"
+							style="width:70px;text-align: left">
+							<p:selectOneMenu id="formPagoList"
+								value="#{_fpmeFormPago.formPago}"
+								converter="omnifaces.SelectItemsConverter" required="false"
+								requiredMessage="Seleccione forma de pago">
+								<p:ajax listener="#{ventaControl.alCambiarFormCobr}"
+									event="change"
+									update="fpmeFormPagofechaCobroInput,fpmeFormPagoDiasPlazInput" />
+
+								<f:selectItem itemLabel="Seleccione..." itemValue="" />
+								<f:selectItems value="#{ventaControl.formPagos}" var="formPago"
+									itemLabel="#{formPago.descri}" itemValue="#{formPago}" />
+							</p:selectOneMenu>
+
+						</p:column>
+
+						<p:column id="fpmeFormPagofecha" headerText="Fecha"
+							style="width:40px;text-align: right">
+							<p:calendar id="fpmeFormPagofechaCobroInput"
+								value="#{_fpmeFormPago.fecha}" pattern="dd-MM-yyyy"
+								inputStyle="width:70px"
+								disabled="#{_fpmeFormPago.formPago.tipo != 'CR'}">
+								<p:ajax event="dateSelect"
+									listener="#{ventaControl.calcularDiasPlaz}"
+									update="fpmeFormPagoDiasPlazInput" />
+
+							</p:calendar>
+						</p:column>
+
+						<p:column id="fpmeFormPagodiasPlaz" headerText="Días Plazo"
+							style="width:60px;text-align: right">
+							<p:inputText id="fpmeFormPagoDiasPlazInput"
+								value="#{_fpmeFormPago.diasPlaz}" rendered="true"
+								style="width:50px" >
+								<p:ajax event="change"
+									listener="#{ventaControl.calcularFechaCobro}"
+									update="fpmeFormPagofechaCobroInput" />
+							</p:inputText>
+						</p:column>
+
+						<p:column headerText="Tiempo" style="width:50px;text-align: right">
+
+							<p:inputText id="unidadTiempoInput"
+								value="#{_fpmeFormPago.unidadTiem}" rendered="true"
+								style="width:100%" />
+
+						</p:column>
+
+						<p:column headerText="Referencia"
+							style="width:50px;text-align: right">
+
+							<p:inputText id="fpmeFormPagoRefereInput"
+								value="#{_fpmeFormPago.refere}" rendered="true"
+								style="width:100%" />
+
+						</p:column>
+
+						<p:column headerText="Total" style="width:50px;text-align: right">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText id="totalOutput"
+										value="#{_fpmeFormPago.totalReci}">
+										<f:convertNumber pattern="#0.00" locale="en-US" />
+									</h:outputText>
+								</f:facet>
+
+								<f:facet name="input">
+									<p:inputText id="fpmeFormPagoTotalInput"
+										value="#{_fpmeFormPago.totalReci}" style="width:100%"
+										onfocus="this.setSelectionRange(0, this.value.length)">
+										<p:ajax listener="#{ventaControl.calcularCambioView}"
+											event="keyup" update="ventaForm:cambio,ventaForm:totalReci" />
+										<f:convertNumber pattern="#0.000000" locale="en-US" />
+
+									</p:inputText>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
+					</p:dataTable>
+
+					<div style="float: right; border-style: none; margin-top: 6px;">
+						<p:commandLink id="procesarDialogo" styleClass="boton"
+							value="Procesar"
+							action="#{ventaControl.procesarImprimirDialogo(false)}"
+							oncomplete="handleLoginRequestCobrar(xhr, status, args)"
+							rendered="#{(ventaControl.estadoActual().equals('GR') or ventaControl.estadoActual() == null) and 
+							ventaControl.rolPermiso.get(3104) }" />
+
+						<p:commandLink id="procesarImprimirDialogo" styleClass="boton"
+							value="Imprimir"
+							action="#{ventaControl.procesarImprimirDialogo(true)}"
+							oncomplete="handleLoginRequestCobrar(xhr, status, args)"
+							rendered="#{(ventaControl.estadoActual().equals('GR') or ventaControl.estadoActual() == null) and 
+							ventaControl.rolPermiso.get(3109) }" />
+
+						<p:commandLink id="cancelar" ajax="true" styleClass="boton"
+							value="Cancelar" onclick="PF('formaPagoDialogo').hide();" />
+					</div>
+				</div>
+			</p:dialog>
+
+			<p:dialog id="convertir" widgetVar="convertirDialogo"
+				header="Convertir Documento" modal="true" resizable="false"
+				focus="rolSucuConvertirList" closable="false">
+
+
+				<p:panel id="panelConvertir" style="margin-bottom:10px; ">
+
+					<h:panelGrid id="gridConvertir" columns="2">
+
+						<p:outputLabel value="Sucursal" />
+						<p:selectOneMenu id="rolSucuConvertirList"
+							value="#{ventaControl.rolSucuConvertir}"
+							converter="omnifaces.SelectItemsConverter" required="false"
+							requiredMessage="Seleccione Sucursal">
+							<p:ajax listener="#{ventaControl.buscarSesionVentasSucursal}"
+								event="change" update="cajaMoviConvertirList" />
+							<f:selectItem itemLabel="Seleccione sucursal destino..."
+								itemValue="" />
+							<f:selectItems value="#{ventaControl.rolSucuConvertirs}"
+								var="rolSucu" itemLabel="#{rolSucu.sucursal.descri}"
+								itemValue="#{rolSucu}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Caja" />
+						<p:selectOneMenu id="cajaMoviConvertirList"
+							value="#{ventaControl.cajaMoviConvertir}"
+							converter="omnifaces.SelectItemsConverter" required="false"
+							requiredMessage="Seleccione Caja">
+							<f:selectItem itemLabel="Seleccione caja destino..." itemValue="" />
+							<f:selectItems value="#{ventaControl.cajaMoviConvertirs}"
+								var="cajaMovi" itemLabel="#{cajaMovi.caja.descri}"
+								itemValue="#{cajaMovi}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Documento" />
+						<p:selectOneMenu id="documentoConvertirList"
+							value="#{ventaControl.docuEgreConvertir}"
+							converter="omnifaces.SelectItemsConverter">
+							<f:selectItem itemLabel="Seleccione documento destino..."
+								itemValue="" />
+							<f:selectItems value="#{ventaControl.docuEgres}" var="docuEgre"
+								itemLabel="#{docuEgre.documento.descri}" itemValue="#{docuEgre}" />
+						</p:selectOneMenu>
+
+					</h:panelGrid>
+				</p:panel>
+
+				<p:commandLink id="aceptarConvertirDialogo" styleClass="boton"
+					value="Aceptar" action="#{ventaControl.convertir}"
+					oncomplete="handleLoginRequestConvertir(xhr, status, args)" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelarConvertirDialogo" ajax="true"
+					styleClass="boton" value="Cancelar"
+					action="#{ventaControl.borraDatosConvertir}"
+					onclick="PF('convertirDialogo').hide();" />
+
+			</p:dialog>
+
+			<p:dialog id="seleccionCxc" widgetVar="seleccionCxc" width="60%"
+				header="Seleccionar Cxc" modal="true" resizable="false">
+
+				<p:panel id="panelCxc" style="margin-bottom:10px">
+
+					<h:panelGrid columns="3">
+
+						<h:panelGrid columns="1">
+							<p:outputLabel for="numeroCxc" value="Documento Número"
+								style="width:100%;" />
+							<p:inputText id="numeroCxc"
+								value="#{ventaControl.cxcBuscar.egreso.numero}" required="false">
+								<f:validateBean for="numeroCxc" disabled="true" />
+							</p:inputText>
+						</h:panelGrid>
+
+						<h:panelGrid columns="1">
+							<p:outputLabel for="fechaEmisCxc" value="Fecha Emisión"
+								style="width:100%;" />
+							<p:calendar id="fechaEmisCxc"
+								value="#{ventaControl.cxcBuscar.egreso.fechaEmis}"
+								pattern="dd-MM-yyyy" required="false">
+								<f:validateBean for="fechaEmisCxc" disabled="true" />
+							</p:calendar>
+						</h:panelGrid>
+
+						<h:panelGrid columns="1">
+							<p:outputLabel for="estadoCxc" value="Estado" style="width:100%;" />
+							<p:selectBooleanCheckbox id="estadoCxc"
+								value="#{ventaControl.cxcBuscar.estado}" />
+						</h:panelGrid>
+					</h:panelGrid>
+
+				</p:panel>
+
+				<p:commandLink id="buscarCxcs" value="Buscar" styleClass="boton"
+					action="#{ventaControl.buscarCxcs}"
+					update="ventaForm:cxcList,paginadorCxcs" />
+
+				<p:dataTable id="cxcList" style="margin-top:10px;"
+					emptyMessage="No se encontro datos" value="#{ventaControl.cxcs}"
+					var="_cxc">
+
+					<p:column headerText="Fecha Emisión"
+						style="width:100px; text-align: center">
+
+						<p:commandLink id="fechaEmis"
+							title="Seleccionar Cuenta por Cobrar"
+							action="#{ventaControl.seleccionarCxc}"
+							value="#{_cxc.egreso.fechaEmis}" ajax="true"
+							update="ventaForm:cxcSele, ventaForm:docuModifica"
+							oncomplete="controlarSeleccionCxcDialogo(xhr, status, args)">
+
+							<f:setPropertyActionListener value="#{_cxc}"
+								target="#{ventaControl.cxcSele}" />
+						</p:commandLink>
+
+					</p:column>
+
+					<p:column headerText="Fecha Vencimiento"
+						style="width:100px; text-align: center">
+
+						<p:commandLink id="fechaVenc"
+							title="Seleccionar Cuenta por Cobrar"
+							action="#{ventaControl.seleccionarCxc}" value="#{_cxc.fechaVenc}"
+							ajax="true" update="ventaForm:cxcSele, ventaForm:docuModifica"
+							oncomplete="controlarSeleccionCxcDialogo(xhr, status, args)">
+
+							<f:setPropertyActionListener value="#{_cxc}"
+								target="#{ventaControl.cxcSele}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Serie1" style="width:80px; text-align: right">
+						<h:outputText id="serie1" value="#{_cxc.egreso.serie1}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Serie2" style="width:80px; text-align: right">
+						<h:outputText id="serie2" value="#{_cxc.egreso.serie2}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Número Documento"
+						style="width:80px; text-align: right">
+
+						<p:commandLink id="docuEgre" title="Seleccionar Cuenta por Cobrar"
+							action="#{ventaControl.seleccionarCxc}"
+							value="#{_cxc.egreso.numero}" ajax="true"
+							update="ventaForm:cxcSele, ventaForm:docuModifica"
+							oncomplete="controlarSeleccionCxcDialogo(xhr, status, args)">
+
+							<f:setPropertyActionListener value="#{_cxc}"
+								target="#{ventaControl.cxcSele}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Total" style="width:80px; text-align: right">
+						<h:outputText id="total" value="#{_cxc.total}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Abono" style="width:80px; text-align: right">
+						<h:outputText id="abono" value="#{_cxc.abono}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Saldo" style="width:80px; text-align: right">
+						<h:outputText id="saldo" value="#{_cxc.saldo}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Estado"
+						style="width:40px; text-align: center">
+						<h:selectBooleanCheckbox id="estado" value="#{_cxc.estado}"
+							disabled="true" />
+					</p:column>
+
+				</p:dataTable>
+
+				<div align="center">
+
+					<h:panelGroup id="paginadorCxcs">
+
+						<p:commandButton value="Anterior" ajax="true"
+							update="ventaForm:cxcList,paginadorCxcs"
+							rendered="#{ventaControl.paginaCxc gt 0}"
+							action="#{ventaControl.buscarCxcs}">
+							<f:param name="paginaCxc" value="#{ventaControl.paginaCxc - 1}" />
+						</p:commandButton>
+
+						<p:commandButton value="Siguiente" ajax="true"
+							update="ventaForm:cxcList,paginadorCxcs"
+							rendered="#{(ventaControl.paginaCxc + 1) * ventaControl.filasPagina lt ventaControl.contadorRegCxc}"
+							action="#{ventaControl.buscarCxcs}">
+							<f:param name="paginaCxc" value="#{ventaControl.paginaCxc + 1}" />
+						</p:commandButton>
+
+					</h:panelGroup>
+				</div>
+
+			</p:dialog>
+
+			<p:dialog id="seleccionarClienteDialogo"
+				onHide="moverCursor('seleccionarClienteDialogo','#{ventaControl.ventaDetaAlSeleProd}')"
+				widgetVar="seleccionarClienteDialogo" width="60%"
+				header="Seleccionar Cliente" modal="true" resizable="false">
+
+				<p:panel id="panelCliente" style="margin-bottom:5px;">
+
+					<p:focus context="panelCliente" />
+
+					<h:panelGrid columns="9">
+
+						<p:outputLabel for="cedulaRuc" value="Cédula/Ruc" />
+						<p:inputText id="cedulaRuc"
+							value="#{ventaControl.persClie.persona.cedulaRuc}"
+							required="false">
+							<f:validateBean for="cedulaRuc" disabled="true" />
+						</p:inputText>
+
+						<p:outputLabel for="apelli" value="Apellido" />
+						<p:inputText id="apelli"
+							value="#{ventaControl.persClie.persona.apelli}" required="false">
+							<f:validateBean for="apelli" disabled="true" />
+						</p:inputText>
+
+						<p:outputLabel for="nombre" value="Nombre" />
+						<p:inputText id="nombre"
+							value="#{ventaControl.persClie.persona.nombre}" required="false">
+							<f:validateBean for="nombre" disabled="true" />
+						</p:inputText>
+
+						<p:commandLink id="buscarPersClie"
+							action="#{ventaControl.buscarPersClies(0)}"
+							update="ventaForm:persClieList,panelCliente,paginadorClientes">
+							<h:graphicImage library="img" name="lupa1.png"
+								title="Buscar Cliente" />
+						</p:commandLink>
+
+						<p:spacer width="10px" />
+
+						<p:commandLink id="abrirClienteRegis"
+							action="#{ventaControl.iniciarClienteRegisDialogo}"
+							update="persClieRegisForm:gridPersClie"
+							onclick="PF('persClieRegisDialogo').show();">
+							<h:graphicImage library="img" name="mas.png" width="20px"
+								title="Agregar Cliente" />
+						</p:commandLink>
+
+					</h:panelGrid>
+
+				</p:panel>
+
+				<p:dataTable id="persClieList"
+					style="margin-top:5px;margin-bottom:5px;"
+					emptyMessage="No se encontro datos"
+					value="#{ventaControl.persClies}" var="_persClie">
+
+					<p:column headerText="Op." style="width:20px;text-align: center">
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" ajax="true"
+							actionListener="#{ventaControl.iniciarClienteRegisDialogo}"
+							oncomplete="PF('persClieRegisDialogo').show()"
+							update="persClieRegisForm:gridPersClie">
+							<f:setPropertyActionListener value="#{_persClie}"
+								target="#{ventaControl.persClieRegis}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Cédula" width="20%">
+						<p:commandLink id="persClieCedula" title="Seleccionar cliente"
+							value="#{_persClie.persona.cedulaRuc}" ajax="true"
+							update="ventaForm:persClieApelli,
+									ventaForm:disponible1,ventaForm:saldoCxc1,ventaForm:cupo1,
+									ventaForm:cxcSele,ventaForm:cxcList,ventaForm:descuento"
+							onclick="PF('seleccionarClienteDialogo').hide();"
+							action="#{ventaControl.seleccionarCliente}">
+
+							<f:setPropertyActionListener value="#{_persClie}"
+								target="#{ventaControl.egreso.persClie}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Apellido / Nombre">
+						<p:commandLink id="persClieApelliNombre"
+							title="Seleccionar cliente"
+							value="#{_persClie.persona.apelli} #{_persClie.persona.nombre}"
+							ajax="true"
+							update="ventaForm:persClieApelli,
+									ventaForm:disponible1,ventaForm:saldoCxc1,ventaForm:cupo1,
+									ventaForm:cxcSele,ventaForm:cxcList,ventaForm:descuento"
+							onclick="PF('seleccionarClienteDialogo').hide();"
+							action="#{ventaControl.seleccionarCliente}">
+
+							<f:setPropertyActionListener value="#{_persClie}"
+								target="#{ventaControl.egreso.persClie}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="Correo">
+						<h:outputText value="#{_persClie.persona.correo}" />
+					</p:column>
+				</p:dataTable>
+
+				<div align="center">
+					<h:panelGroup id="paginadorClientes">
+
+						<p:commandButton value="&lt; Anterior" ajax="true"
+							update="persClieList,paginadorClientes"
+							rendered="#{ventaControl.paginaClie gt 0}"
+							action="#{ventaControl.buscarPersClies(1)}">
+							<f:param name="paginaClie" value="#{ventaControl.paginaClie - 1}" />
+						</p:commandButton>
+
+						<p:commandButton value="Siguiente &gt;" ajax="true"
+							update="persClieList,paginadorClientes"
+							rendered="#{(ventaControl.paginaClie + 1) * ventaControl.filasClientes lt ventaControl.contadorRegClie}"
+							action="#{ventaControl.buscarPersClies(1)}">
+							<f:param name="paginaClie" value="#{ventaControl.paginaClie + 1}" />
+						</p:commandButton>
+
+					</h:panelGroup>
+				</div>
+
+			</p:dialog>
+
+		</h:form>
+
+		<h:form id="remoto">
+			<p:remoteCommand name="modificarCelda"
+				update="ventaForm:egresoDetaList,ventaForm:totalDocumento" />
+		</h:form>
+
+		<p:dialog id="persClieRegistrar" widgetVar="persClieRegisDialogo"
+			width="41%" header="Cliente" modal="true" resizable="false">
+
+			<h:form id="persClieRegisForm">
+
+				<p:panelGrid id="gridPersClie" styleClass="ui-noborder"
+					style="margin-bottom:5px;">
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="cedula" value="Cédula" />
+						</p:column>
+
+						<p:column>
+							<p:inputText id="cedula"
+								value="#{ventaControl.persClieRegis.persona.cedulaRuc}"
+								required="true" requiredMessage="Ingrese cédula o RUC"
+								disabled="#{ventaControl.persClieRegis.personaId != null and persClieControl.rolPermiso.get(3150)}">
+								<p:ajax listener="#{ventaControl.seleccionarDimm}"
+									event="change" update="dimmList" />
+							</p:inputText>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="apellido" value="Apellido" />
+						</p:column>
+
+						<p:column>
+							<p:inputText id="apellido"
+								value="#{ventaControl.persClieRegis.persona.apelli}"
+								required="true" styleClass="cajaTextoDescri"
+								requiredMessage="Ingrese apellido" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="nombre" value="Nombre" />
+						</p:column>
+
+						<p:column>
+							<p:inputText id="nombre"
+								value="#{ventaControl.persClieRegis.persona.nombre}"
+								styleClass="cajaTextoDescri" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="direcc" value="Dirección" />
+						</p:column>
+
+						<p:column>
+							<p:inputText id="direcc"
+								value="#{ventaControl.persClieRegis.persona.direcc}"
+								styleClass="cajaTextoDescri" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="telefo" value="Teléfono" />
+						</p:column>
+
+						<p:column>
+							<p:inputText id="telefo"
+								value="#{ventaControl.persClieRegis.persona.telefo}"
+								styleClass="cajaTextoDescri" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="correo" value="Correo" />
+						</p:column>
+
+						<p:column>
+							<p:inputText id="correo"
+								value="#{ventaControl.persClieRegis.persona.correo}"
+								styleClass="cajaTextoDescri" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="cupo" value="Crédito&#160;Máximo" />
+						</p:column>
+
+						<p:column>
+							<p:inputText id="cupo" value="#{ventaControl.persClieRegis.cupo}"
+								disabled="#{ventaControl.persClieRegis.personaId != null and persClieControl.rolPermiso.get(3151)}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="descueMaxi" value="Descuento&#160;Máximo" />
+						</p:column>
+
+						<p:column>
+							<p:inputText id="descueMaxi"
+								value="#{ventaControl.persClieRegis.descueMaxi}"
+								disabled="#{ventaControl.persClieRegis.personaId != null and persClieControl.rolPermiso.get(3152)}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Fecha&#160;Nacimiento" />
+						</p:column>
+
+						<p:column>
+							<p:calendar id="fechaNaci"
+								value="#{ventaControl.persClieRegis.persona.fechaNaci}"
+								pattern="dd-MM-yyyy" required="false"
+								requiredMessage="Ingrese fecha nacimiento" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Grupo" />
+						</p:column>
+
+						<p:column>
+							<p:selectOneMenu id="clieGrup"
+								value="#{ventaControl.persClieRegis.clieGrup}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{ventaControl.clieGrups}" var="clieGrup"
+									itemLabel="#{clieGrup.descri}" itemValue="#{clieGrup}" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Tipo&#160;Identificación" />
+						</p:column>
+
+						<p:column>
+							<p:selectOneMenu id="dimmList"
+								value="#{ventaControl.persClieRegis.dimm}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{ventaControl.dimmTipoIdens}" var="dimm"
+									itemLabel="#{dimm.codigo} - #{dimm.descri}" itemValue="#{dimm}" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="naturaList" value="Tipo&#160;Cliente" />
+						</p:column>
+
+						<p:column>
+							<p:selectOneMenu id="naturaList"
+								value="#{ventaControl.persClieRegis.natura}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{ventaControl.dimmTipoIdenClies}"
+									var="dimm" itemLabel="#{dimm.descri}"
+									itemValue="#{dimm.codigo}" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="nota" value="Nota" />
+						</p:column>
+
+						<p:column>
+							<p:inputText id="nota" value="#{ventaControl.persClieRegis.nota}"
+								styleClass="cajaTextoDescri" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel for="estado" value="Estado" />
+|						</p:column>
+
+						<p:column>
+							<p:selectBooleanCheckbox id="estado"
+								value="#{ventaControl.persClieRegis.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column colspan="2" style="text-align: center;">
+							<p:commandLink id="grabar" value="Grabar" ajax="false"
+								styleClass="boton" action="#{ventaControl.grabarPersClie}" />
+
+							<p:commandLink id="cancelar" value="Cancelar" styleClass="boton"
+								ajax="true" onclick="PF('persClieRegisDialogo').hide();" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog id="egreDetaSubpDialogo" widgetVar="egreDetaSubpDialogo"
+			width="41%" header="Sub-Productos" modal="true" resizable="false">
+
+			<h:form id="egreDetaSubpForm">
+
+				<p:dataTable id="egreDetaSubp" style="margin-bottom:5px;"
+					emptyMessage="No se encontro datos"
+					value="#{ventaControl.egreDetaSele.egreDetas}" var="_egreDetaSubp">
+
+					<p:column headerText="Descripción"
+						style="width:200px;text-align: left">
+						<h:outputText value="#{_egreDetaSubp.producto.descri}" />
+					</p:column>
+
+					<p:column headerText="Cantidad"
+						style="width:80px;text-align: right">
+						<h:outputText value="#{_egreDetaSubp.cantid}">
+							<f:convertNumber pattern="#0.00" locale="en-US" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="egreNotaDialogo" widgetVar="egreNotaDialogo" width="80%"
+			header="Información Adicional" modal="true" resizable="false"
+			closable="false">
+
+			<h:form id="egreNotaForm">
+
+				<p:dataTable id="egreNotaList" emptyMessage="No se encontro datos"
+					editable="true" editMode="cell" scrollable="true"
+					scrollHeight="170" value="#{ventaControl.egreNotas}"
+					var="_egreNota" rowKey="#{_egreNota.egreNotaId}">
+
+					<f:facet name="header">
+						<p:commandLink value="+ Notas" ajax="true"
+							rendered="#{ventaControl.egreso.estado.equals('GR')}"
+							action="#{ventaControl.crearFilaEgreNota}" update="egreNotaList">
+						</p:commandLink>
+					</f:facet>
+
+					<p:column style="width:30px;text-align: center" headerText="Op.">
+
+						<p:panelGrid styleClass="ui-noborder">
+
+							<p:commandLink styleClass="ui-icon ui-icon-trash"
+								title="Eliminar" action="#{ventaControl.eliminarFilaEgreNota}"
+								update="egreNotaList">
+
+								<f:setPropertyActionListener value="#{_egreNota}"
+									target="#{ventaControl.egreNotaSele}" />
+							</p:commandLink>
+
+						</p:panelGrid>
+
+					</p:column>
+
+					<p:column headerText="Código" style="width:30%;">
+
+						<p:inputText id="codigo" style="width:100%"
+							value="#{_egreNota.codigo}">
+						</p:inputText>
+
+					</p:column>
+
+					<p:column headerText="Descripción" style="width:80%;">
+
+						<p:inputText id="descri" style="width:100%"
+							value="#{_egreNota.descri}">
+						</p:inputText>
+
+					</p:column>
+
+				</p:dataTable>
+
+				<p:commandLink id="aceptarEgreNotaDialogo" ajax="true"
+					styleClass="boton" value="Aceptar"
+					onclick="PF('egreNotaDialogo').hide();" />
+
+			</h:form>
+		</p:dialog>
+
+		<script type="text/javascript">
+
+			// Variable para controlar que regrese a este campo cuando se cambie de pagina
+			// Ej. Si esta vendiendo y abre la pagina de cliente entonces al dar click sobre
+			// esta pagina el curso nuevamente se coloca en esta campo
+			var capturarFocus = "ventaForm:"+"#{ventaControl.ventaDetaAlCargar}";
+		
+        	window.onload = function() {
+	        
+	        	if (document.getElementById('idDescargar').value !== '0') {
+		        	document.getElementById('ventaForm:descargar').onclick();
+		    	}
+    	    }
+	
+	        function moverCursor(desde, hasta) {
+
+				if (desde != hasta){
+					document.getElementById(hasta).click();
+		        	document.getElementById(hasta).focus();
+				}		       
+	        }
+
+	    	function handleLoginRequestCobrar(xhr, status, args) {
+		        if(!args.procesar) {
+	            	PF('formaPagoDialogo').jq.effect("shake", {times:1}, 5);
+	        	}
+	        	else {
+		            PF('formaPagoDialogo').hide();
+	        	}
+		    }
+
+	    	function handleLoginRequestConvertir(xhr, status, args) {
+		        if(!args.convertir) {
+	            	PF('convertirDialogo').jq.effect("shake", {times:1}, 5);
+	        	}
+	        	else {
+		            PF('convertirDialogo').hide();
+	        	}
+		    }
+
+    		function controlarSeleccionCxcDialogo(xhr, status, args) {
+        		
+        		PF('seleccionCxc').hide();
+			}
+
+	        window.addEventListener("focus", function(event) {
+		         document.getElementById(capturarFocus).focus();
+            });
+
+	        
+		</script>
+
+	</ui:define>
+
+</ui:composition>

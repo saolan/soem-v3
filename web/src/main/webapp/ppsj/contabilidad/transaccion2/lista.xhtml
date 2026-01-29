@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{transaccionControl.pagina}' />
+		<f:event type="preRenderView"
+			listener='#{transaccionControl.buscarTransaccions}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:3px"
+				header="Transacción - Panel Busqueda">
+
+				<p:focus context="panelBuscar" />
+
+				<h:panelGrid columns="4">
+
+					<p:outputLabel value="Documento" />
+					<p:selectOneMenu id="documentoList"
+						value="#{transaccionControl.transaccion.docuTran}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{transaccionControl.docuTrans}"
+							var="docuTran" itemLabel="#{docuTran.documento.descri}"
+							itemValue="#{docuTran}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero"
+						value="#{transaccionControl.transaccion.numero}" required="false">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="fechaEmis" value="Fecha" />
+					<p:calendar id="fechaEmis" pattern="dd-MM-yyyy"
+						value="#{transaccionControl.transaccion.fechaEmis}"
+						required="false">
+						<f:validateBean for="fecha" disabled="true" />
+					</p:calendar>
+
+					<p:outputLabel value="Estado" />
+					<p:selectOneRadio id="estado"
+						value="#{transaccionControl.transaccion.estado}">
+						<f:selectItems value="#{transaccionControl.parametroEstados}"
+							var="parametro" itemLabel="#{parametro.descri}"
+							itemValue="#{parametro.descri}" />
+					</p:selectOneRadio>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<p:link value="Nuevo" outcome="registra" styleClass="boton"
+				rendered="#{transaccionControl.rolPermiso.get(2100)}" />
+
+			<p:spacer height="2" />
+
+			<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+				action="#{transaccionControl.iniciarPagina}" ajax="false" />
+
+			<p:spacer height="2" />
+
+			<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+				styleClass="boton" />
+
+			<p:defaultCommand target="buscar" />
+
+
+			<p:dataTable id="transaccionList" style="margin-top:3px;"
+				emptyMessage="No se encontro datos"
+				value="#{transaccionControl.transaccions}" var="_transaccion">
+
+				<p:column style="width:80px;text-align: center"
+					headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{transaccionControl.modificar}">
+							<f:setPropertyActionListener
+								value="#{_transaccion.transaccionId}"
+								target="#{transaccionControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{transaccionControl.explorar}">
+							<f:setPropertyActionListener
+								value="#{_transaccion.transaccionId}"
+								target="#{transaccionControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Documento" style="width:180px;">
+					<h:outputText id="docuTran"
+						value="#{_transaccion.docuTran.documento.descri}" />
+				</p:column>
+
+				<p:column headerText="Número" style="width:60px;">
+					<h:outputText id="numero" value="#{_transaccion.numero}" />
+				</p:column>
+
+				<p:column headerText="Fecha" style="width:80px;">
+					<h:outputText id="fechaEmis" value="#{_transaccion.fechaEmis}">
+						<f:convertDateTime type="localDate"  pattern="dd-MM-yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Total Debe"
+					style="width:80px; text-align:right">
+					<h:outputText id="totalDebe" value="#{_transaccion.totalDebe}">
+						<f:convertNumber pattern="#0.00" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Diferencia"
+					style="width:80px; text-align:right">
+					<h:outputText id="difere" value="#{_transaccion.difere}">
+						<f:convertNumber pattern="#0.00" locale="en-US" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Nota">
+					<h:outputText id="nota" value="#{_transaccion.nota}" />
+				</p:column>
+
+				<p:column headerText="Estado" style="width:60px;">
+					<h:outputText id="estado" value="#{_transaccion.estado}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{transaccionControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

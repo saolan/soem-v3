@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{cajaMoviControl.pagina}' />
+		<f:event type="preRenderView" listener='#{cajaMoviControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:5px"
+				header="Movimiento Caja - Panel Busqueda">
+
+				<p:focus context="panelBuscar" />
+
+				<h:panelGrid columns="8">
+
+					<p:outputLabel for="docume" value="Documento" />
+					<p:inputText id="docume"
+						value="#{cajaMoviControl.cajaMovi.docuCaja.documento.descri}"
+						required="false">
+						<f:validateBean for="docume" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="caja" value="Caja" />
+					<p:inputText id="caja"
+						value="#{cajaMoviControl.cajaMovi.caja.descri}" required="false">
+						<f:validateBean for="caja" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="cajero" value="Cajero" />
+					<p:inputText id="cajero"
+						value="#{cajaMoviControl.cajaMovi.persCaje.persona.apelli}"
+						required="false">
+						<f:validateBean for="cajero" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="fecha" value="Fecha" />
+					<p:calendar id="fecha" value="#{cajaMoviControl.cajaMovi.fecha}"
+						pattern="dd-MM-yyyy" required="false">
+						<f:validateBean for="fecha" disabled="true" />
+					</p:calendar>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton"
+					rendered="#{cajaMoviControl.rolPermiso.get(1100)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+					action="#{cajaMoviControl.iniciarPagina}" ajax="false" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+
+				<p:defaultCommand target="buscar" />
+
+			<p:dataTable id="cajaMoviList" style="margin-top:5px;"
+				emptyMessage="No se encontro datos"
+				value="#{cajaMoviControl.cajaMovis}" var="_cajaMovi">
+
+				<p:column style="width:80px;text-align: center"
+					headerText="Operación">
+
+					<p:panelGrid columns="2" layout="grid">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{cajaMoviControl.modificar}">
+							<f:setPropertyActionListener value="#{_cajaMovi.cajaMoviId}"
+								target="#{cajaMoviControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{cajaMoviControl.explorar}">
+							<f:setPropertyActionListener value="#{_cajaMovi.cajaMoviId}"
+								target="#{cajaMoviControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Documento">
+					<h:outputText id="docuCaja"
+						value="#{_cajaMovi.docuCaja.documento.descri}" />
+				</p:column>
+
+				<p:column headerText="Caja">
+					<h:outputText id="caja" value="#{_cajaMovi.caja.descri}" />
+				</p:column>
+
+				<p:column headerText="Número">
+					<h:outputText id="numero" value="#{_cajaMovi.cajaMoviId}" />
+				</p:column>
+
+				<p:column headerText="Número Refe.">
+					<h:outputText id="numeroRefe"
+						value="#{_cajaMovi.cajaMovi.cajaMoviId}" />
+				</p:column>
+
+				<p:column headerText="Cajero">
+					<h:outputText id="persCaje"
+						value="#{_cajaMovi.persCaje.persona.apelli} #{_cajaMovi.persCaje.persona.nombre}" />
+				</p:column>
+
+				<p:column headerText="Fecha">
+					<h:outputText id="fecha" value="#{_cajaMovi.fecha}">
+						<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Fecha Registro">
+					<h:outputText id="fechaHoraRegi" value="#{_cajaMovi.fechaHoraRegi}">
+						<f:convertDateTime type="localDate" pattern="dd-MM-yyyy HH:mm" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Estado">
+					<h:selectBooleanCheckbox id="estado" value="#{_cajaMovi.estado}"
+						disabled="true" />
+				</p:column>
+
+			</p:dataTable>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{cajaMoviControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

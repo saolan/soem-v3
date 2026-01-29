@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{rolFormPagoControl.pagina}' />
+		<f:event type="preRenderView" listener='#{rolFormPagoControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Rol Forma de Pago - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{rolFormPagoControl.nuevo}" 
+					rendered="#{rolFormPagoControl.rolPermiso.get(7000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/seguridad/rolFormPago/lista"
+							target="#{rolFormPagoControl.paginaRuta}" />
+				</p:commandLink>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{rolFormPagoControl.iniciarPagina}" 
+					ajax="true" update="rolFormPagoList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="rolFormPagoList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{rolFormPagoControl.rolFormPagos}" var="_rolFormPago">
+
+				<f:facet name="header">
+					<h:outputText value="Roles - Formas de pago" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{rolFormPagoControl.modificar}">
+							<f:setPropertyActionListener value="#{_rolFormPago.rolFormPagoId}"
+								target="#{rolFormPagoControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/seguridad/rolFormPago/lista"
+								target="#{rolFormPagoControl.paginaRuta}" />								
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{rolFormPagoControl.explorar}">
+							<f:setPropertyActionListener value="#{_rolFormPago.rolFormPagoId}"
+								target="#{rolFormPagoControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Rol">
+					<h:outputText id="rol" value="#{_rolFormPago.rol.descri}" />
+				</p:column>
+
+				<p:column headerText="Forma Pago">
+					<h:outputText id="formPago" value="#{_rolFormPago.formPago.descri}" />
+				</p:column>
+
+				<p:column headerText="Predeterminado">
+					<h:selectBooleanCheckbox id="predet" value="#{_rolFormPago.predet}" disabled="true"/>
+				</p:column>
+
+				<p:column headerText="Acceso">
+					<h:selectBooleanCheckbox id="estado" value="#{_rolFormPago.acceso}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{rolFormPagoControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

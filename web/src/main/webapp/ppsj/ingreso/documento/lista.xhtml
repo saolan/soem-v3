@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{ingresoDocuControl.pagina}' />
+		<f:event type="preRenderView" listener='#{ingresoDocuControl.buscar}' />
+	</f:metadata>
+	
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Ingreso - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero"
+						value="#{ingresoDocuControl.ingreso.numero}" required="false">
+						<f:validateBean for="numero" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="fecha" value="Fecha" />
+					<p:calendar id="fecha" pattern="dd-MM-yyyy"
+						value="#{ingresoDocuControl.ingreso.fechaEmis}" required="false">
+						<f:validateBean for="fecha" disabled="true" />
+					</p:calendar>
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="docuDeta" styleClass="boton" />
+				
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" ajax="false" value="Buscar"
+					styleClass="boton" action="#{ingresoDocuControl.iniciarPagina}" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="ingresoList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{ingresoDocuControl.ingresos}" var="_ingreso">
+
+				<f:facet name="header">
+					<h:outputText value="Lista Ingresos" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" ajax="false" 
+							action="#{ingresoDocuControl.modificar}">
+							<f:setPropertyActionListener value="#{_ingreso.ingresoId}"
+								target="#{ingresoDocuControl.id}" />
+						</p:commandLink>
+						
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" ajax="false"
+							action="">
+							<f:setPropertyActionListener value="#{_ingreso.ingresoId}"
+								target="#{ingresoDocuControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+ 				<p:column headerText="Documento">
+					<h:outputText id="docuIngr" value="#{_ingreso.docuIngr.documento.descri}" />
+				</p:column>
+
+ 				<p:column headerText="Dimm">
+					<h:outputText id="dimm" value="#{_ingreso.dimm.codigo}" />
+				</p:column>
+
+  				<p:column headerText="Proveedor">
+					<h:outputText id="proveedor" value="#{_ingreso.persProv.persona.apelli}" />
+				</p:column>
+
+				<p:column headerText="Fecha">
+					<h:outputText id="fecha" value="#{_ingreso.fechaEmis}">
+						<f:convertDateTime type="localDate"  pattern="dd-MM-yyyy" />
+					</h:outputText>
+				</p:column>
+ 
+				<p:column headerText="Número">
+					<h:outputText id="numero" value="#{_ingreso.numero}" />
+				</p:column>
+
+ 
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{ingresoDocuControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

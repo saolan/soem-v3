@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{persProvControl.pagina}' />
+		<f:event type="preRenderView" listener='#{persProvControl.buscar}' />
+	</f:metadata>
+	
+	<ui:param name="pageTitle" value="Soem - Proveedores Listado" />
+	
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:3px"
+				header="Proveedor - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="8">
+
+					<p:outputLabel for="cedula" value="Cédula" />
+					<p:inputText id="cedula"
+						value="#{persProvControl.persProv.persona.cedulaRuc}" required="false">
+						<f:validateBean for="cedula" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="apelli" value="Apellido" />
+					<p:inputText id="apelli"
+						value="#{persProvControl.persProv.persona.apelli}" required="false">
+						<f:validateBean for="apelli" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="nombre" value="Nombre" />
+					<p:inputText id="nombre"
+						value="#{persProvControl.persProv.persona.nombre}" required="false">
+						<f:validateBean for="nombre" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="estado" value="Estado" />
+					<p:selectBooleanCheckbox id="estado"
+						value="#{persProvControl.persProv.estado}" required="false">
+						<f:validateBean for="estado" disabled="true" />
+					</p:selectBooleanCheckbox>
+					
+
+				</h:panelGrid>
+
+			</p:panel>
+
+				<p:commandLink value="Nuevo" styleClass="boton" ajax="false" action="#{persProvControl.nuevo}" 
+					rendered="#{persProvControl.rolPermiso.get(4000)}">
+						<f:setPropertyActionListener
+							value="/ppsj/ingreso/persProv/lista"
+							target="#{persProvControl.paginaRuta}" />
+				</p:commandLink>					
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" ajax="false" value="Buscar"
+					styleClass="boton" action="#{persProvControl.iniciarPagina}" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+
+				<p:defaultCommand target="buscar"/>
+
+			<p:dataTable id="persProvList" style="margin-top:3px;" emptyMessage="No se encontro datos"
+				value="#{persProvControl.persProvs}" var="_persProv">
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" ajax="false" 
+							action="#{persProvControl.modificar}">
+							<f:setPropertyActionListener value="#{_persProv.personaId}"
+								target="#{persProvControl.id}" />
+							<f:setPropertyActionListener
+								value="/ppsj/ingreso/persProv/lista"
+								target="#{persProvControl.paginaRuta}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" ajax="false"
+							action="#{persProvControl.explorar}">
+							<f:setPropertyActionListener value="#{_persProv.personaId}"
+								target="#{persProvControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Cédula / Ruc" style="width:110px;">
+					<h:outputText id="cedula" value="#{_persProv.persona.cedulaRuc}" />
+				</p:column>
+
+				<p:column headerText="Apellido">
+					<h:outputText id="apelli" value="#{_persProv.persona.apelli}" />
+				</p:column>
+
+				<p:column headerText="Nombre">
+					<h:outputText id="nombre" value="#{_persProv.persona.nombre}" />
+				</p:column>
+
+				<p:column headerText="Correo">
+					<h:outputText id="correo" value="#{_persProv.persona.correo}" />
+				</p:column>
+
+				<p:column headerText="Estado" style="width:50px;">
+					<h:selectBooleanCheckbox value="#{_persProv.estado}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{persProvControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

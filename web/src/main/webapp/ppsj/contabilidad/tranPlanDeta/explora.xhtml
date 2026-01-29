@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="bodegaId" value='#{bodegaControl.id}' />
+		<f:event type="preRenderView" listener="#{bodegaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Bodega - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{bodegaControl.bodega.descri}" styleClass="cajaTextoDescri" />
+									
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{bodegaControl.bodega.estado}" />
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+		
+			<p:tabView rendered="#{bodegaControl.rolPermiso.get(6003)}">
+
+			<p:tab title="Sucursales">
+
+				<h:form>
+
+					<p:dataTable id="sucuBodeList" style="margin-top:10px;"
+						emptyMessage="No se encontro datos"
+						value="#{bodegaControl.sucuBodes}" var="_sucuBode">
+
+						<f:facet name="header">
+							<h:outputText value="Sucursales" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center"
+							headerText="Operación">
+
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+
+								<p:commandLink styleClass="ui-icon ui-icon-pencil"
+									title="Modificar" action="#{sucuBodeControl.modificar}">
+									<f:setPropertyActionListener value="#{_sucuBode.sucuBodeId}"
+										target="#{sucuBodeControl.id}" />
+									<f:setPropertyActionListener
+										value="#{bodegaControl.bodega.bodegaId}"
+										target="#{sucuBodeControl.bodegaId}" />										
+									<f:setPropertyActionListener
+										value="/ppsj/parametro/bodega/explora"
+										target="#{sucuBodeControl.paginaRuta}" />										
+								</p:commandLink>
+
+							</p:panelGrid>
+
+						</p:column>
+
+						<p:column headerText="Sucursal">
+							<h:outputText id="sucursal" value="#{_sucuBode.sucursal.descri}" />
+						</p:column>
+
+						<p:column headerText="Bodega">
+							<h:outputText id="bodega" value="#{_sucuBode.bodega.descri}" />
+						</p:column>
+
+						<p:column headerText="Acceso">
+							<h:selectBooleanCheckbox id="estado" value="#{_sucuBode.acceso}"
+								disabled="true" />
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer />
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{sucuBodeControl.nuevo}" rendered="#{bodegaControl.rolPermiso.get(2000)}">
+							<f:setPropertyActionListener
+								value="#{bodegaControl.bodega.bodegaId}"
+								target="#{sucuBodeControl.bodegaId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/parametro/bodega/explora"
+								target="#{sucuBodeControl.paginaRuta}" />								
+															
+						</p:commandLink>
+
+
+					</div>
+
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>
+		
+	</ui:define>
+</ui:composition>

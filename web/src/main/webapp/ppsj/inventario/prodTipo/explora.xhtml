@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="prodTipoId" value='#{prodTipoControl.id}' />
+		<f:event type="preRenderView" listener="#{prodTipoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Producto Tipo - Panel Explorar"
+				style="margin-bottom:5px">
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{prodTipoControl.prodTipo.descri}"
+						styleClass="cajaTextoDescri" />
+
+					<p:outputLabel value="Estado" />
+					<p:selectBooleanCheckbox value="#{prodTipoControl.prodTipo.estado}" />
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+
+		<p:tabView rendered="#{prodTipoControl.rolPermiso.get(5003)}">
+
+			<p:tab title="Asignación de cuentas contables">
+
+			<h:form>
+
+			<p:dataTable id="prodTipoPlanCuenList" emptyMessage="No se encontro datos"
+				value="#{prodTipoControl.prodTipoPlanCuens}" var="_prodTipoPlanCuen"
+				style="margin-bottom:3px">
+
+				<p:column style="width:50px;text-align: center" headerText="Operación">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{prodTipoPlanCuenControl.modificar}">
+							<f:setPropertyActionListener value="#{_prodTipoPlanCuen.ptpcId}"
+								target="#{prodTipoPlanCuenControl.id}" />
+							<f:setPropertyActionListener value="#{prodTipoControl.prodTipo.prodTipoId}"
+								target="#{prodTipoPlanCuenControl.prodTipoId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/inventario/prodTipo/explora"
+								target="#{prodTipoPlanCuenControl.paginaRuta}" />
+																
+						</p:commandLink>
+
+
+				</p:column>
+
+				<p:column headerText="Tipo Producto">
+					<h:outputText id="prodTipo" value="#{_prodTipoPlanCuen.prodTipo.descri}" />
+				</p:column>
+
+				<p:column headerText="Cuenta Código" >
+					<h:outputText id="planCuenCodigo" value="#{_prodTipoPlanCuen.planCuen.codigo}" />
+				</p:column>
+				
+				<p:column headerText="Cuenta Descripción">
+					<h:outputText id="planCuenDescri" value="#{_prodTipoPlanCuen.planCuen.descri}" />
+				</p:column>
+
+				<p:column headerText="Tipo Transacción">
+					<h:outputText id="tipoTran" value="#{_prodTipoPlanCuen.tipoTran}" />
+				</p:column>
+
+			</p:dataTable>
+
+					<div id="barraBotones">
+
+						<p:commandLink value="Nuevo" styleClass="boton" ajax="false"
+							action="#{prodTipoPlanCuenControl.nuevo}">
+							<f:setPropertyActionListener value="#{prodTipoControl.prodTipo.prodTipoId}"
+								target="#{prodTipoPlanCuenControl.prodTipoId}" />
+							<f:setPropertyActionListener
+								value="/ppsj/inventario/prodTipo/explora"
+								target="#{prodTipoPlanCuenControl.paginaRuta}" />								
+						</p:commandLink>
+
+					</div>
+
+				</h:form>
+
+			</p:tab>
+
+		</p:tabView>
+
+	</ui:define>
+</ui:composition>

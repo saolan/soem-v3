@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="prodGrupId" value='#{prodGrupControl.id}' />
+		<f:event type="preRenderView" listener="#{prodGrupControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{prodGrupControl.grabar}"
+					rendered="#{(prodGrupControl.id != null and prodGrupControl.rolPermiso.get(5001)) or 
+					(prodGrupControl.id == null and prodGrupControl.rolPermiso.get(5000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{prodGrupControl.eliminar}"
+					rendered="#{prodGrupControl.id != null and prodGrupControl.rolPermiso.get(5002)}" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+			</div>
+
+			<p:panel id="panelRegistrar"
+				header="Producto Grupo - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="descri" value="Descripción" />
+							<p:inputText id="descri"
+								value="#{prodGrupControl.prodGrup.descri}" required="true"
+								requiredMessage="Ingrese descripción" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="tipoList" value="Tipo" />
+							<p:selectOneMenu id="tipoList"
+								value="#{prodGrupControl.prodGrup.tipo}"
+								converter="omnifaces.SelectItemsConverter" required="true">
+								<f:selectItems value="#{prodGrupControl.parametros}"
+									var="parametro" itemLabel="#{parametro.descri}"
+									itemValue="#{parametro.descri}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="prodNivelList" value="Nivel" />
+							<p:selectOneMenu id="prodNivelList"
+								value="#{prodGrupControl.prodGrup.prodGrupNive}"
+								converter="omnifaces.SelectItemsConverter" required="true">
+								<f:selectItems value="#{prodGrupControl.prodGrupNives}"
+									var="prodGrupNive" itemLabel="#{prodGrupNive.descri}"
+									itemValue="#{prodGrupNive}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox id="moduloComp" itemLabel="Módulo Compra"
+								value="#{prodGrupControl.prodGrup.moduloComp}" required="true"
+								requiredMessage="Ingrese detalle" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox id="moduloVent" itemLabel="Módulo Venta"
+								value="#{prodGrupControl.prodGrup.moduloVent}" required="true"
+								requiredMessage="Ingrese detalle" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox id="moduloInve" itemLabel="Módulo Inventario"
+								value="#{prodGrupControl.prodGrup.moduloInve}" required="true"
+								requiredMessage="Ingrese detalle" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox id="detall" itemLabel="Detalle"
+								value="#{prodGrupControl.prodGrup.detall}" required="true"
+								requiredMessage="Ingrese detalle" />
+						</div>
+
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+								value="#{prodGrupControl.prodGrup.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

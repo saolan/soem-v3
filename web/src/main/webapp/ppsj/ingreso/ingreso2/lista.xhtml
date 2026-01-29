@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{ingresoControl.pagina}' />
+		<f:event type="preRenderView" listener='#{ingresoControl.buscar}' />
+	</f:metadata>
+	
+	<ui:param name="pageTitle" value="Soem - Compras Listado" />
+	
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:3px"
+				header="Compras - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="8">
+				
+					<p:outputLabel for="cedulaRuc" value="Prov.&#160;Cédula&#160;/&#160;Ruc" />
+					<p:inputText id="cedulaRuc" value="#{ingresoControl.ingreso.persProv.persona.cedulaRuc}" 
+						required="false">
+						<f:validateBean for="cedulaRuc" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="apelli" value="Prov.&#160;Apellido" />
+					<p:inputText id="apelli" value="#{ingresoControl.ingreso.persProv.persona.apelli}" 
+						required="false">
+						<f:validateBean for="apelli" disabled="true" />
+					</p:inputText>
+			
+					<p:outputLabel for="nombre" value="Prov.&#160;Nombre" />
+					<p:inputText id="nombre" value="#{ingresoControl.ingreso.persProv.persona.nombre}" 
+						required="false">
+						<f:validateBean for="nombre" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="docuIngr" value="Tipo&#160;Documento" />
+					<p:inputText id="docuIngr" value="#{ingresoControl.ingreso.docuIngr.documento.descri}" 
+						required="false">
+						<f:validateBean for="docuIngr" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="fecha" value="Fecha" />
+					<p:calendar id="fecha" pattern="dd-MM-yyyy"
+						value="#{ingresoControl.ingreso.fechaEmis}" required="false">
+						<f:validateBean for="fecha" disabled="true" />
+					</p:calendar>
+
+					<p:outputLabel for="numero" value="Número&#160;Doc." />
+					<p:inputText id="numero"
+						value="#{ingresoControl.ingreso.numero}" required="false">
+						<f:validateBean for="numero" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="secuencial" value="Secuencial" />
+					<p:inputText id="secuencial"
+						value="#{ingresoControl.ingreso.ingresoId}" required="false">
+						<f:validateBean for="secuencial" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel value="Orden" style="width:100%;"/>
+					<p:selectOneRadio id="orden" value="#{ingresoControl.orden}" >
+						<f:selectItems value="#{ingresoControl.ordens}" var="orden" 
+							itemLabel="#{orden}" itemValue="#{orden}"/>
+					</p:selectOneRadio>					
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+
+				<p:link value="Nuevo" outcome="/ppsj/ingreso/compra/compraDeta" styleClass="boton" 
+					rendered="#{ingresoControl.rolPermiso.get(4100)}" />
+				
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" ajax="false" value="Buscar"
+					styleClass="boton" action="#{ingresoControl.iniciarPagina}" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+
+			<p:dataTable id="ingresoList" style="margin-top:3px;" emptyMessage="No se encontro datos"
+				value="#{ingresoControl.ingresos}" var="_ingreso">
+
+				<p:column style="width:60px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" ajax="false" 
+							action="#{compraControl.modificarIngrDetas}">
+							<f:setPropertyActionListener value="#{_ingreso.ingresoId}"
+								target="#{compraControl.ingresoId}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" ajax="false" 
+							action="#{ingresoControl.explorar}">
+							<f:setPropertyActionListener value="#{_ingreso.ingresoId}"
+								target="#{ingresoControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+				
+ 				<p:column headerText="Documento" style="width:140px;">
+					<h:outputText id="docuIngr" value="#{_ingreso.docuIngr.documento.descri}" />
+				</p:column>
+
+  				<p:column headerText="Proveedor">
+					<h:outputText id="apelli" value="#{_ingreso.persProv.persona.apelli} #{_ingreso.persProv.persona.nombre}" />
+				</p:column>
+
+				<p:column headerText="Serie1" style="width:60px;">
+					<h:outputText id="serie1" value="#{_ingreso.serie1}" />
+				</p:column>
+
+				<p:column headerText="Serie2" style="width:60px;">
+					<h:outputText id="serie2" value="#{_ingreso.serie2}" />
+				</p:column>
+
+				<p:column headerText="Número" style="width:60px;">
+					<h:outputText id="numero" value="#{_ingreso.numero}" />
+				</p:column>
+
+				<p:column headerText="Fecha Emis."  style="width:80px;">
+					<h:outputText id="fechaEmis" value="#{_ingreso.fechaEmis}">
+						<f:convertDateTime type="localDate"  pattern="dd-MM-yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Fecha Regi."  style="width:80px;">
+					<h:outputText id="fechaRegi" value="#{_ingreso.fechaRegi}">
+						<f:convertDateTime type="localDate"  pattern="dd-MM-yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Secuencial" style="width:50px;">
+					<h:outputText id="secuencial" value="#{_ingreso.ingresoId}" />
+				</p:column>
+				 				
+				<p:column headerText="Total" style="width:80px; text-align:right">
+					<h:outputText id="total" value="#{_ingreso.total}" >
+						<f:convertNumber pattern="#0.00" locale="en-US"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Estado"  style="width:60px;">
+					<h:outputText id="estado" value="#{_ingreso.estado}" />
+				</p:column>
+
+				<p:column headerText="Estado Docu.Elec" style="width:110px;">
+					<h:outputText id="estadoDe" value="#{_ingreso.estadoDocuElec}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{ingresoControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

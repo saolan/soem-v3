@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{documentoControl.pagina}' />
+		<f:event type="preRenderView" listener='#{documentoControl.buscar}' />
+	</f:metadata>
+	
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Documento - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+
+					<p:inputText id="descri"
+						value="#{documentoControl.documento.descri}" required="false">
+						<f:validateBean for="descri" disabled="true" />
+					</p:inputText>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{documentoControl.rolPermiso.get(6000)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" update="documentoList" 
+					styleClass="boton" action="#{documentoControl.iniciarPagina}" />
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="documentoList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{documentoControl.documentos}" var="_documento">
+
+				<f:facet name="header">
+					<h:outputText value="Lista documentos" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" 
+							action="#{documentoControl.modificar}">
+							<f:setPropertyActionListener value="#{_documento.documentoId}"
+								target="#{documentoControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar"
+							action="#{documentoControl.explorar}">
+							<f:setPropertyActionListener value="#{_documento.documentoId}"
+								target="#{documentoControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Descripción">
+					<h:outputText id="descri" value="#{_documento.descri}" />
+				</p:column>
+
+				<p:column headerText="Número">
+					<h:outputText id="numero" value="#{_documento.numero}" />
+				</p:column>
+
+				<p:column headerText="Formato impresión">
+					<h:outputText id="format" value="#{_documento.format}" />
+				</p:column>
+
+				<p:column headerText="Copias">
+					<h:outputText id="copias" value="#{_documento.copias}" />
+				</p:column>
+
+				<p:column headerText="Factor">
+					<h:outputText id="factor" value="#{_documento.factor}" />
+				</p:column>
+
+				<p:column headerText="Contabiliza">
+					<h:selectBooleanCheckbox id="contab" value="#{_documento.contab}" disabled="true" />
+				</p:column>
+
+				<p:column headerText="Estado">
+					<h:selectBooleanCheckbox id="estado" value="#{_documento.estado}" disabled="true"/>
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{documentoControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,14 @@
+-La clase EnvioComprobantesWs utiliza CDI version 1.1 actualizar para poder quitar esta dependencia
+ <groupId>com.google.inject</groupId>
+- Actualizar @GenericGenerator que esta en todas las relaciones uno a uno Ej: DocuNomi
+- Revisar cargar documento de Compra desde el SRI o Archivo, no se graba ingrDimm pero si graba ingrDetaImpu 
+y calcula las retenciones
+- Copiar cambios en ingreso, CompraImlp relacionados con cargar compras
+- El filtro de documentos en transacciones no funciona transaccioControl - filtrarDocuTrans
+hay un problema y no encuentra el documento y pasa solo con los documentos de transaccion
+le pone un $$_ hibernate interceptor bytebuddyinterceptor en la lista en el documento, 
+revisar rolDocus = rolDocuLista.buscar(rolDocu, null); en IniciarSesionControl tambien aparece 
+roldocus pero en documento sale nulo
+- No borra persClie, persVen, persProv Etc. Ni Persona
+Ruta Archivo layout
+https://github.com/primefaces/primefaces/blob/master/primefaces-showcase/src/main/webapp/resources/showcase/css/layout/layout.css

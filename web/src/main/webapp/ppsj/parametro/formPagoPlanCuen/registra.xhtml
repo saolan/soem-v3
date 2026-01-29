@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="fppcId" value='#{formPagoPlanCuenControl.id}' />
+		<f:viewParam name="formPagoId" value='#{formPagoPlanCuenControl.formPagoId}' />
+		<f:viewParam name="paginaRuta" value='#{formPagoPlanCuenControl.paginaRuta}' />		
+		<f:event type="preRenderView" listener="#{formPagoPlanCuenControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Forma Pago Asignación De Cuentas - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="formPagoList" value="Forma&#160;Pago" />
+					<p:selectOneMenu id="formPagoList" value="#{formPagoPlanCuenControl.formPagoPlanCuen.formPago}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{formPagoPlanCuenControl.formPagos}" var="formPago" 
+							itemLabel="#{formPago.modulo} - #{formPago.descri}" itemValue="#{formPago}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="planCuenList" value="Plan&#160;Cuenta" />
+					<p:selectOneMenu id="planCuenList" value="#{formPagoPlanCuenControl.formPagoPlanCuen.planCuen}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{formPagoPlanCuenControl.planCuens}" var="planCuen" 
+							itemLabel="#{planCuen.codigo} - #{planCuen.descri}" itemValue="#{planCuen}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel for="tipoTran"  value="Tipo&#160;Transacción" />
+					<p:inputText id="tipoTran" value="#{formPagoPlanCuenControl.formPagoPlanCuen.tipoTran}" placeholder="DEPOSITO" 
+						required="false" />
+
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{formPagoPlanCuenControl.grabar}" 
+					rendered="#{(formPagoPlanCuenControl.id != null and formPagoPlanCuenControl.rolPermiso.get(6001)) or 
+					(formPagoPlanCuenControl.id == null and formPagoPlanCuenControl.rolPermiso.get(6000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{formPagoPlanCuenControl.eliminar}" 
+					rendered="#{formPagoPlanCuenControl.id != null and formPagoPlanCuenControl.rolPermiso.get(6002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="cancelar" value="Cancelar" 
+					styleClass="boton" action="#{formPagoPlanCuenControl.cancelar}"	/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

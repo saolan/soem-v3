@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="cajaMoviId" value='#{cajaMoviControl.id}' />
+		<f:event type="preRenderView" listener="#{cajaMoviControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{cajaMoviControl.grabar}"
+					rendered="#{(cajaMoviControl.id != null and cajaMoviControl.rolPermiso.get(1101)) or 
+					(cajaMoviControl.id == null and cajaMoviControl.rolPermiso.get(1100)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{cajaMoviControl.eliminar}"
+					rendered="#{cajaMoviControl.id != null and cajaMoviControl.rolPermiso.get(1102)}" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+			</div>
+
+			<p:panel id="panelRegistrar"
+				header="Movimiento Caja - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="sucursalList" value="Sucursal" />
+							<p:selectOneMenu id="sucursalList"
+								value="#{cajaMoviControl.cajaMovi.sucursal}"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="Seleccione sucursal">
+								<f:selectItem itemLabel="Seleccione..." itemValue="" />
+								<f:selectItems value="#{cajaMoviControl.sucursals}"
+									var="sucursal" itemLabel="#{sucursal.descri}"
+									itemValue="#{sucursal}" />
+								<p:ajax event="change"
+									listener="#{cajaMoviControl.actualizarListas}"
+									update="cajaList, documentoList, persCajeList" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="documentoList" value="Documento" />
+							<p:selectOneMenu id="documentoList"
+								value="#{cajaMoviControl.cajaMovi.docuCaja}"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="Seleccione documento">
+								<f:selectItem itemLabel="Seleccione..." itemValue="" />
+								<f:selectItems value="#{cajaMoviControl.docuCajas}"
+									var="docuCaja" itemLabel="#{docuCaja.documento.descri}"
+									itemValue="#{docuCaja}" />
+								<p:ajax event="change"
+									listener="#{cajaMoviControl.asignarInicio}"
+									update="persCajeList,cajaList,cajaMoviFormPagoList" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="cajaList" value="Caja" />
+							<p:selectOneMenu id="cajaList"
+								value="#{cajaMoviControl.cajaMovi.caja}"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="Seleccione caja">
+								<f:selectItem itemLabel="Seleccione..." itemValue="" />
+								<f:selectItems value="#{cajaMoviControl.cajas}" var="caja"
+									itemLabel="#{caja.sucursal.descri} - #{caja.descri}"
+									itemValue="#{caja}" />
+								<p:ajax event="change"
+									listener="#{cajaMoviControl.consultarEgresosNoAutorizados}"
+									update="docuNoAuto" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="persCajeList" value="Cajero" />
+							<p:selectOneMenu id="persCajeList"
+								value="#{cajaMoviControl.cajaMovi.persCaje}"
+								converter="omnifaces.SelectItemsConverter" required="true"
+								requiredMessage="Seleccione cajero">
+								<f:selectItem itemLabel="Seleccione..." itemValue="" />
+								<f:selectItems value="#{cajaMoviControl.persCajes}"
+									var="persCaje"
+									itemLabel="#{persCaje.persona.apelli} #{persCaje.persona.nombre}"
+									itemValue="#{persCaje}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="fecha" value="Fecha" />
+							<p:calendar id="fecha" value="#{cajaMoviControl.cajaMovi.fecha}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="nota" value="Nota" />
+							<p:inputText id="nota" value="#{cajaMoviControl.cajaMovi.nota}"
+								styleClass="cajaTextoDescri" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel
+								style="text-align: left;  color: blue; margin-right:25px"
+								value="Doc. No Autorizados" />
+							<p:outputLabel id="docuNoAuto"
+								value="#{cajaMoviControl.contadorDocuNoAuto}"
+								style="text-align: left; color: blue;">
+							</p:outputLabel>
+						</div>
+					</div>
+				</div>
+
+				<p:dataTable id="cajaMoviFormPagoList"
+					emptyMessage="No se encontro datos" editable="true" editMode="cell"
+					value="#{cajaMoviControl.cajaMoviFormPagos}"
+					var="_cajaMoviFormPago">
+
+					<f:facet name="header">
+						<p:commandLink value="+ Formas de Pago" ajax="true"
+							action="#{cajaMoviFormPagoControl.nuevo}"
+							rendered="#{cajaMoviControl.rolPermiso.get(1100) and cajaMoviControl.cajaMovi.cajaMoviId != null}">
+
+							<f:setPropertyActionListener
+								value="#{cajaMoviControl.cajaMovi.cajaMoviId}"
+								target="#{cajaMoviFormPagoControl.cajaMoviId}" />
+
+						</p:commandLink>
+					</f:facet>
+
+					<p:column style="width:30px;text-align: center" headerText="Op."
+						rendered="#{cajaMoviControl.cajaMovi.cajaMoviId != null}">
+						<p:panelGrid columns="2" styleClass="ui-noborder">
+
+							<p:commandLink styleClass="ui-icon ui-icon-pencil"
+								title="Modificar" action="#{cajaMoviFormPagoControl.modificar}">
+								<f:setPropertyActionListener value="#{_cajaMoviFormPago.cmfpId}"
+									target="#{cajaMoviFormPagoControl.id}" />
+								<f:setPropertyActionListener
+									value="#{cajaMoviControl.cajaMovi.cajaMoviId}"
+									target="#{cajaMoviFormPagoControl.cajaMoviId}" />
+							</p:commandLink>
+
+						</p:panelGrid>
+					</p:column>
+
+					<p:column headerText="Descripción">
+						<h:outputText id="formPago"
+							value="#{_cajaMoviFormPago.formPago.descri}" />
+					</p:column>
+
+					<p:column headerText="Total">
+						<p:inputText id="totalInput" value="#{_cajaMoviFormPago.total}"
+							onfocus="this.setSelectionRange(0, this.value.length)"
+							style="width:100%; text-align: right;" />
+					</p:column>
+
+				</p:dataTable>
+	
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

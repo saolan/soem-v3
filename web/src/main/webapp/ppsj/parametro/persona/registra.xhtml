@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="personaId" value='#{personaControl.id}' />
+		<f:event type="preRenderView" listener="#{personaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="grabar" />
+			<p:focus for="panelRegistrar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{personaControl.grabar}"
+					rendered="#{(personaControl.id != null and personaControl.rolPermiso.get(6001)) or 
+					(personaControl.id == null and personaControl.rolPermiso.get(6000)) }" />
+
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{personaControl.eliminar}"
+					rendered="#{personaControl.id != null and personaControl.rolPermiso.get(6002)}" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+
+			</div>
+			<p:panel id="panelRegistrar" header="Persona - Crear - Modificar">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="cedula" value="Cédula" />
+							<p:inputText id="cedula"
+								value="#{personaControl.persona.cedulaRuc}" required="true"
+								requiredMessage="Ingrese cédula" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="apellido" value="Apellido" />
+							<p:inputText id="apellido"
+								value="#{personaControl.persona.apelli}" required="true"
+								requiredMessage="Ingrese apellido" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="nombre" value="Nombre" />
+							<p:inputText id="nombre" value="#{personaControl.persona.nombre}" />
+						</div>
+
+						<div class="field col-12 md:col-2">
+							<p:outputLabel for="correo" value="Correo" />
+							<p:inputText id="correo" value="#{personaControl.persona.correo}" />
+						</div>
+						
+						<div class="field col-12 md:col-2" style="margin-top: 29px;">
+							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+								value="#{personaControl.persona.estado}" required="true"
+								requiredMessage="Ingrese estado" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

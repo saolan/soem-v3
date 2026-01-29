@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="ingresoId" value='#{ingresoControl.id}' />
+		<f:event type="preRenderView" listener="#{ingresoControl.recuperar}" />
+		<f:event type="preRenderView" listener="#{ingresoControl.docuIngresos}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Ingreso - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid columns="2" >
+				
+					<p:outputLabel value="Documento" />
+					<p:selectOneMenu id="documentoList" value="#{ingresoControl.ingreso.docuIngr}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{ingresoControl.docuIngrs}" var="docuIngre" 
+							itemLabel="#{docuIngre.documento.descri}" itemValue="#{docuIngre}"/>
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Proveedor" />				
+					<p:selectOneMenu id="proveedorList" value="#{ingresoControl.ingreso.persProv}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{ingresoControl.persProvs}" var="persProv" 
+							itemLabel="#{persProv.persona.apelli}" itemValue="#{persProv}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Dimm" />				
+					<p:selectOneMenu id="dimmList" value="#{ingresoControl.ingreso.dimm}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{ingresoControl.dimms}" var="dimm" 
+							itemLabel="#{dimm.descri}" itemValue="#{dimm}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Fecha" />
+					<p:calendar id="fechaEmision" value="#{ingresoControl.ingreso.fechaEmis}" pattern="dd-MM-yyyy" 
+						required="false" requiredMessage="Ingrese fecha"/>
+
+					<p:outputLabel value="Número" />
+					<p:inputText id="numero" value="#{ingresoControl.ingreso.numero}" 
+						required="true" requiredMessage="Ingrese Número" />
+					
+					<p:inputText id="serie1" value="#{ingresoControl.ingreso.serie1}" 
+						required="true" requiredMessage="Ingrese serie" />
+						
+					<p:inputText id="serei2" value="#{ingresoControl.ingreso.serie2}" 
+						required="true" requiredMessage="Ingrese serie" />
+					
+					<p:outputLabel value="Autorización" />
+					<p:inputText id="autorizacion" value="#{ingresoControl.ingreso.autori}" 
+						required="true" requiredMessage="Ingrese autorización" />
+
+					<p:outputLabel value="Clave Acceso" />
+					<p:inputText id="claveAcceso" value="#{ingresoControl.ingreso.claveAcce}" 
+						required="true" requiredMessage="Ingrese clave acceso" />
+					
+					<p:outputLabel value="Descuento" />
+					<p:inputText id="descuento" value="#{ingresoControl.ingreso.descue}"
+						required="true" requiredMessage="Ingrese Descuento" />
+					
+					<p:outputLabel value="Cuotas" />
+					<p:inputText id="cuotas" value="#{ingresoControl.ingreso.numeroCuot}" 
+					required="true" requiredMessage="Ingrese número cuotas" />
+					
+					<p:outputLabel value="Días Plazo" />
+					<p:inputText id="diasPlazo" value="#{ingresoControl.ingreso.diasPlaz}" 
+						required="true" requiredMessage="Ingrese días plazo" />
+										
+					<p:outputLabel value="Nota" />
+					<p:inputText id="nota" value="#{ingresoControl.ingreso.nota}" />
+
+				
+					<h:column/>
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" ajax="false"
+					styleClass="boton" action="#{ingresoControl.grabar}" 
+					rendered="#{(ingresoControl.id != null and ingresoControl.rolPermiso.get(4101)) or 
+					(ingresoControl.id == null and ingresoControl.rolPermiso.get(4100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" ajax="false"
+					styleClass="boton" action="#{ingresoControl.eliminar}" 
+					rendered="#{ingresoControl.id != null and ingresoControl.rolPermiso.get(4102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

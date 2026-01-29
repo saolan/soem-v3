@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{reteDetaControl.pagina}' />
+		<f:event type="preRenderView" listener='#{reteDetaControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="reteDeta - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{reteDetaControl.rolPermiso.get(4100)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{reteDetaControl.iniciarPagina}" 
+					ajax="true" update="reteDetaList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="reteDetaList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{reteDetaControl.reteDetas}" var="_reteDeta">
+
+				<f:facet name="header">
+					<h:outputText value="Lista reteDetas" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{reteDetaControl.modificar}">
+							<f:setPropertyActionListener value="#{_reteDeta.reteDetaId}"
+								target="#{reteDetaControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{reteDetaControl.explorar}">
+							<f:setPropertyActionListener value="#{_reteDeta.reteDetaId}"
+								target="#{reteDetaControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Ejercicio Fiscal">
+					<h:outputText id="ejerciFisc" value="#{_reteDeta.ejerciFisc}" />
+				</p:column>
+
+				<p:column headerText="Código">
+					<h:outputText id="codigo" value="#{_reteDeta.impues}" />
+				</p:column>
+
+				<p:column headerText="Código Impuesto">
+					<h:outputText id="codigoImpu" value="#{_reteDeta.codigoImpu}" />
+				</p:column>
+
+				<p:column headerText="Base">
+					<h:outputText id="base" value="#{_reteDeta.base}" />
+				</p:column>
+
+				<p:column headerText="Porcentaje">
+					<h:outputText id="porcen" value="#{_reteDeta.porcen}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{reteDetaControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{tomaFisiControl.pagina}' />
+		<f:event type="preRenderView"
+			listener='#{tomaFisiControl.buscarTomaFisis}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:defaultCommand target="buscar" />
+
+			<p:panel id="panelBuscar" style="margin-bottom:3px"
+				header="Toma Física - Panel Busqueda">
+
+				<p:focus context="panelBuscar" />
+
+				<h:panelGrid columns="6">
+
+					<p:outputLabel for="numero" value="Número" />
+					<p:inputText id="numero" value="#{tomaFisiControl.tomaFisi.numero}"
+						required="false">
+						<f:validateBean for="numero" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="tomaFisiId" value="Num.Control" />
+					<p:inputText id="tomaFisiId"
+						value="#{tomaFisiControl.tomaFisi.tomaFisiId}" required="false">
+						<f:validateBean for="tomaFisiId" disabled="true" />
+					</p:inputText>
+
+					<p:outputLabel for="fechaRegi" value="Fecha" />
+					<p:calendar id="fechaRegi" pattern="dd-MM-yyyy"
+						value="#{tomaFisiControl.tomaFisi.fechaRegi}" required="false">
+						<f:validateBean for="fechaRegi" disabled="true" />
+					</p:calendar>
+
+				</h:panelGrid>
+			</p:panel>
+
+			<p:link value="Nuevo" outcome="registra" styleClass="boton"
+				rendered="#{tomaFisiControl.rolPermiso.get(5000)}" />
+
+			<p:spacer height="2" />
+
+			<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+				action="#{tomaFisiControl.iniciarPagina}" ajax="false" />
+
+			<p:spacer height="2" />
+
+			<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+				styleClass="boton" />
+
+
+			<p:dataTable id="tomaFisiList" style="margin-top:3px;"
+				emptyMessage="No se encontro datos"
+				value="#{tomaFisiControl.tomaFisis}" var="_tomaFisi">
+
+				<p:column style="width:80px;text-align: center"
+					headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{tomaFisiControl.modificar}">
+							<f:setPropertyActionListener value="#{_tomaFisi.tomaFisiId}"
+								target="#{tomaFisiControl.id}" />
+						</p:commandLink>
+
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Sucursal" style="width:200px;">
+					<h:outputText id="sucursal" value="#{_tomaFisi.sucursal.descri}" />
+				</p:column>
+
+				<p:column headerText="Número" style="width:60px;">
+					<h:outputText id="numero" value="#{_tomaFisi.numero}" />
+				</p:column>
+
+				<p:column headerText="Num.Control" style="width:60px;">
+					<h:outputText id="tomaFisiId" value="#{_tomaFisi.tomaFisiId}" />
+				</p:column>
+
+				<p:column headerText="Fecha" style="width:80px;">
+					<h:outputText id="fechaRegi" value="#{_tomaFisi.fechaRegi}">
+						<f:convertDateTime type="localDate"  pattern="dd-MM-yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Referencia">
+					<h:outputText id="refere" value="#{_tomaFisi.refere}" />
+				</p:column>
+
+				<p:column headerText="Nota">
+					<h:outputText id="nota" value="#{_tomaFisi.nota}" />
+				</p:column>
+
+				<p:column headerText="Estado" style="width:60px;">
+					<h:outputText id="estado" value="#{_tomaFisi.estado}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{tomaFisiControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{pagoDetaControl.pagina}' />
+		<f:event type="preRenderView" listener='#{pagoDetaControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelBuscar" style="margin-bottom:10px"
+				header="Pago Detalle - Panel Busqueda">
+
+				<p:focus context="panelBuscar"/>
+
+				<h:panelGrid columns="2">
+				
+					<p:outputLabel for="cedulaRuc" value="Benificiario&#160;Cédula&#160;/&#160;Ruc" />
+					<p:inputText id="cedulaRuc" value="#{pagoDetaControl.pagoDeta.formPagoMoviIngr.persona.cedulaRuc}" 
+						required="false">
+						<f:validateBean for="cedulaRuc" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="apelli" value="Apellido" />
+					<p:inputText id="apelli" value="#{pagoDetaControl.pagoDeta.formPagoMoviIngr.persona.apelli}" 
+						required="false">
+						<f:validateBean for="apelli" disabled="true" />
+					</p:inputText>
+					
+					<p:outputLabel for="nombre" value="Nombre" />
+					<p:inputText id="nombre" value="#{pagoDetaControl.pagoDeta.formPagoMoviIngr.persona.nombre}" 
+						required="false">
+						<f:validateBean for="nombre" disabled="true" />
+					</p:inputText>
+									
+					<p:outputLabel for="numero" value="Documento&#160;Número" />
+					<p:inputText id="numero" value="#{pagoDetaControl.pagoDeta.cxp.ingreso.numero}" 
+						required="false">
+						<f:validateBean for="numero" disabled="true" />
+					</p:inputText>
+										
+					<p:outputLabel for="fecha" value="Fecha&#160;Pago" />
+					<p:calendar id="fecha" value="#{pagoDetaControl.pagoDeta.formPagoMoviIngr.fecha}" pattern="dd-MM-yyyy" 
+						required="false">
+						<f:validateBean for="fecha" disabled="true" />
+					</p:calendar> 										
+										
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:link value="Nuevo" outcome="registra" styleClass="boton" 
+					rendered="#{pagoDetaControl.rolPermiso.get(8100)}" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton" action="#{pagoDetaControl.iniciarPagina}" 
+					ajax="false" update="pagoDetaList"/>
+
+				<p:spacer height="2" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+					
+				<p:defaultCommand target="buscar"/>
+
+			</div>
+
+			<p:dataTable id="pagoDetaList" style="margin-top:10px;" emptyMessage="No se encontro datos"
+				value="#{pagoDetaControl.pagoDetas}" var="_pagoDeta">
+
+				<f:facet name="header">
+					<h:outputText value="Pagos" />
+				</f:facet>
+
+				<p:column style="width:80px;text-align: center" headerText="Operación">
+
+					<p:panelGrid columns="2" styleClass="ui-noborder">
+
+						<p:commandLink styleClass="ui-icon ui-icon-pencil"
+							title="Modificar" action="#{pagoDetaControl.modificar}">
+							<f:setPropertyActionListener value="#{_pagoDeta.pagoDetaId}"
+								target="#{pagoDetaControl.id}" />
+						</p:commandLink>
+
+						<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+							title="Explorar" action="#{pagoDetaControl.explorar}">
+							<f:setPropertyActionListener value="#{_pagoDeta.pagoDetaId}"
+								target="#{pagoDetaControl.id}" />
+						</p:commandLink>
+
+					</p:panelGrid>
+
+				</p:column>
+
+				<p:column headerText="Beneficiario&#160;/&#160;Apellido">
+					<h:outputText id="apelli" value="#{_pagoDeta.cxp.ingreso.persProv.persona.apelli}" />
+				</p:column>
+
+				<p:column headerText="Beneficiario&#160;/&#160;Nombre">
+					<h:outputText id="nombre" value="#{_pagoDeta.cxp.ingreso.persProv.persona.nombre}" />
+				</p:column>
+
+				<p:column headerText="Fecha&#160;Pago">
+					<h:outputText id="fechaVenc" value="#{_pagoDeta.formPagoMoviIngr.fecha}" />
+				</p:column>
+
+				<p:column headerText="Número&#160;Documento">
+					<h:outputText id="numero" value="#{_pagoDeta.cxp.ingreso.numero}" />
+				</p:column>
+
+				<p:column headerText="Total">
+					<h:outputText id="descri" value="#{_pagoDeta.total}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml" >
+				<ui:param name="paginadorControl" value='#{pagoDetaControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

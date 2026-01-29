@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte Proveedores - Definición">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persProvApelliDesd" value="Apellido Desde" />
+							<p:inputText id="persProvApelliDesd"
+								value="#{persProvReportControl.persProvDesd.persona.apelli}"
+								required="false">
+								<f:validateBean for="persProvApelliDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persProvApelliHast" value="Apellido Hasta" />
+							<p:inputText id="persProvApelliHast"
+								value="#{persProvReportControl.persProvHast.persona.apelli}"
+								required="false">
+								<f:validateBean for="persProvApelliHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persProvCedulaDesd" value="Cédula Desde" />
+							<p:inputText id="persProvCedulaDesd"
+								value="#{persProvReportControl.persProvDesd.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persProvCedulaDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persProvCedulaHast" value="Cédula Hasta" />
+							<p:inputText id="persProvCedulaHast"
+								value="#{persProvReportControl.persProvHast.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persProvCedulaHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="provGrupList" value="Grupo"
+								 />
+							<p:selectManyMenu id="provGrupList"
+								value="#{persProvReportControl.provGrupIds}" showCheckbox="true"
+								converter="omnifaces.SelectItemsConverter" >
+
+								<f:selectItems value="#{persProvReportControl.provGrups}"
+									var="provGrup" itemLabel="#{provGrup.descri}"
+									itemValue="#{provGrup.provGrupId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Estado"  />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{persProvReportControl.persProvEstado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato"  />
+							<p:selectOneRadio value="#{persProvReportControl.formatoReporte}">
+								<f:selectItems value="#{persProvReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{persProvReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="persProvs"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

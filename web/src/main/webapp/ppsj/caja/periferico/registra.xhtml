@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="perifericoId" value='#{perifericoControl.id}' />
+		<f:event type="preRenderView" listener="#{perifericoControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Periferico - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="descri" value="Descripción" />
+					<p:inputText id="descri" value="#{perifericoControl.periferico.descri}" styleClass="cajaTextoDescri"  
+						required="true" requiredMessage="Ingrese descripción" />
+
+					<p:outputLabel for="puerto" value="Puerto" />
+					<p:inputText id="puerto" value="#{perifericoControl.periferico.puerto}"  
+						required="true" requiredMessage="Ingrese puerto" />
+
+					<p:outputLabel for="caractCont" value="Caracter Control" />
+					<p:inputText id="caractCont" value="#{perifericoControl.periferico.ascii}"  
+						required="true" requiredMessage="Ingrese caracter control" />
+
+					<p:outputLabel for="veloci" value="Velocidad" />
+					<p:inputText id="veloci" value="#{perifericoControl.periferico.veloci}"  
+						required="true" requiredMessage="Ingrese velocidad" />
+
+					<p:outputLabel for="datos" value="Datos" />
+					<p:inputText id="datos" value="#{perifericoControl.periferico.datos}"  
+						required="true" requiredMessage="Ingrese datos" />
+
+					<p:outputLabel for="parida" value="Paridad" />
+					<p:inputText id="parida" value="#{perifericoControl.periferico.parida}"  
+						required="true" requiredMessage="Ingrese paridad" />
+
+					<p:outputLabel for="parada" value="Parada" />
+					<p:inputText id="parada" value="#{perifericoControl.periferico.parada}"  
+						required="true" requiredMessage="Ingrese parada" />
+
+					<p:outputLabel for="flujo" value="Flujo" />
+					<p:inputText id="flujo" value="#{perifericoControl.periferico.flujo}"  
+						required="true" requiredMessage="Ingrese flujo" />
+
+					<p:outputLabel for="digitoPeso" value="Digitos Peso" />
+					<p:inputText id="digitoPeso" value="#{perifericoControl.periferico.digitoPeso}"  
+						required="true" requiredMessage="Ingrese digitos peso" />
+
+					<p:outputLabel for="digitoCodi" value="Digitos Código" />
+					<p:inputText id="digitoCodi" value="#{perifericoControl.periferico.digitoCodi}"  
+						required="true" requiredMessage="Ingrese digitos código" />
+
+					<p:outputLabel for="factorDivi" value="Factor División" />
+					<p:inputText id="factorDivi" value="#{perifericoControl.periferico.factorDivi}"  
+						required="true" requiredMessage="Ingrese factor división" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{perifericoControl.grabar}" 
+					rendered="#{(perifericoControl.id != null and perifericoControl.rolPermiso.get(1001)) or 
+					(perifericoControl.id == null and perifericoControl.rolPermiso.get(1000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{perifericoControl.eliminar}"
+					rendered="#{perifericoControl.id != null and perifericoControl.rolPermiso.get(1002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

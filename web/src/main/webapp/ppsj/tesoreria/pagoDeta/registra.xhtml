@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagoDetaId" value='#{pagoDetaControl.id}' />
+		<f:viewParam name="fpmiId" value='#{pagoDetaControl.fpmiId}' />
+		<f:viewParam name="cxpId" value='#{pagoDetaControl.cxpId}' />
+		<f:event type="preRenderView" listener="#{pagoDetaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="Pago Detalle - Panel Datos"
+				style="margin-bottom:10px;" >
+
+				<p:focus for="panelRegistrar"/>
+
+				<p:panelGrid id="grid1" columns="1" layout="grid" style="margin-top:10px;">
+					<f:facet name="header">
+						Proveedor / Beneficiario
+					</f:facet>
+					<p:outputLabel id="apellid" 
+						value="#{pagoDetaControl.pagoDeta.cxp.ingreso.persProv.persona.apelli}&#160;#{pagoDetaControl.pagoDeta.cxp.ingreso.persProv.persona.nombre}" />
+				</p:panelGrid>
+
+				<p:panelGrid id="grid2" columns="3" layout="grid" style="margin-top:10px;">
+					<f:facet name="header">
+						Cuenta a Pagar:
+					</f:facet>
+					
+					<p:outputLabel for="cxpTotal" value="Total" />
+					<p:outputLabel for="cxpAbono" value="Abono" />
+					<p:outputLabel for="cxpSaldo" value="Saldo" />
+					
+					<p:outputLabel id="cxpTotal" value="#{pagoDetaControl.pagoDeta.cxp.total}" />
+					<p:outputLabel id="cxpAbono" value="#{pagoDetaControl.pagoDeta.cxp.abono}" />
+					<p:outputLabel id="cxpSaldo" value="#{pagoDetaControl.pagoDeta.cxp.saldo}" />
+					
+				</p:panelGrid>
+
+				<p:spacer height="30px" />
+
+				<p:panelGrid id="grid" columns="2" >
+
+					<p:outputLabel for="fpmiTotal" value="Total&#160;Pago" />
+					<p:outputLabel id="fpmiTotal" value="#{pagoDetaControl.pagoDeta.formPagoMoviIngr.total}"/>
+
+					<p:outputLabel for="total" value="Total&#160;Abono" />
+					<p:inputText id="total" value="#{pagoDetaControl.pagoDeta.total}"   
+						required="true" requiredMessage="Ingrese total" />
+
+				</p:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{pagoDetaControl.grabar}" 
+					rendered="#{(pagoDetaControl.id != null and pagoDetaControl.rolPermiso.get(8101)) or 
+					(pagoDetaControl.id == null and pagoDetaControl.rolPermiso.get(8100)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{pagoDetaControl.eliminar}" 
+					rendered="#{pagoDetaControl.id != null and pagoDetaControl.rolPermiso.get(8102)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="/ppsj/tesoreria/formPagoMoviIngr/explora?faces-redirect=true&amp;formPagoMoviIngrId=#{pagoDetaControl.pagoDeta.formPagoMoviIngr.fpmiId}"/>
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

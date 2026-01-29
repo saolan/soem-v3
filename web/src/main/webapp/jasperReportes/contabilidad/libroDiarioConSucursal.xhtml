@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panel" />
+			<p:defaultCommand target="descargar" />
+
+			<p:panel id="panel" header="Reporte - Libro Diario">
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="transaccionFechaDesd" value="Fecha Desde" />
+							<p:calendar id="transaccionFechaDesd"
+								value="#{libroDiarioReportControl.transaccionDesd.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="transaccionFechaHast" value="Fecha Hasta" />
+							<p:calendar id="transaccionFechaHast"
+								value="#{libroDiarioReportControl.transaccionHast.fechaEmis}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="sucursalList" value="Sucursal"
+								 />
+							<p:selectManyMenu id="sucursalList"
+								value="#{libroDiarioReportControl.sucursalIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								 required="true"
+								requiredMessage="Seleccione sucursales">
+
+								<f:selectItems value="#{libroDiarioReportControl.sucursals}"
+									var="sucursal" itemLabel="#{sucursal.descri}"
+									itemValue="#{sucursal.sucursalId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="docuTranList" value="Documento"
+								 />
+							<p:selectManyMenu id="docuTranList"
+								value="#{libroDiarioReportControl.docuTranIds}"
+								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
+								>
+
+								<f:selectItems value="#{libroDiarioReportControl.docuTrans}"
+									var="docuTran" itemLabel="#{docuTran.documento.descri}"
+									itemValue="#{docuTran.documentoId}" />
+
+							</p:selectManyMenu>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato" />
+							<p:selectOneRadio
+								value="#{libroDiarioReportControl.formatoReporte}">
+								<f:selectItems
+									value="#{libroDiarioReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{libroDiarioReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="libroDiario"
+					includeViewParams="false" styleClass="boton" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

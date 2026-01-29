@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="documentoId" value='#{docuEgreControl.id}' />
+		<f:event type="preRenderView" listener="#{docuEgreControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="main">
+
+		<h:form>
+			<p:panel id="explora" header="Documento Venta - Panel Explorar"
+				style="margin-bottom:10px">
+
+				<h:panelGrid columns="2">
+					<p:outputLabel value="Descripción" />
+					<p:inputText value="#{docuEgreControl.docuEgre.documento.descri}" />
+				
+					<p:outputLabel value="Código SRI" />
+					<p:inputText value="#{docuEgreControl.docuEgre.dimm.codigo}" />
+					
+										<p:outputLabel for="ambienList" value="Ambiente" />
+					<p:selectOneMenu id="ambienList" value="#{docuEgreControl.docuEgre.ambien}">
+						<f:selectItems value="#{docuEgreControl.dimmAmbiens}" var="dimm" 
+							itemLabel="#{dimm.descri}" itemValue="#{dimm.codigo}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel for="tipoEmisList" value="Tipo&#160;Emisión" />
+					<p:selectOneMenu id="tipoEmisList" value="#{docuEgreControl.docuEgre.tipoEmis}">
+						<f:selectItems value="#{docuEgreControl.dimmTipoEmiss}" var="dimm" 
+							itemLabel="#{dimm.descri}" itemValue="#{dimm.codigo}"/>
+					</p:selectOneMenu>
+										
+					<p:outputLabel value="Ambiente" />
+					<p:inputText value="#{docuEgreControl.docuEgre.ambien}" />
+
+					<p:outputLabel value="Tipo Emisión" />
+					<p:inputText value="#{docuEgreControl.docuEgre.tipoEmis}" />
+					
+					<p:outputLabel value="Genera Anexo" />
+					<p:selectBooleanCheckbox value="#{docuEgreControl.docuEgre.generaAnex}" />
+										
+					<p:outputLabel value="Genera Cxc" />
+					<p:selectBooleanCheckbox value="#{docuEgreControl.docuEgre.generaCxc}" />
+					
+					<p:outputLabel value="Genera Impuestos" />
+					<p:selectBooleanCheckbox value="#{docuEgreControl.docuEgre.generaImpu}" />
+
+					<p:outputLabel value="Documento Electronico" />
+					<p:inputText value="#{docuEgreControl.docuEgre.documeElec}" />
+					
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+				<p:link id="aceptar" value="Aceptar" outcome="lista"
+					styleClass="boton" />
+
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

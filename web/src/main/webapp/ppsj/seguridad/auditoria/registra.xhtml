@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="auditoriaId" value='#{auditoriaControl.id}' />
+		<f:event type="preRenderView" listener="#{auditoriaControl.recuperar}" />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panelRegistrar" header="auditoria - Panel Datos"
+				style="margin-bottom:10px; ">
+
+				<p:focus for="panelRegistrar"/>
+
+				<h:panelGrid id="grid" columns="2">
+
+					<p:outputLabel for="direccIp" value="Dirección IP" />
+					<p:inputText id="direccIp" value="#{auditoriaControl.auditoria.direccIp}"  
+						required="true" requiredMessage="Ingrese dirección IP" />
+
+					<p:outputLabel for="operac" value="Operación" />
+					<p:inputText id="operac" value="#{auditoriaControl.auditoria.operac}"  
+						required="true" requiredMessage="Ingrese operación" />
+
+					<p:outputLabel for="fecha" value="Fecha" />
+					<p:inputText id="fecha" value="#{auditoriaControl.auditoria.fecha}"  
+						required="true" requiredMessage="Ingrese fecha" />
+
+					<p:outputLabel for="hora" value="Hora" />
+					<p:inputText id="hora" value="#{auditoriaControl.auditoria.hora}"  
+						required="true" requiredMessage="Ingrese hora" />
+
+					<p:outputLabel for="fechaHora" value="Fecha Hora" />
+					<p:inputText id="fechaHora" value="#{auditoriaControl.auditoria.fechaHora}"  
+						required="true" requiredMessage="Ingrese Fecha y hora" />
+
+					<p:outputLabel for="cadenaAnte" value="Cadena Anterior" />
+					<p:inputText id="cadenaAnte" value="#{auditoriaControl.auditoria.cadenaAnte}"  
+						required="true" requiredMessage="Ingrese cadena anterior" />
+
+					<p:outputLabel for="cadenaActu" value="Cadena Actual" />
+					<p:inputText id="cadenaActu" value="#{auditoriaControl.auditoria.cadenaActu}"  
+						required="true" requiredMessage="Ingrese cadena actual" />
+
+				</h:panelGrid>
+
+			</p:panel>
+
+			<div id="barraBotones">
+
+				<p:commandLink id="grabar" value="Grabar" 
+					styleClass="boton" action="#{auditoriaControl.grabar}" 
+					rendered="#{(auditoriaControl.id != null and auditoriaControl.rolPermiso.get(7001)) or 
+					(auditoriaControl.id == null and auditoriaControl.rolPermiso.get(7000)) }" />
+
+				<p:spacer height="2" />
+
+				<p:commandLink id="eliminar" value="Eliminar" 
+					styleClass="boton" action="#{auditoriaControl.eliminar}" 
+					rendered="#{auditoriaControl.id != null and auditoriaControl.rolPermiso.get(7002)}"/>
+
+				<p:spacer height="2" />
+
+				<p:link styleClass="boton" type="link" value="Cancelar"
+					outcome="lista" />
+					
+				<p:defaultCommand target="grabar"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

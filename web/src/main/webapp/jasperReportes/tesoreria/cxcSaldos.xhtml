@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:panel id="panel" header="Reporte Cuentas Por Cobrar - Saldos">
+
+
+
+				<div class="card ui-fluid">
+					<div class="formgrid grid">
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieApelliDesd" value="Apellido Desde" />
+							<p:inputText id="persClieApelliDesd"
+								value="#{cxcSaldoReportControl.persClieDesd.persona.apelli}"
+								required="false">
+								<f:validateBean for="persClieApelliDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieApelliHast" value="Apellido Hasta" />
+							<p:inputText id="persClieApelliHast"
+								value="#{cxcSaldoReportControl.persClieHast.persona.apelli}"
+								required="false">
+								<f:validateBean for="persClieApelliHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieCedulaDesd" value="Cédula Desde" />
+							<p:inputText id="persClieCedulaDesd"
+								value="#{cxcSaldoReportControl.persClieDesd.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persClieCedulaDesd" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="persClieCedulaHast" value="Cédula Hasta" />
+							<p:inputText id="persClieCedulaHast"
+								value="#{cxcSaldoReportControl.persClieHast.persona.cedulaRuc}"
+								required="false">
+								<f:validateBean for="persClieCedulaHast" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="cxpFechaDesd" value="Fecha Desde" />
+							<p:calendar id="cxpFechaDesd"
+								value="#{cxcSaldoReportControl.cxcDesd.fechaVenc}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha desde" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="cxpFechaHast" value="Fecha Hasta" />
+							<p:calendar id="cxpFechaHast"
+								value="#{cxcSaldoReportControl.cxcHast.fechaVenc}"
+								pattern="dd-MM-yyyy" required="true"
+								requiredMessage="Ingrese fecha hasta" />
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="saldoMini" value="Saldo Mínimo" />
+							<p:inputText id="saldoMini"
+								value="#{cxcSaldoReportControl.saldoMini}" required="true"
+								requiredMessage="Ingrese saldo mínimo">
+								<f:validateBean for="cantidMini" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="saldoMaxi" value="Saldo Máximo" />
+							<p:inputText id="saldoMaxi"
+								value="#{cxcSaldoReportControl.saldoMaxi}" required="true"
+								requiredMessage="Ingrese saldo máximo">
+								<f:validateBean for="cantidMaxi" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel for="estado" value="Cliente Estado" />
+							<p:selectBooleanCheckbox id="estado"
+								value="#{cxcSaldoReportControl.persClieEstado}" required="false">
+								<f:validateBean for="estado" disabled="true" />
+							</p:selectBooleanCheckbox>
+						</div>
+
+						<div class="field col-12 md:col-6">
+							<p:outputLabel value="Formato" />
+							<p:selectOneRadio value="#{cxcSaldoReportControl.formatoReporte}">
+								<f:selectItems value="#{cxcSaldoReportControl.formatoReportes}"
+									var="formatoReporte" itemValue="#{formatoReporte.descri}"
+									itemLabel="#{formatoReporte.descri}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+			<div class="barraBotones">
+
+				<p:commandLink id="descargar" ajax="false" styleClass="boton"
+					value="Descargar" action="#{cxcSaldoReportControl.descargar}" />
+
+				<p:link value="Cancelar" outcome="cxcSaldos"
+					includeViewParams="false" styleClass="boton" />
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

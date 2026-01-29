@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="pagina" value='#{cxcControl.pagina}' />
+		<f:event type="preRenderView" listener='#{cxcControl.buscar}' />
+	</f:metadata>
+
+	<ui:define name="main">
+
+		<h:form>
+
+			<p:focus context="panelBuscar" />
+			<p:defaultCommand target="buscar" />
+
+			<div class="barraBotones">
+
+				<p:commandLink id="buscar" value="Buscar" styleClass="boton"
+					action="#{cxcControl.iniciarPagina}" ajax="false" update="cxcList" />
+
+				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
+					styleClass="boton" />
+			</div>
+
+			<p:panel id="panelBuscar" style="margin-bottom:5px"
+				header="Cuentas Por Cobrar - Panel Busqueda">
+
+				<div class="card">
+					<div class="grid ui-fluid">
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="cedulaRuc"
+								value="#{cxcControl.cxc.egreso.persClie.persona.cedulaRuc}"
+								required="false" placeholder="Cédula o Ruc">
+								<f:validateBean for="cedulaRuc" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="apelli"
+								value="#{cxcControl.cxc.egreso.persClie.persona.apelli}"
+								required="false" placeholder="Apellido">
+								<f:validateBean for="apelli" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="nombre"
+								value="#{cxcControl.cxc.egreso.persClie.persona.nombre}"
+								required="false" placeholder="Nombre">
+								<f:validateBean for="nombre" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:inputText id="numero" value="#{cxcControl.cxc.egreso.numero}"
+								required="false" placeholder="Número">
+								<f:validateBean for="numero" disabled="true" />
+							</p:inputText>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:calendar id="fechaEmis"
+								value="#{cxcControl.cxc.egreso.fechaEmis}" pattern="dd-MM-yyyy"
+								required="false" placeholder="Fecha Emisión">
+								<f:validateBean for="fechaEmis" disabled="true" />
+							</p:calendar>
+						</div>
+
+						<div class="col-12 md:col-2">
+
+							<p:calendar id="fechaVenc" value="#{cxcControl.cxc.fechaVenc}"
+								pattern="dd-MM-yyyy" required="false"
+								placeholder="Fecha Vencimiento">
+								<f:validateBean for="fechaVenc" disabled="true" />
+							</p:calendar>
+						</div>
+
+						<div class="col-12 md:col-2">
+							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
+								value="#{cxcControl.cxc.estado}" />
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+
+			<div class="card product">
+
+				<p:dataView id="cxcList" style="margin-top:5px;"
+					emptyMessage="No se encontro datos" value="#{cxcControl.cxcs}"
+					var="_cxc">
+
+					<f:facet name="header">
+						<h:outputText value="Cuentas por pagar" />
+					</f:facet>
+
+					<p:dataViewListItem>
+
+						<div class="product-list-item">
+
+							<div class="product-list-detail">
+								<div class="product-name">#{_cxc.egreso.persClie.persona.apelli}
+									#{_cxc.egreso.persClie.persona.nombre}</div>
+								<span>Num: #{_cxc.egreso.numero}</span>
+							</div>
+
+							<div class="product-list-detail">
+
+								<p:outputLabel value="Emisión:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText value="#{_cxc.egreso.fechaEmis}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+								</h:outputText>
+
+								<div></div>
+
+								<p:outputLabel value="Vence:" style="margin-right:17px"></p:outputLabel>
+								<h:outputText value="#{_cxc.fechaVenc}">
+									<f:convertDateTime type="localDate" pattern="dd-MM-yyyy" />
+								</h:outputText>
+							</div>
+
+							<div class="product-list-detail">
+
+								<p:outputLabel value="Total:" style="margin-right:17px"></p:outputLabel>
+								<h:outputText id="total" value="#{_cxc.total}">
+									<f:convertNumber pattern="$0.00" locale="en-US" />
+								</h:outputText>
+
+								<div></div>
+
+								<p:outputLabel value="Abono:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText id="abono" value="#{_cxc.abono}">
+									<f:convertNumber pattern="$0.00" locale="en-US" />
+								</h:outputText>
+
+
+							</div>
+
+							<div class="product-list-detail">
+								<p:outputLabel value="Saldo:" style="margin-right:5px"></p:outputLabel>
+								<h:outputText id="saldo" value="#{_cxc.saldo}">
+									<f:convertNumber pattern="$0.00" locale="en-US" />
+								</h:outputText>
+								<div></div>
+								<h:selectBooleanCheckbox id="estado" value="#{_cxc.estado}"
+									disabled="true" />
+							</div>
+
+							<div class="product-list-action">
+								<p:commandLink styleClass="ui-icon ui-icon-folder-open"
+									title="Explorar" action="#{cxcControl.explorar}">
+									<f:setPropertyActionListener value="#{_cxc.cxcId}"
+										target="#{cxcControl.id}" />
+								</p:commandLink>
+							</div>
+						</div>
+					</p:dataViewListItem>
+				</p:dataView>
+			</div>
+
+			<ui:include src="/WEB-INF/facelets/templates/paginador.xhtml">
+				<ui:param name="paginadorControl" value='#{cxcControl}' />
+			</ui:include>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
