@@ -28,10 +28,18 @@ public class FpmeFormPagoRete implements Serializable {
 	private FpmeFormPago fpmeFormaPago;
 	private Retencion retencion;
 
+	public FpmeFormPagoRete() {
+	}
+
+	public FpmeFormPagoRete(FpmeFormPago fpmeFormaPago, Retencion retencion) {
+		this.fpmeFormaPago = fpmeFormaPago;
+		this.retencion = retencion;
+	}
+
 	@Id
 	@TableGenerator(name = "idFpmeFormPagoRete", table = "secuencial", pkColumnName = "tabla", pkColumnValue = "fpme_form_pago_rete", valueColumnName = "numero", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "idFpmeFormPagoRete")
-	@Column(name = "ffpr_ID", unique = true, nullable = false)
+	@Column(name = "FFPR_ID", unique = true, nullable = false)
 	public Integer getFfprId() {
 		return ffprId;
 	}
