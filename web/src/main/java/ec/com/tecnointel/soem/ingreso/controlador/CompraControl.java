@@ -1509,9 +1509,9 @@ public class CompraControl extends PaginaControl implements Serializable {
 
 					if (this.variablesSesion.getFactElecCompraAuto().equals("Activar")) {
 
-						if (this.validarUrl() == true) {
+//						if (this.validarUrl() == true) {
 
-							if (this.validarConexion() == true) {
+//							if (this.validarConexion() == true) {
 
 								this.procesarComprobanteElectronicoLiquidacion();
 
@@ -1528,8 +1528,8 @@ public class CompraControl extends PaginaControl implements Serializable {
 //													"Error al cambiar estado del documento"));
 //									e.printStackTrace();
 //								}
-							}
-						}
+//							}
+//						}
 					}
 				}
 //				Fin Generar Liquidacion de compras
@@ -1607,9 +1607,9 @@ public class CompraControl extends PaginaControl implements Serializable {
 //							se debe enviar desde la pagina reprocesar
 							if (this.variablesSesion.getFactElecCompraAuto().equals("Activar")) {
 
-								if (this.validarUrl() == true) {
+//								if (this.validarUrl() == true) {
 
-									if (this.validarConexion() == true) {
+//									if (this.validarConexion() == true) {
 
 										String estadoDocuElec = this.procesarComprobanteElectronico();
 
@@ -1630,15 +1630,15 @@ public class CompraControl extends PaginaControl implements Serializable {
 
 										// this.crearRideRetencionPdf(retencionId);
 
-									} else {
-										FacesContext.getCurrentInstance().addMessage(null,
-												new FacesMessage(FacesMessage.SEVERITY_INFO, null,
-														"No existe conexión con el Sri, documento no enviado"));
-									}
-								} else {
-									FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-											FacesMessage.SEVERITY_INFO, null, "Url no esta configurado correctamente"));
-								}
+//									} else {
+//										FacesContext.getCurrentInstance().addMessage(null,
+//												new FacesMessage(FacesMessage.SEVERITY_INFO, null,
+//														"No existe conexión con el Sri, documento no enviado"));
+//									}
+//								} else {
+//									FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+//											FacesMessage.SEVERITY_INFO, null, "Url no esta configurado correctamente"));
+//								}
 							}
 						}
 					} // fin if (this.reteDetas.size() != 0)
