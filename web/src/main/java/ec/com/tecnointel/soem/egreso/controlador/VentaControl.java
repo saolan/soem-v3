@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -212,7 +211,6 @@ public class VentaControl extends PaginaControl implements Serializable {
 	private List<EgreNota> egreNotas;
 	private Set<Integer> sucursals;
 	private List<Egreso> egresos;
-//	private List<Producto> productos;
 	private List<Precio> precios;
 	private List<EgreDeta> egreDetaDataTable;
 	private List<EgreDeta> egreDetaEliminados;
@@ -3742,12 +3740,8 @@ public class VentaControl extends PaginaControl implements Serializable {
 		for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
 			try {
 				fpmeFormPago.setFormPagoMoviEgre(this.formPagoMoviEgre);
-
-//				Se quito esto para que grabe la forma de pago credito
-//				lo que en la version 1.1 no hacia
-//				if (!fpmeFormPago.getFormPago().getTipo().equals("CR")) {
 				venta.insertarFpmeFormPago(fpmeFormPago);
-//				}
+
 			} catch (Exception e) {
 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, null,
 						"Excepcion - Error al insertar detalle de pago - FpmeFormPago"));
@@ -3758,10 +3752,6 @@ public class VentaControl extends PaginaControl implements Serializable {
 
 		return id;
 	}
-
-//	public String aceptar(){
-//		return "/ppsj/egreso/venta/ventaDeta?faces-redirect=true";
-//	}
 
 	public Precio buscarPrecioPred() {
 
@@ -4768,17 +4758,16 @@ public class VentaControl extends PaginaControl implements Serializable {
 
 		return navegar;
 	}
-    
-    public List<RolSucu> obtenerRolSucuUnicosPorSucursal(List<RolSucu> listaRolSucu) {
-    	
-        Set<Integer> sucursalIdsVistos = ConcurrentHashMap.newKeySet();
 
-        return listaRolSucu.stream()
-                .filter(rs -> rs.getSucursal() != null)
-                .filter(rs -> sucursalIdsVistos.add(rs.getSucursal().getSucursalId())) // filtra duplicados
-                .collect(Collectors.toList());
-    }
-    
+	public List<RolSucu> obtenerRolSucuUnicosPorSucursal(List<RolSucu> listaRolSucu) {
+
+		Set<Integer> sucursalIdsVistos = ConcurrentHashMap.newKeySet();
+
+		return listaRolSucu.stream().filter(rs -> rs.getSucursal() != null)
+				.filter(rs -> sucursalIdsVistos.add(rs.getSucursal().getSucursalId())) // filtra duplicados
+				.collect(Collectors.toList());
+	}
+
 	public void cargarDatosConvertir() {
 
 //		La lista de documentos se usa la lista inicial
@@ -4793,7 +4782,7 @@ public class VentaControl extends PaginaControl implements Serializable {
 //			Se llena esta lista pero en el caso que un usuario tenga dos roles
 //			se va a duplicar la sucursal, se tendría que sacar en otra lista aparte solo las sucursales
 			List<RolSucu> rolSucus = venta.buscarRolSucus(persUsuaSesion.getRolPersUsuas());
-			//PARA NO HACER ESTO SE PUEDE AUMETNAR EN LA CONSULTA UN GROUPBY
+			// PARA NO HACER ESTO SE PUEDE AUMENTAR EN LA CONSULTA UN GROUPBY
 			rolSucuConvertirs = obtenerRolSucuUnicosPorSucursal(rolSucus);
 
 		} catch (Exception e) {
@@ -4808,7 +4797,7 @@ public class VentaControl extends PaginaControl implements Serializable {
 //				this.sucursals.add(rolSucu.getSucursal().getSucursalId());	
 //			}
 //		}
-
+		
 	}
 
 	public void borraDatosConvertir() {
@@ -5185,16 +5174,16 @@ public class VentaControl extends PaginaControl implements Serializable {
 	}
 
 	public void activarBotonAnular() {
-		
+
 		if (variablesSesion.isAnulaFactConsFina()) {
 			botonAnular = true;
 			return;
 		}
 
-        LocalDate fechaLimite = egreso.getFechaEmis().plusMonths(1).withDayOfMonth(variablesSesion.getDiasAnulacionDocuElec());
-           
-		if (LocalDate.now().isAfter(fechaLimite) 
-				&& egreso.getEstadoDocuElec().equals("AUTORIZADO")) {
+		LocalDate fechaLimite = egreso.getFechaEmis().plusMonths(1)
+				.withDayOfMonth(variablesSesion.getDiasAnulacionDocuElec());
+
+		if (LocalDate.now().isAfter(fechaLimite) && egreso.getEstadoDocuElec().equals("AUTORIZADO")) {
 			botonAnular = false;
 		} else if (egreso.getPersClie().getPersona().getCedulaRuc().equals("9999999999999")
 				&& egreso.getEstadoDocuElec().equals("AUTORIZADO")) {
