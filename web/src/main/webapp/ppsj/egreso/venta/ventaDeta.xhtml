@@ -403,12 +403,11 @@
 											onclick="PF('seleccionarClienteDialogo').show();" />
 									</div>
 
-									<div class="field field col-12 md:col-4">
+									<div class="field field col-12 md:col-7">
 										<p:outputLabel id="persClieApelli"
 											value="#{ventaControl.egreso.persClie.persona.apelli} 
 										   #{ventaControl.egreso.persClie.persona.nombre}"
-											styleClass="cajaTextoDescri"
-											style="width:300px;text-align: left" />
+											style="text-align: left" />
 									</div>
 
 									<div class="field col-12 md:col-1">
@@ -423,48 +422,50 @@
 										<p:inputText id="nota" value="#{ventaControl.egreso.nota}" />
 									</div>
 
-									<div class="field col-12 md:col-3">
-										<p:row rendered="#{ventaControl.rolPermiso.get(3200)}">
-											<p:column>
-												<p:outputLabel value="Disponible"
-													style="width:100%;text-align:left" />
-											</p:column>
+									<ui:fragment rendered="#{ventaControl.rolPermiso.get(3200)}">
+										<div class="col-12 md:col-1">
+											<p:outputLabel value="Disponible"
+												style="text-align:left" />
+										</div>
 
-											<p:column>
-												<p:inputText id="disponible1"
-													value="#{ventaControl.saldoDisponible}" readonly="true"
-													style="text-align: right;width:70px;">
-													<f:convertNumber pattern="#0.00" locale="en-US" />
-												</p:inputText>
-											</p:column>
+										<div class="field col-12 md:col-3">
+											<p:inputText id="disponible1"
+												value="#{ventaControl.saldoDisponible}" readonly="true"
+												style="text-align: right;">
+												<f:convertNumber pattern="#0.00" locale="en-US" />
+											</p:inputText>
+										</div>
 
-											<p:column>
-												<p:outputLabel value="Saldo Cxc"
-													style="width:100%;text-align: left" />
-											</p:column>
+										<div class="col-12 md:col-1">
+											<p:outputLabel value="Saldo&#160;Cxc"
+												rendered="#{ventaControl.rolPermiso.get(3200)}"
+												style="text-align: left" />
+										</div>
 
-											<p:column>
-												<p:inputText id="saldoCxc1"
-													value="#{ventaControl.saldoCliente}" readonly="true"
-													style="text-align: right;width:70px;">
-													<f:convertNumber pattern="#0.00" locale="en-US" />
-												</p:inputText>
-											</p:column>
+										<div class="col-12 md:col-3">
+											<p:inputText id="saldoCxc1"
+												rendered="#{ventaControl.rolPermiso.get(3200)}"
+												value="#{ventaControl.saldoCliente}" readonly="true"
+												style="text-align: right;">
+												<f:convertNumber pattern="#0.00" locale="en-US" />
+											</p:inputText>
+										</div>
 
-											<p:column>
-												<p:outputLabel value="Cupo"
-													style="width:100%;text-align: right" />
-											</p:column>
+										<div class="col-12 md:col-1">
+											<p:outputLabel value="Cupo"
+												rendered="#{ventaControl.rolPermiso.get(3200)}"
+												style="text-align: right" />
+										</div>
 
-											<p:column style="text-align: left">
-												<p:inputText id="cupo1"
-													value="#{ventaControl.egreso.persClie.cupo}"
-													readonly="true" style="text-align: right;width:70px;">
-													<f:convertNumber pattern="#0.00" locale="en-US" />
-												</p:inputText>
-											</p:column>
-										</p:row>
-									</div>
+										<div class="col-12 md:col-3">
+											<p:inputText id="cupo1"
+												rendered="#{ventaControl.rolPermiso.get(3200)}"
+												value="#{ventaControl.egreso.persClie.cupo}" readonly="true"
+												style="text-align: right;">
+												<f:convertNumber pattern="#0.00" locale="en-US" />
+											</p:inputText>
+										</div>
+									</ui:fragment>
 								</div>
 							</div>
 
