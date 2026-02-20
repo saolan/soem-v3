@@ -26,8 +26,6 @@
 		<h:form id="ventaForm">
 
 			<p:defaultCommand target="buscarProductos" />
-			<p:defaultCommand target="buscarPersClie"
-				scope="seleccionarClienteDialogo" />
 			<p:defaultCommand target="persClieRegisForm:grabar"
 				scope="persClieRegistrar" />
 			<p:defaultCommand target="buscarCxcs" scope="seleccionCxc" />
@@ -156,6 +154,7 @@
 
 						<p:commandLink id="buscarProductos" style="margin-left:37%"
 							action="#{ventaControl.buscarProdPrecsBalanza(0)}"
+							process="@this panelBuscar"
 							update="prodPrecList,ventaForm:egresoDetaList,ventaForm:totalDocumento,panelBuscar,paginadorProductos">
 							<h:graphicImage library="img" name="lupa1.png" width="14px" />
 						</p:commandLink>
@@ -176,7 +175,7 @@
 									<div class="product-list-item">
 
 										<p:commandLink id="agregarBtnImg" title="Agregar producto"
-											rendered="#{ventaControl.activarImagen}"
+											rendered="#{ventaControl.activarImagen}" process="@this"
 											oncomplete="moverCursor('agregarBtnImg','#{ventaControl.ventaDetaAlSeleProd}')"
 											action="#{ventaControl.agregarProducto}" ajax="true"
 											update="ventaForm:egresoDetaList,ventaForm:totalDocumento">
@@ -208,7 +207,7 @@
 
 										<div class="product-list-detail">
 											<p:commandLink id="agregarDescri" title="Agregar producto"
-												rendered="#{ventaControl.activarDescri}"
+												rendered="#{ventaControl.activarDescri}" process="@this"
 												value="#{_prodPrec.producto.descri}"
 												oncomplete="moverCursor('agregarDescri','#{ventaControl.ventaDetaAlSeleProd}')"
 												action="#{ventaControl.agregarProducto}" ajax="true"
@@ -227,7 +226,7 @@
 
 											<span><i class="pi pi-barcode  product-category-icon" />
 												<p:commandLink id="agregarProduc" title="Agregar producto"
-													value="#{_prodPrec.producto.codigoBarra}"
+													value="#{_prodPrec.producto.codigoBarra}" process="@this"
 													oncomplete="moverCursor('agregarProduc','#{ventaControl.ventaDetaAlSeleProd}')"
 													action="#{ventaControl.agregarProducto}" ajax="true"
 													update="ventaForm:egresoDetaList,ventaForm:totalDocumento">
@@ -245,7 +244,7 @@
 
 											<p:commandLink id="abriDialogoPrecio2"
 												rendered="#{ventaControl.activarPrecio}"
-												title="Detalle Producto"
+												title="Detalle Producto" process="@this"
 												onclick="PF('productoDetalleDialogo').show();"
 												action="#{ventaControl.buscarProdPrecKardTotaView}"
 												update="ventaForm:karkTotaView,ventaForm:prodPrec,ventaForm:imagenProducto">
@@ -279,7 +278,7 @@
 							<h:panelGroup id="paginadorProductos">
 
 								<p:commandButton value="&lt; Anterior" ajax="true"
-									style="width:30%;"
+									process="@this" style="width:30%;"
 									update="ventaForm:prodPrecList,paginadorProductos"
 									rendered="#{ventaControl.pagina gt 0}"
 									action="#{ventaControl.buscarProdPrecsBalanza(1)}">
@@ -287,7 +286,7 @@
 								</p:commandButton>
 
 								<p:commandButton value="Siguiente &gt;" ajax="true"
-									style="width:30%;"
+									process="@this" style="width:30%;"
 									update="ventaForm:prodPrecList,paginadorProductos"
 									rendered="#{(ventaControl.pagina + 1) * ventaControl.filasProductos lt ventaControl.contadorReg}"
 									action="#{ventaControl.buscarProdPrecsBalanza(1)}">
@@ -399,20 +398,20 @@
 
 									<div class="col-12 md:col-1">
 										<p:commandLink id="abrirBuscarCliente" value="Cliente"
+											process="@this"
 											style="font-size: 110%; font-weight: bold; color: blue; text-decoration: underline;"
 											onclick="PF('seleccionarClienteDialogo').show();" />
 									</div>
 
-									<div class="field field col-12 md:col-4">
+									<div class="field field col-12 md:col-7">
 										<p:outputLabel id="persClieApelli"
 											value="#{ventaControl.egreso.persClie.persona.apelli} 
 										   #{ventaControl.egreso.persClie.persona.nombre}"
-											styleClass="cajaTextoDescri"
-											style="width:300px;text-align: left" />
+											style="text-align: left" />
 									</div>
 
 									<div class="field col-12 md:col-1">
-										<p:commandLink id="abrirEgreNota" value="Nota"
+										<p:commandLink id="abrirEgreNota" value="Nota" process="@this"
 											action="#{ventaControl.buscarEgreNotas}"
 											update="egreNotaForm:egreNotaList"
 											style="font-size: 110%; font-weight: bold; color: blue; text-decoration: underline;"
@@ -423,48 +422,50 @@
 										<p:inputText id="nota" value="#{ventaControl.egreso.nota}" />
 									</div>
 
-									<div class="field col-12 md:col-3">
-										<p:row rendered="#{ventaControl.rolPermiso.get(3200)}">
-											<p:column>
-												<p:outputLabel value="Disponible"
-													style="width:100%;text-align:left" />
-											</p:column>
+									<ui:fragment rendered="#{ventaControl.rolPermiso.get(3200)}">
+										<div class="col-12 md:col-1">
+											<p:outputLabel value="Disponible"
+												style="text-align:left" />
+										</div>
 
-											<p:column>
-												<p:inputText id="disponible1"
-													value="#{ventaControl.saldoDisponible}" readonly="true"
-													style="text-align: right;width:70px;">
-													<f:convertNumber pattern="#0.00" locale="en-US" />
-												</p:inputText>
-											</p:column>
+										<div class="field col-12 md:col-3">
+											<p:inputText id="disponible1"
+												value="#{ventaControl.saldoDisponible}" readonly="true"
+												style="text-align: right;">
+												<f:convertNumber pattern="#0.00" locale="en-US" />
+											</p:inputText>
+										</div>
 
-											<p:column>
-												<p:outputLabel value="Saldo Cxc"
-													style="width:100%;text-align: left" />
-											</p:column>
+										<div class="col-12 md:col-1">
+											<p:outputLabel value="Saldo&#160;Cxc"
+												rendered="#{ventaControl.rolPermiso.get(3200)}"
+												style="text-align: left" />
+										</div>
 
-											<p:column>
-												<p:inputText id="saldoCxc1"
-													value="#{ventaControl.saldoCliente}" readonly="true"
-													style="text-align: right;width:70px;">
-													<f:convertNumber pattern="#0.00" locale="en-US" />
-												</p:inputText>
-											</p:column>
+										<div class="col-12 md:col-3">
+											<p:inputText id="saldoCxc1"
+												rendered="#{ventaControl.rolPermiso.get(3200)}"
+												value="#{ventaControl.saldoCliente}" readonly="true"
+												style="text-align: right;">
+												<f:convertNumber pattern="#0.00" locale="en-US" />
+											</p:inputText>
+										</div>
 
-											<p:column>
-												<p:outputLabel value="Cupo"
-													style="width:100%;text-align: right" />
-											</p:column>
+										<div class="col-12 md:col-1">
+											<p:outputLabel value="Cupo"
+												rendered="#{ventaControl.rolPermiso.get(3200)}"
+												style="text-align: right" />
+										</div>
 
-											<p:column style="text-align: left">
-												<p:inputText id="cupo1"
-													value="#{ventaControl.egreso.persClie.cupo}"
-													readonly="true" style="text-align: right;width:70px;">
-													<f:convertNumber pattern="#0.00" locale="en-US" />
-												</p:inputText>
-											</p:column>
-										</p:row>
-									</div>
+										<div class="col-12 md:col-3">
+											<p:inputText id="cupo1"
+												rendered="#{ventaControl.rolPermiso.get(3200)}"
+												value="#{ventaControl.egreso.persClie.cupo}" readonly="true"
+												style="text-align: right;">
+												<f:convertNumber pattern="#0.00" locale="en-US" />
+											</p:inputText>
+										</div>
+									</ui:fragment>
 								</div>
 							</div>
 
@@ -568,7 +569,7 @@
 									style="width:30%;text-align: left">
 
 									<p:commandLink id="abrirDialogo"
-										value="#{_egreDeta.precio.descri}"
+										value="#{_egreDeta.precio.descri}" process="@this"
 										onclick="PF('productoDetalleDialogo').show();"
 										action="#{ventaControl.buscarProdPrecKardTotaView}"
 										update="ventaForm:karkTotaView,ventaForm:prodPrec,ventaForm:imagenProducto">
@@ -764,7 +765,7 @@
 				</p:panel>
 
 				<div align="center" style="margin-top: 15px;">
-					<p:commandButton id="aceptarcontrolStockDialogo" ajax="false"
+					<p:commandButton id="aceptarcontrolStockDialogo" type="button"
 						styleClass="boton" value="Aceptar"
 						onclick="PF('controlStockDialogo').hide();" />
 				</div>
@@ -789,7 +790,7 @@
 
 				<div align="center" style="margin-top: 15px;">
 					<p:commandButton id="aceptarSaldoMenorQueUnoDialogo" ajax="false"
-						styleClass="boton" value="Aceptar"
+						type="button" styleClass="boton" value="Aceptar"
 						onclick="PF('saldoMenorQueUnoDialogo').hide();" />
 				</div>
 
@@ -833,7 +834,6 @@
 						onclick="PF('prodNoExisteDialogo').hide();" />
 				</div>
 			</p:dialog>
-
 
 
 			<p:dialog id="formaPago" widgetVar="formaPagoDialogo"
@@ -1064,9 +1064,11 @@
 						</p:column>
 
 					</p:dataTable>
+
 				</div>
 
-				<div class="barraBotones" style="float: right;">
+				<div
+					style="width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 3px; margin-top: 40px;">
 
 					<p:commandLink id="procesarDialogo" styleClass="boton"
 						value="Procesar"
@@ -1085,6 +1087,7 @@
 					<p:commandLink id="cancelar" ajax="true" styleClass="boton"
 						value="Cancelar" onclick="PF('formaPagoDialogo').hide();" />
 				</div>
+
 			</p:dialog>
 
 			<p:dialog id="convertir" widgetVar="convertirDialogo" width="99%"
@@ -1305,10 +1308,19 @@
 
 			</p:dialog>
 
-			<p:dialog id="seleccionarClienteDialogo" fitViewport="true"
-				onHide="moverCursor('seleccionarClienteDialogo','#{ventaControl.ventaDetaAlSeleProd}')"
-				widgetVar="seleccionarClienteDialogo" width="99%" header="Clientes"
-				modal="true" resizable="false">
+
+		</h:form>
+
+		<p:dialog id="seleccionarClienteDialogo" fitViewport="true"
+			onHide="moverCursor('seleccionarClienteDialogo','#{ventaControl.ventaDetaAlSeleProd}')"
+			widgetVar="seleccionarClienteDialogo" width="99%" header="Clientes"
+			modal="true" resizable="false">
+
+
+			<h:form>
+
+				<p:defaultCommand target="buscarPersClie"
+					scope="seleccionarClienteDialogo" />
 
 				<p:focus context="panelCliente" />
 
@@ -1322,7 +1334,7 @@
 
 					<p:commandLink id="buscarPersClie" value="Buscar"
 						styleClass="boton" action="#{ventaControl.buscarPersClies(0)}"
-						update="ventaForm:persClieList,panelCliente,paginadorClientes">
+						update="persClieList,panelCliente,paginadorClientes">
 					</p:commandLink>
 				</div>
 
@@ -1356,8 +1368,6 @@
 							</div>
 						</div>
 					</div>
-
-
 				</p:panel>
 
 				<div class="card product">
@@ -1445,10 +1455,8 @@
 
 					</h:panelGroup>
 				</div>
-
-			</p:dialog>
-		</h:form>
-
+			</h:form>
+		</p:dialog>
 
 		<h:form id="remoto">
 			<p:remoteCommand name="modificarCelda"
