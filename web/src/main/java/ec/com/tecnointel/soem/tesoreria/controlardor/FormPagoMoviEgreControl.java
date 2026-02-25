@@ -36,10 +36,16 @@ import ec.com.tecnointel.soem.egreso.modelo.Egreso;
 import ec.com.tecnointel.soem.egreso.modelo.PersClie;
 import ec.com.tecnointel.soem.egreso.modelo.PersCobr;
 import ec.com.tecnointel.soem.general.controlador.PaginaControl;
+import ec.com.tecnointel.soem.ingreso.modelo.Ingreso;
+import ec.com.tecnointel.soem.ingreso.modelo.ReteDeta;
+import ec.com.tecnointel.soem.ingreso.modelo.Retencion;
+import ec.com.tecnointel.soem.ingreso.registroInt.ReteDetaRegisInt;
+import ec.com.tecnointel.soem.ingreso.registroInt.RetencionRegisInt;
 import ec.com.tecnointel.soem.parametro.listaInt.DocuMoviEgreListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.FormPagoListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.TranPlanDetaListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.TranPlanListaInt;
+import ec.com.tecnointel.soem.parametro.modelo.Dimm;
 import ec.com.tecnointel.soem.parametro.modelo.DocuCaja;
 import ec.com.tecnointel.soem.parametro.modelo.DocuMoviEgre;
 import ec.com.tecnointel.soem.parametro.modelo.DocuTran;
@@ -254,11 +260,11 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 			FormPagoMoviEgre fpme = formPagoMoviEgreRegis.buscarPorId(FormPagoMoviEgre.class, this.getId());
 			fpme.setEstado("AN");
-			
+
 			formPagoMoviEgreRegis.modificar(fpme);
 
 			if (fpme.getTransaccion() != null) {
-				
+
 //				Anula registro en el caso que el documento se haya cobrado con deposito
 				anularFpmi(fpme);
 
@@ -362,7 +368,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 		for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
 
-			fpmeFormPago.setDiasPlaz((short) ChronoUnit.DAYS.between(fpmeFormPago.getFecha(), this.formPagoMoviEgre.getFecha()));
+			fpmeFormPago.setDiasPlaz(
+					(short) ChronoUnit.DAYS.between(fpmeFormPago.getFecha(), this.formPagoMoviEgre.getFecha()));
 		}
 	}
 
@@ -388,24 +395,27 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		Integer transaccionId = 0;
 
 		try {
-			
+
 //			Modifica la nota del ingreso para pasar eso a la nota de la tansaccion
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			
+
 //			Revisar que la nota no tenga valores nulos
 			if (formPagoMoviEgre.getNota() == null) {
-				formPagoMoviEgre.setNota(formPagoMoviEgre.getDocuMoviEgre().getDocumento().getDescri() + " " + formPagoMoviEgre.getNumero() + " " + 
-						formPagoMoviEgre.getPersona().getApelli() + " Ref:" + formPagoMoviEgre.getRefere() + " " +  formPagoMoviEgre.getFecha().format(dateTimeFormatter));				
+				formPagoMoviEgre.setNota(formPagoMoviEgre.getDocuMoviEgre().getDocumento().getDescri() + " "
+						+ formPagoMoviEgre.getNumero() + " " + formPagoMoviEgre.getPersona().getApelli() + " Ref:"
+						+ formPagoMoviEgre.getRefere() + " " + formPagoMoviEgre.getFecha().format(dateTimeFormatter));
 			} else {
-				formPagoMoviEgre.setNota(formPagoMoviEgre.getNota() + " " + formPagoMoviEgre.getDocuMoviEgre().getDocumento().getDescri() + " " + formPagoMoviEgre.getNumero() + " " + 
-						formPagoMoviEgre.getPersona().getApelli() + " Ref:" + formPagoMoviEgre.getRefere() + " " +  formPagoMoviEgre.getFecha().format(dateTimeFormatter));
+				formPagoMoviEgre.setNota(formPagoMoviEgre.getNota() + " "
+						+ formPagoMoviEgre.getDocuMoviEgre().getDocumento().getDescri() + " "
+						+ formPagoMoviEgre.getNumero() + " " + formPagoMoviEgre.getPersona().getApelli() + " Ref:"
+						+ formPagoMoviEgre.getRefere() + " " + formPagoMoviEgre.getFecha().format(dateTimeFormatter));
 			}
-			
+
 //			Revisar que la nota no tenga mas de 255 caracateres
 			if (formPagoMoviEgre.getNota().length() > 255) {
-				formPagoMoviEgre.setNota(formPagoMoviEgre.getNota().substring(0,254));
+				formPagoMoviEgre.setNota(formPagoMoviEgre.getNota().substring(0, 254));
 			}
-			
+
 			if (formPagoMoviEgre.getDocuMoviEgre().getTipo().equals("PAGO-COBRO")) {
 
 				transaccionId = contabilizarCobro(formPagoMoviEgre);
@@ -737,7 +747,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 						new FacesMessage(FacesMessage.SEVERITY_FATAL, null, "Excepcion - Error al buscar Id"));
 				e.printStackTrace();
 			}
-			
+
 //			Buscar y asignar transaccion si no tiene asignar una vacia
 			if (this.formPagoMoviEgre.getTransaccion() != null) {
 
@@ -746,13 +756,13 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				this.formPagoMoviEgre.setTransaccion(transaccion);
 
 			} else {
-				
+
 				DocuTran docuTran = new DocuTran();
 				docuTran.setDocumento(new Documento());
 				Transaccion transaccion = new Transaccion();
 				transaccion.setDocuTran(docuTran);
 				this.formPagoMoviEgre.setTransaccion(transaccion);
-				
+
 			}
 
 		}
@@ -800,13 +810,12 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	public void validarRefere(FacesContext arg0, UIComponent arg1, Object arg2) throws ValidatorException {
 
 		String refere = (String) arg2;
-		
+
 		if (refere != null) {
 			List<Object[]> objs = new ArrayList<>();
 //			Busca si se esta ingresando una referencia duplicada
@@ -866,6 +875,10 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 				Object id = formPagoMoviEgreRegis.insertar(formPagoMoviEgre);
 				this.id = (Integer) id;
+
+//				TODO: Grabar retencion
+				this.grabarRetencion();
+//				Fin Grabar retencion
 
 				this.insertarFpmeFormPagos();
 
@@ -1123,7 +1136,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			FormPagoMoviEgre fpme = formPagoMoviEgre.next();
 
 			List<FpmeFormPago> fpmeFormPagos = this.buscarFpmeFormPagos(new FpmeFormPago(fpme));
-			
+
 //			TODO:
 //			Solucion temporal
 //			Si se pago la factura con mas de una forma de pago cuando entra aca da error
@@ -1275,7 +1288,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			for (CobrDeta cobrDeta : cobrDetas) {
 
 				FpmeFormPago fpmeFormPago = new FpmeFormPago();
-				fpmeFormPago = this.fpmeFormPagoRegis.buscarPorId(FpmeFormPago.class, cobrDeta.getFpmeFormPago().getFpmeFormPagoId());
+				fpmeFormPago = this.fpmeFormPagoRegis.buscarPorId(FpmeFormPago.class,
+						cobrDeta.getFpmeFormPago().getFpmeFormPagoId());
 
 				cobrDeta.setFpmeFormPago(fpmeFormPago);
 			}
@@ -1844,5 +1858,214 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	public void setIncluirCredito(boolean incluirCredito) {
 		this.incluirCredito = incluirCredito;
 	}
+
+	// Implementacion carga retenciones
+
+	BigDecimal retencionTotal = new BigDecimal(0);
+
+	@Inject
+	RetencionRegisInt retencionRegis;
+
+	@Inject
+	ReteDetaRegisInt reteDetaRegis;
+
+	private Retencion retencion = new Retencion();
+	private ReteDeta reteDetaSele;
+
+	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
+
+	public void insertarRetencion() {
+		try {
+
+			
+//			TODO: Ingreso de prueba cambiar o permitir null en esta relacion con retencion
+			Ingreso ingresoTest = new Ingreso();
+			ingresoTest.setIngresoId(1581);
+
+			retencion.setFechaHoraEmis(retencion.getFechaEmis().atTime(LocalTime.now()));
+			retencion.setFechaRegi(LocalDate.now());
+			retencion.setFechaHoraRegi(LocalDateTime.now());
+			retencion.setIngreso(ingresoTest);
+			retencion.setClaveAcce(retencion.getAutori());
+			retencion.setEstado("PR");
+			retencion.setEstadoDocuElec("AUTORIZADO");
+			retencion.setDocumeElec(true);
+
+			retencionRegis.insertar(retencion);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void insertarReteDeta() {
+		for (ReteDeta reteDeta : reteDetas) {
+			reteDeta.setRetencion(retencion);
+			try {
+				reteDetaRegis.insertar(reteDeta);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+//	Este metodo se llama desde la pagina
+	public void cargarFpmeFormPagoRetencion () {
+		
+		this.fpmeFormPagos.clear();
+		this.crearFpmeFormPagoRetencion();
+//		Podria llamar a otro metodo que cree la forma de pago
+//		con la diferencia del total de retenciones
+//		o dejar que el cliente llene manualmente la forma de pago
+//		dando click sobre + formas de pago
+		System.out.println("=================== Retencion ingresada");
+		
+	}
+	
+	
+	public List<FpmeFormPago> crearFpmeFormPagoRetencion() {
+//		TODO: implementar
+//		Crear nuevos fpmeFormPago para cada linea de reteDeta
+		
+		for (ReteDeta reteDeta : reteDetas) {
+
+			FpmeFormPago fpmeFormPago = new FpmeFormPago();
+			
+			// Determinar RR o RI
+			Dimm dimm = new Dimm();
+			dimm.setDimmId(14000);
+
+			FormPago formPago = new FormPago();
+			formPago.setDimm(dimm);
+
+			if (reteDeta.getImpues().equals("Renta")) {
+				formPago.setFormPagoId(11);
+//				talves asignar estos campos no se necesario,
+//				solo con el id puede ser suficiente
+//				formPago.setTipo("RR");
+//				formPago.setTipo2("VN-RR");
+			} else if (reteDeta.getImpues().equals("Iva")) {
+				formPago.setFormPagoId(12);
+//				talves asignar estos campos no se necesario,
+//				solo con el id puedde ser suficiente
+//				formPago.setTipo("RI");
+//				formPago.setTipo2("VN-RI");
+			}
+			// Fin Determinar RR o RI
+
+			fpmeFormPago.setReteDeta(reteDeta);
+			fpmeFormPago.setFormPagoMoviEgre(formPagoMoviEgre);
+			fpmeFormPago.setFecha(this.formPagoMoviEgre.getFecha());
+			fpmeFormPago.setFechaHora(this.formPagoMoviEgre.getFecha().atTime(LocalTime.now()));
+			fpmeFormPago.setFormPago(formPago);
+			fpmeFormPago.setDiasPlaz((short) 0);
+			fpmeFormPago.setTotalReci(reteDeta.getReteDetaTotal());
+			
+			this.fpmeFormPagos.add(fpmeFormPago);
+		}
+		
+		return fpmeFormPagos;
+	}
+
+	public void grabarRetencion() {
+//	TODO: implementar este metodo se debe llamar a procesar el cobro
+		// Aqui se va a grabar fpmeFormPago y se debe haber grabar retencion
+		if (retencion.getRetencionId() == null) {
+
+			this.insertarRetencion();
+			this.insertarReteDeta();
+//		TODO: elimanr esto esta tabla yano existe
+//		this.insertarFpmeFormPagoRete(fpmeFormPago, retencion);
+		}
+	}
+
+	public void modificarDatosReteDeta(ReteDeta reteDeta) {
+
+		this.calcularTotalRetencion();
+	}
+
+	public void agregarReteDeta() {
+
+		ReteDeta reteDeta = new ReteDeta();
+
+		reteDeta.setEjerciFisc(this.retencion.getFechaEmis());
+		reteDeta.setBase(new BigDecimal(0));
+		reteDeta.setPorcen(new BigDecimal(0));
+
+		this.reteDetas.add(reteDeta);
+
+	}
+
+	public void eliminarReteDeta() {
+
+		this.reteDetas.remove(this.reteDetaSele);
+//		
+//		try {
+//			
+//			if (reteDetaSele.getReteDetaId() != null) {
+//				
+//				reteDetaEliminados.add(reteDetaSele);
+//				
+//			}
+//			
+		this.calcularTotalRetencion();
+//			
+//		} catch (Exception e) {
+//			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, null,
+//					"Excepcion - Error al eliminar detalle documento"));
+//			e.printStackTrace();
+//
+//		}
+	}
+
+	public void calcularTotalRetencion() {
+
+		BigDecimal total = new BigDecimal(0);
+
+		for (ReteDeta reteDeta : reteDetas) {
+
+			reteDeta.setReteDetaTotal(reteDeta.getBase().multiply(reteDeta.getPorcen()).divide(new BigDecimal(100)));
+			total = total.add(reteDeta.getReteDetaTotal());
+
+		}
+
+		retencionTotal = total;
+
+	}
+
+	public Retencion getRetencion() {
+		return retencion;
+	}
+
+	public void setRetencion(Retencion retencion) {
+		this.retencion = retencion;
+	}
+
+	public List<ReteDeta> getReteDetas() {
+		return reteDetas;
+	}
+
+	public void setReteDetas(List<ReteDeta> reteDetas) {
+		this.reteDetas = reteDetas;
+	}
+
+	public BigDecimal getRetencionTotal() {
+		return retencionTotal;
+	}
+
+	public void setRetencionTotal(BigDecimal retencionTotal) {
+		this.retencionTotal = retencionTotal;
+	}
+
+	public ReteDeta getReteDetaSele() {
+		return reteDetaSele;
+	}
+
+	public void setReteDetaSele(ReteDeta reteDetaSele) {
+		this.reteDetaSele = reteDetaSele;
+	}
+
+	//
 
 }

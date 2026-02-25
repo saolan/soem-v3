@@ -31,7 +31,7 @@
 					value="Cobrar"
 					action="#{formPagoMoviEgreControl.cargarDialogoFpmeFormPago}"
 					onclick="PF('formaPagoDialogo').show();"
-					update="cliente,totalReci,totalDialogo,fpmeFormPagoList" />
+					update="formFormPago:cliente,formFormPago:totalReci,formFormPago:totalDialogo,formFormPago:fpmeFormPagoList" />
 
 				<p:commandLink id="anular" value="Anular" styleClass="boton"
 					action="#{formPagoMoviEgreControl.anular}"
@@ -529,9 +529,12 @@
 
 			</p:dialog>
 
-			<p:dialog id="formaPago" widgetVar="formaPagoDialogo" width="99%"
-				focus="procesarDialogo" resizable="false" header="Cobro"
-				modal="true">
+		</h:form>
+
+		<p:dialog id="formaPago" widgetVar="formaPagoDialogo" width="99%"
+			focus="procesarDialogo" resizable="false" header="Cobro" modal="true">
+
+			<h:form id="formFormPago">
 
 				<div class="card ui-fluid">
 					<div class="formgrid grid">
@@ -575,7 +578,7 @@
 					<f:facet name="header">
 						<p:commandLink value="+ Formas de Pago" ajax="true"
 							disabled="#{formPagoMoviEgreControl.cxcSeles.size() > 1}"
-							update="fpmeFormPagoList,fpme:totalReci,fpme:totalDialogo"
+							update="fpmeFormPagoList,totalReci,totalDialogo"
 							action="#{formPagoMoviEgreControl.crearFilaFpmeFormPago}">
 						</p:commandLink>
 
@@ -585,7 +588,7 @@
 						<p:commandLink styleClass="ui-icon ui-icon-trash" title="eliminar"
 							ajax="true"
 							action="#{formPagoMoviEgreControl.eliminarFilaFpmeFormPago}"
-							update="fpmeFormPagoList,fpme:totalReci">
+							update="fpmeFormPagoList,totalReci">
 							<f:setPropertyActionListener value="#{_fpmeFormPago}"
 								target="#{formPagoMoviEgreControl.fpmeFormPagoSele}" />
 
@@ -626,7 +629,7 @@
 									onfocus="this.setSelectionRange(0, this.value.length)">
 									<p:ajax
 										listener="#{formPagoMoviEgreControl.calcularTotalReciView}"
-										event="keyup" update="fpme:totalReci" />
+										event="keyup" update="formFormPago:totalReci" />
 									<f:convertNumber pattern="#0.000000" locale="en-US" />
 								</p:inputText>
 							</f:facet>
@@ -634,7 +637,13 @@
 					</p:column>
 				</p:dataTable>
 
+
 				<div class="barraBotones" style="float: right;">
+
+					<p:commandLink id="abrirDialogoCobrar" styleClass="boton"
+						value="Cargar Retencion"
+						onclick="PF('cargarRetencionDialogo').show();" />
+
 					<p:commandLink id="procesarDialogo" value="Procesar"
 						styleClass="boton" action="#{formPagoMoviEgreControl.procesar}"
 						oncomplete="handleLoginRequestCobrar(xhr, status, args)"
@@ -643,8 +652,171 @@
 					<p:commandLink id="cancelar" ajax="true" styleClass="boton"
 						value="Cancelar" onclick="PF('formaPagoDialogo').hide();" />
 				</div>
-			</p:dialog>
-		</h:form>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog id="cargarRetencion" widgetVar="cargarRetencionDialogo"
+			width="99%" focus="agregarBtn" resizable="false"
+			header="CargarRetencion" modal="true">
+
+			<h:form id="datosRetencion">
+
+				<p:panel id="panelRegistrarRetencion" header="Retención"
+					rendered="true">
+
+					<div class="card ui-fluid">
+						<div class="formgrid grid">
+
+							<div class="field col-12 md:col-1">
+								<p:outputLabel for="reteSerie1" value="Serie 1" />
+								<p:inputText id="reteSerie1"
+									value="#{formPagoMoviEgreControl.retencion.serie1}"
+									required="true" requiredMessage="Ingrese serie1" />
+							</div>
+
+							<div class="field col-12 md:col-1">
+								<p:outputLabel for="reteSerie2" value="Serie 2" />
+								<p:inputText id="reteSerie2"
+									value="#{formPagoMoviEgreControl.retencion.serie2}"
+									required="true" requiredMessage="Ingrese serie2" />
+							</div>
+
+							<div class="field col-12 md:col-2">
+								<p:outputLabel for="reteNumero" value="Retención&#160;Número" />
+								<p:inputText id="reteNumero"
+									value="#{formPagoMoviEgreControl.retencion.numero}"
+									required="true" requiredMessage="Ingrese numero" />
+							</div>
+
+							<div class="field col-12 md:col-2">
+								<p:outputLabel value="Fecha&#160;Emisión" />
+								<p:calendar id="reteFechaEmis"
+									value="#{formPagoMoviEgreControl.retencion.fechaEmis}"
+									pattern="dd-MM-yyyy" required="true"
+									requiredMessage="Ingrese fecha" />
+							</div>
+
+							<div class="field col-12 md:col-2">
+								<p:outputLabel value="Fecha&#160;Autorización" />
+								<p:calendar id="reteFechaAuto"
+									value="#{formPagoMoviEgreControl.retencion.fechaAuto}"
+									pattern="dd-MM-yyyy HH:mm" required="true"
+									requiredMessage="Ingrese fecha" />
+							</div>
+
+							<div class="field col-12 md:col-4">
+								<p:outputLabel for="reteAutori" value="Autorización" />
+								<p:inputText id="reteAutori"
+									value="#{formPagoMoviEgreControl.retencion.autori}"
+									required="true" requiredMessage="Ingrese autorizacion" />
+
+							</div>
+						</div>
+					</div>
+				</p:panel>
+
+
+				<div class="card">
+					<p:dataTable id="reteDetaList" emptyMessage="No se encontro datos"
+						editable="true" editMode="cell"
+						value="#{formPagoMoviEgreControl.reteDetas}" var="_reteDeta"
+						rowKey="#{_reteDeta.reteDetaId}" reflow="true">
+
+						<f:facet name="header">
+							<h:outputText value="Detalle Retención" />
+						</f:facet>
+
+						<p:column style="width:50px;text-align: center" headerText="Op.">
+
+							<p:commandLink styleClass="ui-icon ui-icon-trash"
+								title="eliminar" ajax="true"
+								update="reteDetaList, retencForm:totalRetencion"
+								action="#{formPagoMoviEgreControl.eliminarReteDeta}">
+								<f:setPropertyActionListener value="#{_reteDeta}"
+									target="#{formPagoMoviEgreControl.reteDetaSele}" />
+							</p:commandLink>
+						</p:column>
+
+						<p:column headerText="Ejercicio Fiscal">
+							<h:outputText id="fecha" value="#{_reteDeta.ejerciFisc}">
+								<f:convertDateTime type="localDate" pattern="MM/yyyy" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="Impuesto">
+							<p:inputText id="reteDetaImpues" value="#{_reteDeta.impues}"
+								style="text-align: left">
+							</p:inputText>
+						</p:column>
+
+						<p:column headerText="Código Impuesto">
+							<p:inputText id="reteDetaCodigo" value="#{_reteDeta.codigoImpu}"
+								style="text-align: right">
+							</p:inputText>
+						</p:column>
+
+						<p:column headerText="Base Imponible" style="text-align: left">
+							<p:inputText id="reteDetaBase" value="#{_reteDeta.base}"
+								style="text-align: right"
+								onfocus="this.setSelectionRange(0, this.value.length)">
+								<p:ajax event="change"
+									listener="#{formPagoMoviEgreControl.modificarDatosReteDeta(_reteDeta)}"
+									update="reteDetaTotal,ventaForm:retencionTotal" />
+							</p:inputText>
+
+						</p:column>
+
+						<p:column headerText="% Retención" style="text-align: left">
+							<p:inputText id="reteDetaPorcen" value="#{_reteDeta.porcen}"
+								style="text-align: right"
+								onfocus="this.setSelectionRange(0, this.value.length)">
+								<p:ajax event="change"
+									listener="#{formPagoMoviEgreControl.modificarDatosReteDeta(_reteDeta)}"
+									update="reteDetaTotal,ventaForm:retencionTotal" />
+							</p:inputText>
+
+						</p:column>
+
+						<p:column headerText="Valor Retenido" style="text-align: left">
+							<p:inputText id="reteDetaTotal" style="text-align: right"
+								value="#{_reteDeta.reteDetaTotal}">
+								<f:convertNumber pattern="#0.00" locale="en-US" />
+							</p:inputText>
+						</p:column>
+
+					</p:dataTable>
+				</div>
+
+				<p:commandLink id="agregarBtn" title="Agregar Detalle Retencion"
+					value="Agregar Detalle" styleClass="boton" style="float:left;"
+					action="#{formPagoMoviEgreControl.agregarReteDeta}" ajax="true"
+					update="reteDetaList, totalRetencion">
+
+				</p:commandLink>
+
+				<p:commandLink id="cargarFpmeFormCobro"
+					title="Aceptar" value="Aceptar"
+					styleClass="boton" style="float:left;"
+					action="#{formPagoMoviEgreControl.cargarFpmeFormPagoRetencion}"
+					ajax="true" update="formFormPago:fpmeFormPagoList"
+					oncomplete="PF('cargarRetencionDialogo').hide();">
+				</p:commandLink>
+
+				<p:panel id="totalRetencion" emptyMessage="Total"
+					style="width:200px;float:right;">
+
+					<h:outputText id="retencionTotal"
+						value="#{formPagoMoviEgreControl.retencionTotal}"
+						style="float:right">
+						<f:convertNumber pattern="#0.00" locale="en-US" />
+					</h:outputText>
+
+				</p:panel>
+
+
+			</h:form>
+		</p:dialog>
 
 		<script type="text/javascript">
 		
