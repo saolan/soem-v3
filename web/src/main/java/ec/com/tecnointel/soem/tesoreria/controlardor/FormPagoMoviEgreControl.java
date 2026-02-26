@@ -1875,17 +1875,12 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
 
 	public void insertarRetencion() {
+
 		try {
-
 			
-//			TODO: Ingreso de prueba cambiar o permitir null en esta relacion con retencion
-			Ingreso ingresoTest = new Ingreso();
-			ingresoTest.setIngresoId(1581);
-
 			retencion.setFechaHoraEmis(retencion.getFechaEmis().atTime(LocalTime.now()));
 			retencion.setFechaRegi(LocalDate.now());
 			retencion.setFechaHoraRegi(LocalDateTime.now());
-			retencion.setIngreso(ingresoTest);
 			retencion.setClaveAcce(retencion.getAutori());
 			retencion.setEstado("PR");
 			retencion.setEstadoDocuElec("AUTORIZADO");
@@ -2065,7 +2060,4 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	public void setReteDetaSele(ReteDeta reteDetaSele) {
 		this.reteDetaSele = reteDetaSele;
 	}
-
-	//
-
 }
