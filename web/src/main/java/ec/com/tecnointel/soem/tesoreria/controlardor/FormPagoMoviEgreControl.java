@@ -23,6 +23,7 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.IRetencionSriServicio;
 import ec.com.tecnointel.soem.caja.listaInt.CajaMoviListaInt;
 import ec.com.tecnointel.soem.caja.modelo.Caja;
 import ec.com.tecnointel.soem.caja.modelo.CajaMovi;
@@ -36,11 +37,11 @@ import ec.com.tecnointel.soem.egreso.modelo.Egreso;
 import ec.com.tecnointel.soem.egreso.modelo.PersClie;
 import ec.com.tecnointel.soem.egreso.modelo.PersCobr;
 import ec.com.tecnointel.soem.general.controlador.PaginaControl;
-import ec.com.tecnointel.soem.ingreso.modelo.Ingreso;
 import ec.com.tecnointel.soem.ingreso.modelo.ReteDeta;
 import ec.com.tecnointel.soem.ingreso.modelo.Retencion;
 import ec.com.tecnointel.soem.ingreso.registroInt.ReteDetaRegisInt;
 import ec.com.tecnointel.soem.ingreso.registroInt.RetencionRegisInt;
+import ec.com.tecnointel.soem.parametro.listaInt.DimmListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.DocuMoviEgreListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.FormPagoListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.TranPlanDetaListaInt;
@@ -56,6 +57,7 @@ import ec.com.tecnointel.soem.parametro.modelo.Persona;
 import ec.com.tecnointel.soem.parametro.modelo.TranPlan;
 import ec.com.tecnointel.soem.parametro.modelo.TranPlanDeta;
 import ec.com.tecnointel.soem.parametro.registroInt.DocumentoRegisInt;
+import ec.com.tecnointel.soem.parametro.registroInt.FormPagoRegisInt;
 import ec.com.tecnointel.soem.parametro.registroInt.TranPlanRegisInt;
 import ec.com.tecnointel.soem.seguridad.modelo.PersUsua;
 import ec.com.tecnointel.soem.seguridad.modelo.RolDocu;
@@ -198,6 +200,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	@Inject
 	FormPagoMoviIngrRegisInt formPagoMoviIngrRegis;
 
+	@Inject
+	FormPagoRegisInt formPagoRegis;
+
 	private static final long serialVersionUID = -6797405619945178593L;
 
 	@PostConstruct
@@ -229,6 +234,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		this.cxcs = new ArrayList<>();
 		this.formPagos = new ArrayList<>();
 		this.tranPlans = new ArrayList<>();
+
+		cargarDimmRetenciones();
 	}
 
 	public String anular() {
@@ -840,13 +847,11 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 		FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
 
-//		String mensaje = validarGrabar();
-//
-//		if (!mensaje.equals("validado")) {
-//			FacesContext.getCurrentInstance().addMessage(null,
-//					new FacesMessage(FacesMessage.SEVERITY_INFO, null, mensaje));
-//			return null;
-//		}
+	    if (!validarAntesDeProcesar()) {
+			FacesContext.getCurrentInstance().addMessage(null,
+			new FacesMessage(FacesMessage.SEVERITY_INFO, null, "No se ha grabado el cobro"));
+	        return null;
+	    }
 
 		try {
 
@@ -877,6 +882,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				this.id = (Integer) id;
 
 //				TODO: Grabar retencion
+//				Validar que se ejecuta solamente si hay retencion
 				this.grabarRetencion();
 //				Fin Grabar retencion
 
@@ -989,6 +995,57 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		return mensaje;
 	}
 
+	private boolean validarAntesDeProcesar() {
+	    FacesContext context = FacesContext.getCurrentInstance();
+
+	    if (formPagoMoviEgre == null || formPagoMoviEgre.getTotal() == null) {
+	        context.addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total del cobro es obligatorio"));
+	        return false;
+	    }
+
+	    // Validar que el total sea mayor a 0
+	    if (formPagoMoviEgre.getTotal().compareTo(BigDecimal.ZERO) <= 0) {
+	        context.addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total del cobro debe ser mayor a 0"));
+	        return false;
+	    }
+
+	    // Validar que exista al menos una cuenta por cobrar seleccionada
+	    if (cxcSeles == null || cxcSeles.isEmpty()) {
+	        context.addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_WARN, null, "Debe seleccionar al menos una cuenta por cobrar"));
+	        return false;
+	    }
+
+	    // Sumar lo abonado / recibido en formas de pago
+	    BigDecimal totalAbonado = BigDecimal.ZERO;
+	    if (fpmeFormPagos != null) {
+	        for (FpmeFormPago fp : fpmeFormPagos) {
+	            if (fp.getTotalReci() != null) {
+	                totalAbonado = totalAbonado.add(fp.getTotalReci());
+	            }
+	        }
+	    }
+
+	    // Validar que el total abonado sea mayor a 0
+	    if (totalAbonado.compareTo(BigDecimal.ZERO) <= 0) {
+	        context.addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total abonado debe ser mayor a 0"));
+	        return false;
+	    }
+
+	    // Validar que el cobro no sea menor que el total abonado
+	    if (formPagoMoviEgre.getTotal().compareTo(totalAbonado) < 0) {
+	        context.addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+	                        "El total del cobro no puede ser menor que el total abonado"));
+	        return false;
+	    }
+
+	    return true;
+	}
+	
 	public String modificar() {
 		return "registra?faces-redirect=true&formPagoMoviEgreId=" + this.getId();
 	}
@@ -1860,8 +1917,13 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	// Implementacion carga retenciones
-
 	BigDecimal retencionTotal = new BigDecimal(0);
+
+	private Retencion retencion = new Retencion();
+	private ReteDeta reteDetaSele;
+
+	private List<Dimm> dimmRetencionRentas;
+	private List<Dimm> dimmRetencionIvas;
 
 	@Inject
 	RetencionRegisInt retencionRegis;
@@ -1869,15 +1931,15 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	@Inject
 	ReteDetaRegisInt reteDetaRegis;
 
-	private Retencion retencion = new Retencion();
-	private ReteDeta reteDetaSele;
+	@Inject
+	DimmListaInt dimmLista;
 
 	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
 
 	public void insertarRetencion() {
 
 		try {
-			
+
 			retencion.setFechaHoraEmis(retencion.getFechaEmis().atTime(LocalTime.now()));
 			retencion.setFechaRegi(LocalDate.now());
 			retencion.setFechaHoraRegi(LocalDateTime.now());
@@ -1894,6 +1956,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	public void insertarReteDeta() {
+
 		for (ReteDeta reteDeta : reteDetas) {
 			reteDeta.setRetencion(retencion);
 			try {
@@ -1906,8 +1969,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 //	Este metodo se llama desde la pagina
-	public void cargarFpmeFormPagoRetencion () {
-		
+	public void cargarFpmeFormPagoRetencion() {
+
 		this.fpmeFormPagos.clear();
 		this.crearFpmeFormPagoRetencion();
 //		Podria llamar a otro metodo que cree la forma de pago
@@ -1915,39 +1978,88 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 //		o dejar que el cliente llene manualmente la forma de pago
 //		dando click sobre + formas de pago
 		System.out.println("=================== Retencion ingresada");
-		
 	}
-	
-	
+
+	public void cargarDimmRetenciones() {
+		try {
+			Dimm dimmRenta = new Dimm();
+			dimmRenta.setTablaRefe("Tabla3");
+			dimmRenta.setEstado(true);
+			dimmRetencionRentas = dimmLista.buscar(dimmRenta, dimmRenta, null);
+
+			Dimm dimmIva = new Dimm();
+			dimmIva.setTablaRefe("Tabla11");
+			dimmIva.setEstado(true);
+			dimmRetencionIvas = dimmLista.buscar(dimmIva, dimmIva, null);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public List<Dimm> obtenerDimmRetencions(String impues) {
+		if ("Renta".equals(impues)) {
+			return dimmRetencionRentas;
+		} else if ("Iva".equals(impues)) {
+			return dimmRetencionIvas;
+		}
+		return java.util.Collections.emptyList();
+	}
+
+	public void alCambiarReteDetaImpues(ReteDeta reteDeta) {
+		reteDeta.setCodigoImpu(null); // limpiar selección anterior
+		reteDeta.setPorcen(BigDecimal.ZERO); // o BigDecimal.ZERO, según tu tipo
+		reteDeta.setReteDetaTotal(BigDecimal.ZERO); // si tienes total de retención calculado
+	}
+
+	public void alSeleccionarDimmRetencion(ReteDeta reteDeta) {
+
+		if (reteDeta == null || reteDeta.getCodigoImpu() == null || reteDeta.getCodigoImpu().trim().isEmpty()) {
+			reteDeta.setPorcen(BigDecimal.ZERO);
+			return;
+		}
+
+		List<Dimm> lista = obtenerDimmRetencions(reteDeta.getImpues());
+
+		if (lista == null || lista.isEmpty()) {
+			reteDeta.setPorcen(BigDecimal.ZERO);
+			return;
+		}
+
+		for (Dimm dimm : lista) {
+			if (reteDeta.getCodigoImpu().equals(dimm.getCodigo())) {
+
+				reteDeta.setPorcen(dimm.getPorcen());
+
+				this.calcularTotalRetencion();
+
+				return;
+			}
+		}
+
+		// si no encuentra coincidencia
+		reteDeta.setPorcen(BigDecimal.ZERO);
+	}
+
+	public static BigDecimal obtenerPorcentaje(List<Dimm> lista, String codigoBuscado) {
+
+		return lista.stream().filter(r -> r.getCodigo().equalsIgnoreCase(codigoBuscado)).map(Dimm::getPorcen)
+				.findFirst().orElse(BigDecimal.ZERO);
+	}
+
 	public List<FpmeFormPago> crearFpmeFormPagoRetencion() {
-//		TODO: implementar
-//		Crear nuevos fpmeFormPago para cada linea de reteDeta
-		
+
 		for (ReteDeta reteDeta : reteDetas) {
 
 			FpmeFormPago fpmeFormPago = new FpmeFormPago();
-			
-			// Determinar RR o RI
-			Dimm dimm = new Dimm();
-			dimm.setDimmId(14000);
 
 			FormPago formPago = new FormPago();
-			formPago.setDimm(dimm);
 
-			if (reteDeta.getImpues().equals("Renta")) {
-				formPago.setFormPagoId(11);
-//				talves asignar estos campos no se necesario,
-//				solo con el id puede ser suficiente
-//				formPago.setTipo("RR");
-//				formPago.setTipo2("VN-RR");
-			} else if (reteDeta.getImpues().equals("Iva")) {
-				formPago.setFormPagoId(12);
-//				talves asignar estos campos no se necesario,
-//				solo con el id puedde ser suficiente
-//				formPago.setTipo("RI");
-//				formPago.setTipo2("VN-RI");
+			if ("Renta".equals(reteDeta.getImpues())) {
+				formPago.setFormPagoId(7);
+			} else if ("Iva".equals(reteDeta.getImpues())) {
+				formPago.setFormPagoId(8);
 			}
-			// Fin Determinar RR o RI
 
 			fpmeFormPago.setReteDeta(reteDeta);
 			fpmeFormPago.setFormPagoMoviEgre(formPagoMoviEgre);
@@ -1956,28 +2068,21 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			fpmeFormPago.setFormPago(formPago);
 			fpmeFormPago.setDiasPlaz((short) 0);
 			fpmeFormPago.setTotalReci(reteDeta.getReteDetaTotal());
-			
+
 			this.fpmeFormPagos.add(fpmeFormPago);
 		}
-		
+
 		return fpmeFormPagos;
 	}
 
 	public void grabarRetencion() {
-//	TODO: implementar este metodo se debe llamar a procesar el cobro
-		// Aqui se va a grabar fpmeFormPago y se debe haber grabar retencion
+//		TODO: implementar este metodo se debe llamar a procesar el cobro
+//		Aqui se va a grabar fpmeFormPago y se debe haber grabado retencion
 		if (retencion.getRetencionId() == null) {
 
 			this.insertarRetencion();
 			this.insertarReteDeta();
-//		TODO: elimanr esto esta tabla yano existe
-//		this.insertarFpmeFormPagoRete(fpmeFormPago, retencion);
 		}
-	}
-
-	public void modificarDatosReteDeta(ReteDeta reteDeta) {
-
-		this.calcularTotalRetencion();
 	}
 
 	public void agregarReteDeta() {
@@ -1989,29 +2094,11 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		reteDeta.setPorcen(new BigDecimal(0));
 
 		this.reteDetas.add(reteDeta);
-
 	}
 
 	public void eliminarReteDeta() {
-
 		this.reteDetas.remove(this.reteDetaSele);
-//		
-//		try {
-//			
-//			if (reteDetaSele.getReteDetaId() != null) {
-//				
-//				reteDetaEliminados.add(reteDetaSele);
-//				
-//			}
-//			
 		this.calcularTotalRetencion();
-//			
-//		} catch (Exception e) {
-//			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, null,
-//					"Excepcion - Error al eliminar detalle documento"));
-//			e.printStackTrace();
-//
-//		}
 	}
 
 	public void calcularTotalRetencion() {
@@ -2026,7 +2113,40 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		}
 
 		retencionTotal = total;
+	}
 
+// Comienza descarga archivo retencion del sri
+	@Inject
+	IRetencionSriServicio retencionSriServicio;
+
+	public void cargarXmlDesdeSri() {
+
+		try {
+
+			retencion = retencionSriServicio.procesarRetencionSri(retencion.getAutori());
+			reteDetas = new ArrayList<>(retencion.getReteDetas());
+//			Se coloca este clear porque la clase Retencion viene con un set de reteDetas y 
+//			tiene cascade en persist entonces al grabar sale error porque intenta grabar nuevamente
+//			con el clear deja el set vacio y grabar el list sin errores
+//			Se hace esto porque aqui se ve la retencion en pantalla, mientras que en compra no se ve
+//			la retencion entonces graba con el set de reteDeta
+//			La IA aconseja si el elemento es visual utilizar list e lugar de set
+			retencion.getReteDetas().clear();
+			
+			calcularTotalRetencion();
+
+			System.out.println("=================================== Retencion ingresada desde SRI");
+
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
+					"Documento cargado desde SRI, revisar y procesar..."));
+
+		} catch (Exception e) {
+
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, e.getMessage()));
+
+			e.printStackTrace();
+		}
 	}
 
 	public Retencion getRetencion() {
@@ -2059,5 +2179,21 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	public void setReteDetaSele(ReteDeta reteDetaSele) {
 		this.reteDetaSele = reteDetaSele;
+	}
+
+	public List<Dimm> getDimmRetencionRentas() {
+		return dimmRetencionRentas;
+	}
+
+	public void setDimmRetencionRentas(List<Dimm> dimmRetencionRentas) {
+		this.dimmRetencionRentas = dimmRetencionRentas;
+	}
+
+	public List<Dimm> getDimmRetencionIvas() {
+		return dimmRetencionIvas;
+	}
+
+	public void setDimmRetencionIvas(List<Dimm> dimmRetencionIvas) {
+		this.dimmRetencionIvas = dimmRetencionIvas;
 	}
 }
