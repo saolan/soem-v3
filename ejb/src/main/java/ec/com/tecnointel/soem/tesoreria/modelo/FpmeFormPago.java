@@ -37,7 +37,8 @@ import jakarta.validation.constraints.Min;
 @Table(name = "fpme_form_pago", schema = "public")
 @NamedEntityGraph(name = "fpmeFormPago.Graph", attributeNodes = { 
 @NamedAttributeNode(value = "formPago", subgraph = "dimm.Graph"),
-@NamedAttributeNode(value = "formPagoMoviEgre")},
+@NamedAttributeNode(value = "formPagoMoviEgre"),
+@NamedAttributeNode(value = "reteDeta")},
 subgraphs = { @NamedSubgraph
 		(
 			name = "dimm.Graph", attributeNodes = {
