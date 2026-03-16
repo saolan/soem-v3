@@ -264,10 +264,30 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				cxcRegis.modificar(cxc);
 			}
 
-			for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
-				fpmeFormPagoRegis.eliminar(fpmeFormPago);
-			}
+//			for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
+//				fpmeFormPagoRegis.eliminar(fpmeFormPago);
+//
+//			}
+			System.out.println("Eliminar reteDeta");
+			List<ReteDeta> reteDetas = new ArrayList<>();
 
+			for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
+
+			    ReteDeta reteDeta = fpmeFormPago.getReteDeta();
+
+			    if (reteDeta != null) {
+			        fpmeFormPago.setReteDeta(null);
+
+			        // si existe en ReteDeta
+			        reteDeta.setFpmeFormPago(null);
+
+			        fpmeFormPagoRegis.modificar(fpmeFormPago);
+			        reteDetaRegis.eliminar(reteDeta);
+			    }
+
+			    fpmeFormPagoRegis.eliminar(fpmeFormPago);
+			}
+			
 			FormPagoMoviEgre fpme = formPagoMoviEgreRegis.buscarPorId(FormPagoMoviEgre.class, this.getId());
 			fpme.setEstado("AN");
 
@@ -2106,6 +2126,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		this.reteDetas.add(reteDeta);
 	}
 
+	// Se elimina de la lista
 	public void eliminarReteDeta() {
 		this.reteDetas.remove(this.reteDetaSele);
 	}
