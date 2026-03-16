@@ -2089,7 +2089,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	public void grabarRetencion() {
 //		TODO: implementar este metodo se debe llamar a procesar el cobro
 //		Aqui se va a grabar fpmeFormPago y se debe haber grabado retencion
-		if (retencion.getRetencionId() == null) {
+		if (retencion.getNumero() != null) {
 			this.insertarRetencion();
 			this.insertarReteDeta();
 		}
