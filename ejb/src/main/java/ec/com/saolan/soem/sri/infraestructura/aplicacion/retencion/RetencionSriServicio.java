@@ -20,7 +20,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @Stateless
-public class RetencionSriServicio implements IRetencionSriServicio, Serializable {
+public class RetencionSriServicio implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,6 @@ public class RetencionSriServicio implements IRetencionSriServicio, Serializable
 	@Inject
 	RetencionSriUnmarshaller unmarshaller;
 
-	@Override
 	@Transactional
 	public Retencion procesarRetencionSri(String claveAcceso) {
 
@@ -87,13 +86,13 @@ public class RetencionSriServicio implements IRetencionSriServicio, Serializable
 			comprobanteRetencion.getDocsSustento().getDocSustento();
 
 			Set<ReteDeta> reteDetas = new HashSet<ReteDeta>();
-			
+
 			for (DocSustento docSustentoRete : comprobanteRetencion.getDocsSustento().getDocSustento()) {
 				for (ec.com.tecnointel.soem.documeElec.modelo.retencion.Retencion reteDetaInfo : docSustentoRete
 						.getRetenciones().getRetencion()) {
 
 					ReteDeta reteDeta = new ReteDeta();
-					
+
 					reteDeta.setRetencion(retencion);
 
 					reteDeta.setEjerciFisc(retencion.getFechaEmis());
@@ -110,13 +109,13 @@ public class RetencionSriServicio implements IRetencionSriServicio, Serializable
 					reteDeta.setCodigoImpu(reteDetaInfo.getCodigoRetencion());
 					reteDeta.setPorcen(reteDetaInfo.getPorcentajeRetener());
 					reteDeta.setBase(reteDetaInfo.getBaseImponible());
-					
+
 					reteDetas.add(reteDeta);
 				}
 			}
 
 			retencion.setReteDetas(reteDetas);
-			
+
 			// 4. Persistir
 //			retencionRepo.save(retencion);
 //			reteDetaRepo.saveAll(detalles);

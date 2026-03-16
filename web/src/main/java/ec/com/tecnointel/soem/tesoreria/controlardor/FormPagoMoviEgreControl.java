@@ -25,8 +25,8 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.IRetencionServicio;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.IRetencionSriServicio;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.RetencionServicio;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.RetencionSriServicio;
 import ec.com.tecnointel.soem.caja.listaInt.CajaMoviListaInt;
 import ec.com.tecnointel.soem.caja.modelo.Caja;
 import ec.com.tecnointel.soem.caja.modelo.CajaMovi;
@@ -264,27 +264,17 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				cxcRegis.modificar(cxc);
 			}
 
-//			for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
-//				fpmeFormPagoRegis.eliminar(fpmeFormPago);
-//
-//			}
-			System.out.println("Eliminar reteDeta");
-			List<ReteDeta> reteDetas = new ArrayList<>();
-
 			for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
 
 			    ReteDeta reteDeta = fpmeFormPago.getReteDeta();
-
 			    if (reteDeta != null) {
+//			        Eliminar relaciones
 			        fpmeFormPago.setReteDeta(null);
-
-			        // si existe en ReteDeta
 			        reteDeta.setFpmeFormPago(null);
 
 			        fpmeFormPagoRegis.modificar(fpmeFormPago);
 			        reteDetaRegis.eliminar(reteDeta);
 			    }
-
 			    fpmeFormPagoRegis.eliminar(fpmeFormPago);
 			}
 			
@@ -1963,7 +1953,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	RetencionRegisInt retencionRegis;
 
 	@Inject
-	IRetencionServicio retencionServicio;
+	RetencionServicio retencionServicio;
 
 	@Inject
 	ReteDetaRegisInt reteDetaRegis;
@@ -2015,7 +2005,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 //		con la diferencia del total de retenciones
 //		o dejar que el cliente llene manualmente la forma de pago
 //		dando click sobre + formas de pago
-		System.out.println("=================== Retencion ingresada");
 	}
 
 	public void cargarDimmRetenciones() {
@@ -2136,9 +2125,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 // Comienza descarga archivo retencion del sri
-
+	
 	@Inject
-	IRetencionSriServicio retencionSriServicio;
+	RetencionSriServicio retencionSriServicio;
 
 	public void cargarXmlDesdeSri() {
 

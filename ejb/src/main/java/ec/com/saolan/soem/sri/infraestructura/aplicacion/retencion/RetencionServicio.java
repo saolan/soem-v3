@@ -9,7 +9,7 @@ import ec.com.tecnointel.soem.ingreso.modelo.ReteDeta;
 import jakarta.ejb.Stateless;
 
 @Stateless
-public class RetencionServicio implements Serializable, IRetencionServicio {
+public class RetencionServicio implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -17,7 +17,6 @@ public class RetencionServicio implements Serializable, IRetencionServicio {
 	private static final int ESCALA = 6;
 	private static final RoundingMode REDONDEO = RoundingMode.HALF_UP;
 
-	@Override
 	public void calcularReteDeta(List<ReteDeta> reteDetas) {
 
 		if (reteDetas == null) {
