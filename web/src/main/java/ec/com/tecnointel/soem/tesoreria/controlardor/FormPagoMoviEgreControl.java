@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.TransformerUtils;
@@ -23,6 +25,7 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.IRetencionServicio;
 import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.IRetencionSriServicio;
 import ec.com.tecnointel.soem.caja.listaInt.CajaMoviListaInt;
 import ec.com.tecnointel.soem.caja.modelo.Caja;
@@ -847,11 +850,11 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 		FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
 
-	    if (!validarAntesDeProcesar()) {
+		if (!validarAntesDeProcesar()) {
 			FacesContext.getCurrentInstance().addMessage(null,
-			new FacesMessage(FacesMessage.SEVERITY_INFO, null, "No se ha grabado el cobro"));
-	        return null;
-	    }
+					new FacesMessage(FacesMessage.SEVERITY_INFO, null, "No se ha grabado el cobro"));
+			return null;
+		}
 
 		try {
 
@@ -996,56 +999,55 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	private boolean validarAntesDeProcesar() {
-	    FacesContext context = FacesContext.getCurrentInstance();
+		FacesContext context = FacesContext.getCurrentInstance();
 
-	    if (formPagoMoviEgre == null || formPagoMoviEgre.getTotal() == null) {
-	        context.addMessage(null,
-	                new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total del cobro es obligatorio"));
-	        return false;
-	    }
+		if (formPagoMoviEgre == null || formPagoMoviEgre.getTotal() == null) {
+			context.addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total del cobro es obligatorio"));
+			return false;
+		}
 
-	    // Validar que el total sea mayor a 0
-	    if (formPagoMoviEgre.getTotal().compareTo(BigDecimal.ZERO) <= 0) {
-	        context.addMessage(null,
-	                new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total del cobro debe ser mayor a 0"));
-	        return false;
-	    }
+		// Validar que el total sea mayor a 0
+		if (formPagoMoviEgre.getTotal().compareTo(BigDecimal.ZERO) <= 0) {
+			context.addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total del cobro debe ser mayor a 0"));
+			return false;
+		}
 
-	    // Validar que exista al menos una cuenta por cobrar seleccionada
-	    if (cxcSeles == null || cxcSeles.isEmpty()) {
-	        context.addMessage(null,
-	                new FacesMessage(FacesMessage.SEVERITY_WARN, null, "Debe seleccionar al menos una cuenta por cobrar"));
-	        return false;
-	    }
+		// Validar que exista al menos una cuenta por cobrar seleccionada
+		if (cxcSeles == null || cxcSeles.isEmpty()) {
+			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+					"Debe seleccionar al menos una cuenta por cobrar"));
+			return false;
+		}
 
-	    // Sumar lo abonado / recibido en formas de pago
-	    BigDecimal totalAbonado = BigDecimal.ZERO;
-	    if (fpmeFormPagos != null) {
-	        for (FpmeFormPago fp : fpmeFormPagos) {
-	            if (fp.getTotalReci() != null) {
-	                totalAbonado = totalAbonado.add(fp.getTotalReci());
-	            }
-	        }
-	    }
+		// Sumar lo abonado / recibido en formas de pago
+		BigDecimal totalAbonado = BigDecimal.ZERO;
+		if (fpmeFormPagos != null) {
+			for (FpmeFormPago fp : fpmeFormPagos) {
+				if (fp.getTotalReci() != null) {
+					totalAbonado = totalAbonado.add(fp.getTotalReci());
+				}
+			}
+		}
 
-	    // Validar que el total abonado sea mayor a 0
-	    if (totalAbonado.compareTo(BigDecimal.ZERO) <= 0) {
-	        context.addMessage(null,
-	                new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total abonado debe ser mayor a 0"));
-	        return false;
-	    }
+		// Validar que el total abonado sea mayor a 0
+		if (totalAbonado.compareTo(BigDecimal.ZERO) <= 0) {
+			context.addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total abonado debe ser mayor a 0"));
+			return false;
+		}
 
-	    // Validar que el cobro no sea menor que el total abonado
-	    if (formPagoMoviEgre.getTotal().compareTo(totalAbonado) < 0) {
-	        context.addMessage(null,
-	                new FacesMessage(FacesMessage.SEVERITY_WARN, null,
-	                        "El total del cobro no puede ser menor que el total abonado"));
-	        return false;
-	    }
+		// Validar que el cobro no sea menor que el total abonado
+		if (formPagoMoviEgre.getTotal().compareTo(totalAbonado) < 0) {
+			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+					"El total del cobro no puede ser menor que el total abonado"));
+			return false;
+		}
 
-	    return true;
+		return true;
 	}
-	
+
 	public String modificar() {
 		return "registra?faces-redirect=true&formPagoMoviEgreId=" + this.getId();
 	}
@@ -1917,6 +1919,18 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	// Implementacion carga retenciones
+
+	private static final Logger LOGGER = Logger.getLogger(FormPagoMoviEgreControl.class.getName());
+
+	public static final String TABLA_RETEN_RENTA = "Tabla3";
+	public static final String TABLA_RETEN_IVA = "Tabla11";
+
+	public static final String IMPUESTO_RENTA = "Renta";
+	public static final String IMPUESTO_IVA = "Iva";
+
+	public static final String ESTADO_PR = "PR";
+	public static final String ESTADO_DOC_ELEC_AUTORIZADO = "AUTORIZADO";
+
 	BigDecimal retencionTotal = new BigDecimal(0);
 
 	private Retencion retencion = new Retencion();
@@ -1927,6 +1941,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	@Inject
 	RetencionRegisInt retencionRegis;
+
+	@Inject
+	IRetencionServicio retencionServicio;
 
 	@Inject
 	ReteDetaRegisInt reteDetaRegis;
@@ -1944,14 +1961,15 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			retencion.setFechaRegi(LocalDate.now());
 			retencion.setFechaHoraRegi(LocalDateTime.now());
 			retencion.setClaveAcce(retencion.getAutori());
-			retencion.setEstado("PR");
-			retencion.setEstadoDocuElec("AUTORIZADO");
+			retencion.setEstado(ESTADO_PR);
+			retencion.setEstadoDocuElec(ESTADO_DOC_ELEC_AUTORIZADO);
 			retencion.setDocumeElec(true);
 
 			retencionRegis.insertar(retencion);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Error: Retencion no se ha grabado", e);
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, "Error: Retencion no se ha grabado"));
 		}
 	}
 
@@ -1983,12 +2001,12 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	public void cargarDimmRetenciones() {
 		try {
 			Dimm dimmRenta = new Dimm();
-			dimmRenta.setTablaRefe("Tabla3");
+			dimmRenta.setTablaRefe(TABLA_RETEN_RENTA);
 			dimmRenta.setEstado(true);
 			dimmRetencionRentas = dimmLista.buscar(dimmRenta, dimmRenta, null);
 
 			Dimm dimmIva = new Dimm();
-			dimmIva.setTablaRefe("Tabla11");
+			dimmIva.setTablaRefe(TABLA_RETEN_IVA);
 			dimmIva.setEstado(true);
 			dimmRetencionIvas = dimmLista.buscar(dimmIva, dimmIva, null);
 
@@ -1998,9 +2016,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	public List<Dimm> obtenerDimmRetencions(String impues) {
-		if ("Renta".equals(impues)) {
+		if (IMPUESTO_RENTA.equals(impues)) {
 			return dimmRetencionRentas;
-		} else if ("Iva".equals(impues)) {
+		} else if (IMPUESTO_IVA.equals(impues)) {
 			return dimmRetencionIvas;
 		}
 		return java.util.Collections.emptyList();
@@ -2019,32 +2037,25 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			return;
 		}
 
-		List<Dimm> lista = obtenerDimmRetencions(reteDeta.getImpues());
+		List<Dimm> listaRetenciones = obtenerDimmRetencions(reteDeta.getImpues());
 
-		if (lista == null || lista.isEmpty()) {
+		if (listaRetenciones == null || listaRetenciones.isEmpty()) {
 			reteDeta.setPorcen(BigDecimal.ZERO);
 			return;
 		}
 
-		for (Dimm dimm : lista) {
+		for (Dimm dimm : listaRetenciones) {
 			if (reteDeta.getCodigoImpu().equals(dimm.getCodigo())) {
 
 				reteDeta.setPorcen(dimm.getPorcen());
-
-				this.calcularTotalRetencion();
-
+				calcularTotalReteDeta();
 				return;
 			}
+
 		}
 
 		// si no encuentra coincidencia
 		reteDeta.setPorcen(BigDecimal.ZERO);
-	}
-
-	public static BigDecimal obtenerPorcentaje(List<Dimm> lista, String codigoBuscado) {
-
-		return lista.stream().filter(r -> r.getCodigo().equalsIgnoreCase(codigoBuscado)).map(Dimm::getPorcen)
-				.findFirst().orElse(BigDecimal.ZERO);
 	}
 
 	public List<FpmeFormPago> crearFpmeFormPagoRetencion() {
@@ -2055,9 +2066,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 			FormPago formPago = new FormPago();
 
-			if ("Renta".equals(reteDeta.getImpues())) {
+			if (IMPUESTO_RENTA.equals(reteDeta.getImpues())) {
 				formPago.setFormPagoId(7);
-			} else if ("Iva".equals(reteDeta.getImpues())) {
+			} else if (IMPUESTO_IVA.equals(reteDeta.getImpues())) {
 				formPago.setFormPagoId(8);
 			}
 
@@ -2079,7 +2090,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 //		TODO: implementar este metodo se debe llamar a procesar el cobro
 //		Aqui se va a grabar fpmeFormPago y se debe haber grabado retencion
 		if (retencion.getRetencionId() == null) {
-
 			this.insertarRetencion();
 			this.insertarReteDeta();
 		}
@@ -2098,33 +2108,25 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	public void eliminarReteDeta() {
 		this.reteDetas.remove(this.reteDetaSele);
-		this.calcularTotalRetencion();
 	}
 
-	public void calcularTotalRetencion() {
-
-		BigDecimal total = new BigDecimal(0);
-
-		for (ReteDeta reteDeta : reteDetas) {
-
-			reteDeta.setReteDetaTotal(reteDeta.getBase().multiply(reteDeta.getPorcen()).divide(new BigDecimal(100)));
-			total = total.add(reteDeta.getReteDetaTotal());
-
-		}
-
-		retencionTotal = total;
+	public void calcularTotalReteDeta() {
+		retencionServicio.calcularReteDeta(reteDetas);
 	}
 
 // Comienza descarga archivo retencion del sri
+
 	@Inject
 	IRetencionSriServicio retencionSriServicio;
 
 	public void cargarXmlDesdeSri() {
 
 		try {
-
 			retencion = retencionSriServicio.procesarRetencionSri(retencion.getAutori());
 			reteDetas = new ArrayList<>(retencion.getReteDetas());
+
+			calcularTotalReteDeta();
+
 //			Se coloca este clear porque la clase Retencion viene con un set de reteDetas y 
 //			tiene cascade en persist entonces al grabar sale error porque intenta grabar nuevamente
 //			con el clear deja el set vacio y grabar el list sin errores
@@ -2132,10 +2134,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 //			la retencion entonces graba con el set de reteDeta
 //			La IA aconseja si el elemento es visual utilizar list e lugar de set
 			retencion.getReteDetas().clear();
-			
-			calcularTotalRetencion();
-
-			System.out.println("=================================== Retencion ingresada desde SRI");
 
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
 					"Documento cargado desde SRI, revisar y procesar..."));
@@ -2146,6 +2144,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, e.getMessage()));
 
 			e.printStackTrace();
+
 		}
 	}
 

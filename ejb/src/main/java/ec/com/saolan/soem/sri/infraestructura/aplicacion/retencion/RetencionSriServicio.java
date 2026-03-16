@@ -27,7 +27,8 @@ public class RetencionSriServicio implements IRetencionSriServicio, Serializable
 	@Inject
 	SriClienteWs sriClienteWs;
 
-	private final RetencionSriUnmarshaller unmarshaller = new RetencionSriUnmarshaller();
+	@Inject
+	RetencionSriUnmarshaller unmarshaller;
 
 	@Override
 	@Transactional
