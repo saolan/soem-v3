@@ -206,6 +206,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	@Inject
 	FormPagoRegisInt formPagoRegis;
 
+	@Inject
+	RetencionRegisInt retencionRegis;
+
 	private static final long serialVersionUID = -6797405619945178593L;
 
 	@PostConstruct
@@ -264,10 +267,17 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				cxcRegis.modificar(cxc);
 			}
 
+			Retencion retencionEliminar = null;
 			for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
 
 			    ReteDeta reteDeta = fpmeFormPago.getReteDeta();
 			    if (reteDeta != null) {
+//			        Guardar referencia antes de romper relaciones para luego eliminar
+			        Retencion retencion = reteDeta.getRetencion();
+			        if (retencion != null) {
+			            retencionEliminar = reteDeta.getRetencion();
+			        }
+			    	
 //			        Eliminar relaciones
 			        fpmeFormPago.setReteDeta(null);
 			        reteDeta.setFpmeFormPago(null);
@@ -276,6 +286,10 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			        reteDetaRegis.eliminar(reteDeta);
 			    }
 			    fpmeFormPagoRegis.eliminar(fpmeFormPago);
+			}
+			
+			if (retencionEliminar != null) {
+				retencionRegis.eliminar(retencionEliminar);	
 			}
 			
 			FormPagoMoviEgre fpme = formPagoMoviEgreRegis.buscarPorId(FormPagoMoviEgre.class, this.getId());
@@ -1949,8 +1963,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	private List<Dimm> dimmRetencionRentas;
 	private List<Dimm> dimmRetencionIvas;
 
-	@Inject
-	RetencionRegisInt retencionRegis;
 
 	@Inject
 	RetencionServicio retencionServicio;
