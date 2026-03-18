@@ -92,6 +92,9 @@ import jakarta.inject.Named;
 @ViewScoped
 public class FormPagoMoviEgreControl extends PaginaControl implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger(FormPagoMoviEgreControl.class.getName());
+
 	private Integer egresoId;
 	private Integer paginaClie;
 
@@ -209,8 +212,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	@Inject
 	RetencionRegisInt retencionRegis;
 
-	private static final long serialVersionUID = -6797405619945178593L;
-
 	@PostConstruct
 	public void cargar() {
 
@@ -270,28 +271,28 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			Retencion retencionEliminar = null;
 			for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
 
-			    ReteDeta reteDeta = fpmeFormPago.getReteDeta();
-			    if (reteDeta != null) {
+				ReteDeta reteDeta = fpmeFormPago.getReteDeta();
+				if (reteDeta != null) {
 //			        Guardar referencia antes de romper relaciones para luego eliminar
-			        Retencion retencion = reteDeta.getRetencion();
-			        if (retencion != null) {
-			            retencionEliminar = reteDeta.getRetencion();
-			        }
-			    	
-//			        Eliminar relaciones
-			        fpmeFormPago.setReteDeta(null);
-			        reteDeta.setFpmeFormPago(null);
+					Retencion retencion = reteDeta.getRetencion();
+					if (retencion != null) {
+						retencionEliminar = reteDeta.getRetencion();
+					}
 
-			        fpmeFormPagoRegis.modificar(fpmeFormPago);
-			        reteDetaRegis.eliminar(reteDeta);
-			    }
-			    fpmeFormPagoRegis.eliminar(fpmeFormPago);
+//			        Eliminar relaciones
+					fpmeFormPago.setReteDeta(null);
+					reteDeta.setFpmeFormPago(null);
+
+					fpmeFormPagoRegis.modificar(fpmeFormPago);
+					reteDetaRegis.eliminar(reteDeta);
+				}
+				fpmeFormPagoRegis.eliminar(fpmeFormPago);
 			}
-			
+
 			if (retencionEliminar != null) {
-				retencionRegis.eliminar(retencionEliminar);	
+				retencionRegis.eliminar(retencionEliminar);
 			}
-			
+
 			FormPagoMoviEgre fpme = formPagoMoviEgreRegis.buscarPorId(FormPagoMoviEgre.class, this.getId());
 			fpme.setEstado("AN");
 
@@ -1944,8 +1945,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	// Implementacion carga retenciones
 
-	private static final Logger LOGGER = Logger.getLogger(FormPagoMoviEgreControl.class.getName());
-
 	public static final String TABLA_RETEN_RENTA = "Tabla3";
 	public static final String TABLA_RETEN_IVA = "Tabla11";
 
@@ -1962,7 +1961,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	private List<Dimm> dimmRetencionRentas;
 	private List<Dimm> dimmRetencionIvas;
-
 
 	@Inject
 	RetencionServicio retencionServicio;
@@ -2137,18 +2135,25 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 // Comienza descarga archivo retencion del sri
-	
+
 	@Inject
 	RetencionSriServicio retencionSriServicio;
 
 	public void cargarXmlDesdeSri() {
 
 		try {
-			retencion = retencionSriServicio.procesarRetencionSri(retencion.getAutori());
+			
+			Retencion retencionBuscada = retencionSriServicio.descargarRetencionSri(retencion.getAutori());
+
+			if (retencionBuscada == null) {
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+						"No se encontró la retención en el SRI o no está autorizada - Clave: " + retencion.getAutori()));
+
+				return;
+			}
+
+			retencion = retencionBuscada;
 			reteDetas = new ArrayList<>(retencion.getReteDetas());
-
-			calcularTotalReteDeta();
-
 //			Se coloca este clear porque la clase Retencion viene con un set de reteDetas y 
 //			tiene cascade en persist entonces al grabar sale error porque intenta grabar nuevamente
 //			con el clear deja el set vacio y grabar el list sin errores
@@ -2156,6 +2161,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 //			la retencion entonces graba con el set de reteDeta
 //			La IA aconseja si el elemento es visual utilizar list e lugar de set
 			retencion.getReteDetas().clear();
+			
+			calcularTotalReteDeta();
 
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
 					"Documento cargado desde SRI, revisar y procesar..."));
