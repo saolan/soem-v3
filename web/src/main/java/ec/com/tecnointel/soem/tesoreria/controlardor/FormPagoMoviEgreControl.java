@@ -2135,7 +2135,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 // Comienza descarga archivo retencion del sri
-
 	@Inject
 	RetencionSriServicio retencionSriServicio;
 
