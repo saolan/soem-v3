@@ -29,20 +29,18 @@ public class RetencionSriServicio implements Serializable {
 	private static final Logger LOGGER = Logger.getLogger(RetencionSriServicio.class.getName());
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
 	private static final String AMBIENTE_PRODUCCION = "2";
 	private static final String NOMBRE_SERVICIO = "AutorizacionComprobantesOffline";
 	private static final String ESTADO_PROCESADO = "PR";
 	private static final String ESTADO_DOCUMENTO_ELECTRONICO_AUTORIZADO = "AUTORIZADO";
-
 	private static final Map<String, String> CODIGO_IMPUESTO = Map.of("1", "Renta", "2", "Iva", "6", "ISD");
 
 	@Inject
 	AutorizacionComprobantesWsInt autorizacionComprobantes;
-	
+
 	@Inject
 	RetencionSriUnmarshaller unmarshaller;
-	
+
 	@Inject
 	ParametroDocuElectronicoCache parametroDocuElectronicoCache;
 
@@ -73,7 +71,7 @@ public class RetencionSriServicio implements Serializable {
 			comprobanteRetencion = unmarshaller.unmarshall(xmlRetencion);
 
 			// 3. Mapear a entidades de dominio
-			retencion = construirRetencion(comprobanteRetencion, autorizacionDTO);
+			retencion = mapearRetencion(comprobanteRetencion, autorizacionDTO);
 
 		} catch (
 
@@ -90,7 +88,13 @@ public class RetencionSriServicio implements Serializable {
 				.orElseThrow(() -> new RuntimeException("Sin autorización para clave: " + claveAcce)).getComprobante(); // aquí
 	}
 
-	public Retencion construirRetencion(ComprobanteRetencion comprobanteRetencion, AutorizacionDTO autorizacionDTO) {
+	public Retencion mapearRetencion(ComprobanteRetencion comprobanteRetencion, AutorizacionDTO autorizacionDTO) {
+		Retencion retencion = mapearCabecera(comprobanteRetencion, autorizacionDTO);
+		retencion.setReteDetas(mapearDetalles(comprobanteRetencion, retencion));
+		return retencion;
+	}
+
+	private Retencion mapearCabecera(ComprobanteRetencion comprobanteRetencion, AutorizacionDTO autorizacionDTO) {
 
 		Retencion retencion = new Retencion();
 
@@ -113,8 +117,10 @@ public class RetencionSriServicio implements Serializable {
 		retencion.setEstado(ESTADO_PROCESADO);
 		retencion.setEstadoDocuElec(ESTADO_DOCUMENTO_ELECTRONICO_AUTORIZADO);
 
-		comprobanteRetencion.getDocsSustento().getDocSustento();
+		return retencion;
+	}
 
+	private Set<ReteDeta> mapearDetalles(ComprobanteRetencion comprobanteRetencion, Retencion retencion) {
 		Set<ReteDeta> reteDetas = new HashSet<ReteDeta>();
 
 		for (DocSustento docSustentoRete : comprobanteRetencion.getDocsSustento().getDocSustento()) {
@@ -134,10 +140,7 @@ public class RetencionSriServicio implements Serializable {
 				reteDetas.add(reteDeta);
 			}
 		}
-
-		retencion.setReteDetas(reteDetas);
-
-		return retencion;
+		return reteDetas;
 	}
 
 	private String definirTipoImpuesto(String codigo) {
