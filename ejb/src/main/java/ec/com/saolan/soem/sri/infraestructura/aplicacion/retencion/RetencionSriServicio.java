@@ -90,7 +90,7 @@ public class RetencionSriServicio implements Serializable {
 
 	public Retencion mapearRetencion(ComprobanteRetencion comprobanteRetencion, AutorizacionDTO autorizacionDTO) {
 		Retencion retencion = mapearCabecera(comprobanteRetencion, autorizacionDTO);
-		retencion.setReteDetas(mapearDetalles(comprobanteRetencion, retencion));
+		retencion.setReteDetas(mapearReteDetas(comprobanteRetencion, retencion));
 		return retencion;
 	}
 
@@ -120,7 +120,7 @@ public class RetencionSriServicio implements Serializable {
 		return retencion;
 	}
 
-	private Set<ReteDeta> mapearDetalles(ComprobanteRetencion comprobanteRetencion, Retencion retencion) {
+	private Set<ReteDeta> mapearReteDetas(ComprobanteRetencion comprobanteRetencion, Retencion retencion) {
 		Set<ReteDeta> reteDetas = new HashSet<ReteDeta>();
 
 		for (DocSustento docSustentoRete : comprobanteRetencion.getDocsSustento().getDocSustento()) {
