@@ -1,17 +1,15 @@
 package ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Objects;
 
 import ec.com.tecnointel.soem.ingreso.modelo.ReteDeta;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@Stateless
-public class RetencionServicio implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+@ApplicationScoped
+public class RetencionServicio {
 
 	private static final BigDecimal CIEN = BigDecimal.valueOf(100);
 	private static final int ESCALA = 6;
@@ -19,9 +17,7 @@ public class RetencionServicio implements Serializable {
 
 	public void calcularReteDeta(List<ReteDeta> reteDetas) {
 
-		if (reteDetas == null) {
-			return;
-		}
+		Objects.requireNonNull(reteDetas, "La lista de detalles de retención no puede ser null");
 
 		for (ReteDeta reteDeta : reteDetas) {
 			BigDecimal baseImponible = reteDeta.getBase() != null ? reteDeta.getBase() : BigDecimal.ZERO;
