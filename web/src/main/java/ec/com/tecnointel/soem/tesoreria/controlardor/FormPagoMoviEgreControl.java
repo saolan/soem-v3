@@ -1173,7 +1173,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		this.formPagoMoviEgre.setTotalReci(this.getFormPagoMoviEgre().getTotal());
 		this.fpmeFormPagos.add(fpmeFormPago);
 
-//		Siempre que se agraga una fila en cambio debe ser cero
+//		Siempre que se agrega una fila en cambio debe ser cero
 //		ya que el total en cada fila aparece automaticamene
 //		this.cambio = BigDecimal.ZERO;
 	}
@@ -1956,7 +1956,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	BigDecimal retencionTotal = new BigDecimal(0);
 
-	private Retencion retencion = new Retencion();
+	private Retencion retencion;
 	private ReteDeta reteDetaSele;
 
 	private List<Dimm> dimmRetencionRentas;
@@ -1971,8 +1971,20 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	@Inject
 	DimmListaInt dimmLista;
 
-	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
+	private List<ReteDeta> reteDetas;
 
+//	Se ejecuta al abrir dialogo para cargar retecion
+	public void iniciarCargarRetencion() {
+		retencion = new Retencion();
+		reteDetas = new ArrayList<ReteDeta>();
+	}
+	
+//	Se ejecuta hacer click sobre le boton cancelar del dialogo para cargar retecion
+	public void cancelarCargarRetencion () {
+		iniciarCargarRetencion();
+		cargarDialogoFpmeFormPago();
+	}
+	
 	public void insertarRetencion() {
 
 		try {
@@ -2108,7 +2120,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	public void grabarRetencion() {
 //		TODO: implementar este metodo se debe llamar a procesar el cobro
 //		Aqui se va a grabar fpmeFormPago y se debe haber grabado retencion
-		if (retencion.getNumero() != null) {
+		if (retencion.getAutori() != null) {
 			this.insertarRetencion();
 			this.insertarReteDeta();
 		}
@@ -2141,12 +2153,14 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	public void cargarXmlDesdeSri() {
 
 		try {
-			
+
 			Retencion retencionBuscada = retencionSriServicio.descargarRetencionSri(retencion.getAutori());
 
 			if (retencionBuscada == null) {
-				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, null,
-						"No se encontró la retención en el SRI o no está autorizada - Clave: " + retencion.getAutori()));
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+								"No se encontró la retención en el SRI o no está autorizada - Clave: "
+										+ retencion.getAutori()));
 
 				return;
 			}
@@ -2160,7 +2174,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 //			la retencion entonces graba con el set de reteDeta
 //			La IA aconseja si el elemento es visual utilizar list e lugar de set
 			retencion.getReteDetas().clear();
-			
+
 			calcularTotalReteDeta();
 
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,

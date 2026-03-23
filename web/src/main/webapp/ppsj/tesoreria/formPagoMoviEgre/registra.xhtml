@@ -655,6 +655,8 @@
 
 					<p:commandLink id="abrirDialogoCobrar" styleClass="boton"
 						value="Cargar Retencion"
+						action="#{formPagoMoviEgreControl.iniciarCargarRetencion}"
+						update=":datosRetencion:panelRegistrarRetencion,:datosRetencion:reteDetaList"
 						onclick="PF('cargarRetencionDialogo').show();" />
 
 					<div class="flex align-items-center gap-2">
@@ -664,6 +666,7 @@
 							rendered="#{(formPagoMoviEgreControl.id == null and formPagoMoviEgreControl.rolPermiso.get(8104))}" />
 
 						<p:commandLink id="cancelar" ajax="true" styleClass="boton"
+							action="#{formPagoMoviEgreControl.iniciarCargarRetencion}"
 							value="Cancelar" onclick="PF('formaPagoDialogo').hide();" />
 					</div>
 				</div>
@@ -838,8 +841,10 @@
 						</p:commandLink>
 
 						<p:commandLink id="cancelarRetencion" value="Cancelar"
-							type="button" styleClass="boton ui-button-danger ui-button-lg"
-							onclick="PF('cargarRetencionDialogo').hide();" />
+							action="#{formPagoMoviEgreControl.cancelarCargarRetencion}"
+							update="formFormPago:fpmeFormPagoList" process="@this"
+							immediate="true" styleClass="boton ui-button-danger ui-button-lg"
+							oncomplete="PF('cargarRetencionDialogo').hide();" />
 					</div>
 				</div>
 			</h:form>
