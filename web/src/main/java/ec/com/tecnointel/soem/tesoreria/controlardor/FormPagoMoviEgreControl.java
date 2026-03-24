@@ -1956,8 +1956,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	BigDecimal retencionTotal = new BigDecimal(0);
 
-	private Retencion retencion;
-	private ReteDeta reteDetaSele;
+	private Retencion retencion = new Retencion() ;
+	private ReteDeta reteDetaSele = new ReteDeta();
 
 	private List<Dimm> dimmRetencionRentas;
 	private List<Dimm> dimmRetencionIvas;
@@ -1971,7 +1971,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	@Inject
 	DimmListaInt dimmLista;
 
-	private List<ReteDeta> reteDetas;
+	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
 
 //	Se ejecuta al abrir dialogo para cargar retecion
 	public void iniciarCargarRetencion() {
@@ -2023,10 +2023,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 		this.fpmeFormPagos.clear();
 		this.crearFpmeFormPagoRetencion();
-//		Podria llamar a otro metodo que cree la forma de pago
-//		con la diferencia del total de retenciones
-//		o dejar que el cliente llene manualmente la forma de pago
-//		dando click sobre + formas de pago
+		crearFilaFpmeFormPago();
 	}
 
 	public void cargarDimmRetenciones() {
