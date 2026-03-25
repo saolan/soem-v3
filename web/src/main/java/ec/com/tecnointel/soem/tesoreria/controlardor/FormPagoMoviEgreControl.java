@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1956,7 +1958,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	BigDecimal retencionTotal = new BigDecimal(0);
 
-	private Retencion retencion = new Retencion() ;
+	private Retencion retencion = new Retencion();
 	private ReteDeta reteDetaSele = new ReteDeta();
 
 	private List<Dimm> dimmRetencionRentas;
@@ -1973,18 +1975,18 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
 
-//	Se ejecuta al abrir dialogo para cargar retecion
+//	Se ejecuta al abrir dialogo para cargar retencion
 	public void iniciarCargarRetencion() {
 		retencion = new Retencion();
 		reteDetas = new ArrayList<ReteDeta>();
 	}
-	
+
 //	Se ejecuta hacer click sobre le boton cancelar del dialogo para cargar retecion
-	public void cancelarCargarRetencion () {
+	public void cancelarCargarRetencion() {
 		iniciarCargarRetencion();
 		cargarDialogoFpmeFormPago();
 	}
-	
+
 	public void insertarRetencion() {
 
 		try {
@@ -2081,7 +2083,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			}
 
 		}
-
 		// si no encuentra coincidencia
 		reteDeta.setPorcen(BigDecimal.ZERO);
 	}
@@ -2089,29 +2090,39 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	public List<FpmeFormPago> crearFpmeFormPagoRetencion() {
 
 		for (ReteDeta reteDeta : reteDetas) {
-
 			FpmeFormPago fpmeFormPago = new FpmeFormPago();
-
-			FormPago formPago = new FormPago();
-
-			if (IMPUESTO_RENTA.equals(reteDeta.getImpues())) {
-				formPago.setFormPagoId(7);
-			} else if (IMPUESTO_IVA.equals(reteDeta.getImpues())) {
-				formPago.setFormPagoId(8);
-			}
-
 			fpmeFormPago.setReteDeta(reteDeta);
 			fpmeFormPago.setFormPagoMoviEgre(formPagoMoviEgre);
 			fpmeFormPago.setFecha(this.formPagoMoviEgre.getFecha());
 			fpmeFormPago.setFechaHora(this.formPagoMoviEgre.getFecha().atTime(LocalTime.now()));
-			fpmeFormPago.setFormPago(formPago);
+			fpmeFormPago.setFormPago(obtenerFormaPagoRetencion(reteDeta.getImpues()));
 			fpmeFormPago.setDiasPlaz((short) 0);
 			fpmeFormPago.setTotalReci(reteDeta.getReteDetaTotal());
 
 			this.fpmeFormPagos.add(fpmeFormPago);
 		}
-
 		return fpmeFormPagos;
+	}
+
+	private FormPago obtenerFormaPagoRetencion(String impuesto) {
+
+		if (impuesto == null || impuesto.isBlank()) {
+			throw new IllegalArgumentException("El impuesto es obligatorio");
+		}
+
+		String tipo2;
+
+		if (IMPUESTO_RENTA.equals(impuesto)) {
+			tipo2 = "VN-RR";
+		} else if (IMPUESTO_IVA.equals(impuesto)) {
+			tipo2 = "VN-RI";
+		} else {
+			throw new IllegalArgumentException("No existe configuración de forma de pago para impuesto: " + impuesto);
+		}
+
+		return formPagos.stream().filter(Objects::nonNull).filter(fp -> Boolean.TRUE.equals(fp.isEstado()))
+				.filter(fp -> tipo2.equals(fp.getTipo2())).findFirst().orElseThrow(() -> new IllegalStateException(
+						"No existe forma de pago activa configurada para impuesto: " + impuesto));
 	}
 
 	public void grabarRetencion() {
