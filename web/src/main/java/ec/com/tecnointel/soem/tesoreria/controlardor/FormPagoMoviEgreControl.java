@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -96,6 +95,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(FormPagoMoviEgreControl.class.getName());
+
+	public static final String TIPO2_VN_RR = "VN-RR";
+	public static final String TIPO2_VN_RI = "VN-RI";
 
 	private Integer egresoId;
 	private Integer paginaClie;
@@ -421,6 +423,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	public void calcularTotalReciView() {
+
 		BigDecimal totalReci = new BigDecimal(0);
 
 		totalReci = this.calcularTotalReci();
@@ -1181,6 +1184,13 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	public void eliminarFilaFpmeFormPago() {
+
+		if (isTieneRetencion() && (fpmeFormPagoSele.getFormPago().getTipo2().equals(TIPO2_VN_RR)
+				|| fpmeFormPagoSele.getFormPago().getTipo2().equals(TIPO2_VN_RI))) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
+					"No se puede elimimar. Tiene registrada retención"));
+			return;
+		}
 
 		this.fpmeFormPagos.remove(this.fpmeFormPagoSele);
 
@@ -1946,6 +1956,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	// Implementacion carga retenciones
+	private boolean tieneRetencion;
 
 	public static final String TABLA_RETEN_RENTA = "Tabla3";
 	public static final String TABLA_RETEN_IVA = "Tabla11";
@@ -1974,18 +1985,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	DimmListaInt dimmLista;
 
 	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
-
-//	Se ejecuta al abrir dialogo para cargar retencion
-	public void iniciarCargarRetencion() {
-		retencion = new Retencion();
-		reteDetas = new ArrayList<ReteDeta>();
-	}
-
-//	Se ejecuta hacer click sobre le boton cancelar del dialogo para cargar retecion
-	public void cancelarCargarRetencion() {
-		iniciarCargarRetencion();
-		cargarDialogoFpmeFormPago();
-	}
 
 	public void insertarRetencion() {
 
@@ -2020,12 +2019,26 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		}
 	}
 
-//	Este metodo se llama desde la pagina
+//	Se ejecuta al abrir dialogo para cargar retencion
+	public void iniciarCargarRetencion() {
+		retencion = new Retencion();
+		reteDetas = new ArrayList<ReteDeta>();
+	}
+
+//	Se ejecuta hacer click sobre le boton aceptar del dialogo para cargar retecion
 	public void cargarFpmeFormPagoRetencion() {
 
 		this.fpmeFormPagos.clear();
 		this.crearFpmeFormPagoRetencion();
 		crearFilaFpmeFormPago();
+		setTieneRetencion(true);
+	}
+
+//	Se ejecuta hacer click sobre le boton cancelar del dialogo para cargar retecion
+	public void cancelarCargarRetencion() {
+		setTieneRetencion(false);
+		iniciarCargarRetencion();
+		cargarDialogoFpmeFormPago();
 	}
 
 	public void cargarDimmRetenciones() {
@@ -2113,9 +2126,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		String tipo2;
 
 		if (IMPUESTO_RENTA.equals(impuesto)) {
-			tipo2 = "VN-RR";
+			tipo2 = TIPO2_VN_RR;
 		} else if (IMPUESTO_IVA.equals(impuesto)) {
-			tipo2 = "VN-RI";
+			tipo2 = TIPO2_VN_RI;
 		} else {
 			throw new IllegalArgumentException("No existe configuración de forma de pago para impuesto: " + impuesto);
 		}
@@ -2244,5 +2257,13 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	public void setDimmRetencionIvas(List<Dimm> dimmRetencionIvas) {
 		this.dimmRetencionIvas = dimmRetencionIvas;
+	}
+
+	public boolean isTieneRetencion() {
+		return tieneRetencion;
+	}
+
+	public void setTieneRetencion(boolean tieneRetencion) {
+		this.tieneRetencion = tieneRetencion;
 	}
 }

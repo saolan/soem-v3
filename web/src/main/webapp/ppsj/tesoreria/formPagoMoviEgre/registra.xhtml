@@ -627,7 +627,7 @@
 					</p:column>
 
 
-					<p:column headerText="Total" style="text-align: right">
+					<p:column headerText="Totales" style="text-align: right">
 						<p:cellEditor>
 							<f:facet name="output">
 								<h:outputText id="totalOutput"
@@ -639,6 +639,8 @@
 							<f:facet name="input">
 								<p:inputText id="fpmeFormPagoTotalInput"
 									value="#{_fpmeFormPago.totalReci}" style="width:100%"
+									readonly="#{formPagoMoviEgreControl.tieneRetencion 
+    and (_fpmeFormPago.formPago.tipo2 eq 'VN-RR' or _fpmeFormPago.formPago.tipo2 eq 'VN-RI')}"
 									onfocus="this.setSelectionRange(0, this.value.length)">
 									<p:ajax
 										listener="#{formPagoMoviEgreControl.calcularTotalReciView}"
@@ -676,7 +678,7 @@
 
 		<p:dialog id="cargarRetencion" widgetVar="cargarRetencionDialogo"
 			width="99%" focus="agregarBtn" resizable="false"
-			header="Cargar Retencion" modal="true">
+			header="Cargar Retencion" modal="true" closable="false">
 
 			<h:form id="datosRetencion">
 
