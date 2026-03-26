@@ -692,7 +692,9 @@
 								<p:inputText id="reteAutori"
 									value="#{formPagoMoviEgreControl.retencion.autori}"
 									required="true" requiredMessage="Ingrese autorizacion">
-									<p:ajax event="blur" update="btnCargarRetencionSri" />
+									<p:ajax event="blur"
+										listener="#{formPagoMoviEgreControl.validarRetencionNumeroAutorizacion}"
+										process="@this" update="btnCargarRetencionSri" />
 								</p:inputText>
 
 							</div>
@@ -832,7 +834,7 @@
 						action="#{formPagoMoviEgreControl.cargarXmlDesdeSri}"
 						process="@this reteAutori"
 						update=":datosRetencion:panelRegistrarRetencion,:datosRetencion:reteDetaList"
-						disabled="#{formPagoMoviEgreControl.retencion.autori.length() != 49}" />
+						disabled="#{formPagoMoviEgreControl.retencion.autori.length() != 49 or formPagoMoviEgreControl.existeRetencionNumeroAutorizacion}" />
 
 					<div class="flex align-items-center gap-2">
 						<p:commandLink id="cargarFpmeFormCobro" title="Aceptar"

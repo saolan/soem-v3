@@ -112,9 +112,10 @@ public class RetencionListaImp extends GestorListaSoem<Retencion> implements Ret
 
 		return predicates.toArray(new Predicate[predicates.size()]);
 	}
-	
+
 	@Override
-	public List<Retencion> buscar2(Retencion retencion, LocalDate fechaEmisDesde, LocalDate fechaEmisHasta, Integer pagina) {
+	public List<Retencion> buscar2(Retencion retencion, LocalDate fechaEmisDesde, LocalDate fechaEmisHasta,
+			Integer pagina) {
 
 		EntityGraph<?> retencionGraph = this.entityManager.getEntityGraph("retencion.Graph");
 
@@ -123,8 +124,8 @@ public class RetencionListaImp extends GestorListaSoem<Retencion> implements Ret
 		Root<Retencion> retencionRoot = query.from(Retencion.class);
 
 		query.orderBy(builder.asc(retencionRoot.get("retencionId")));
-		TypedQuery<Retencion> consulta = this.entityManager
-				.createQuery(query.select(retencionRoot).where(getSearchPredicates(retencionRoot, retencion, fechaEmisDesde, fechaEmisHasta)));
+		TypedQuery<Retencion> consulta = this.entityManager.createQuery(query.select(retencionRoot)
+				.where(getSearchPredicates(retencionRoot, retencion, fechaEmisDesde, fechaEmisHasta)));
 		consulta.setHint("jakarta.persistence.loadgraph", retencionGraph);
 
 		// Si se pasa null a pagina se listan todos los datos de acuerdo a
@@ -153,7 +154,8 @@ public class RetencionListaImp extends GestorListaSoem<Retencion> implements Ret
 
 	}
 
-	private Predicate[] getSearchPredicates(Root<Retencion> retencionRoot, Retencion retencion, LocalDate fechaEmisDesde, LocalDate fechaEmisHasta) {
+	private Predicate[] getSearchPredicates(Root<Retencion> retencionRoot, Retencion retencion,
+			LocalDate fechaEmisDesde, LocalDate fechaEmisHasta) {
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicates = new ArrayList<Predicate>();
@@ -164,21 +166,21 @@ public class RetencionListaImp extends GestorListaSoem<Retencion> implements Ret
 					builder.equal(builder.lower(retencionRoot.get("ingreso").get("docuIngr").<String>get("tipoRete")),
 							tipoRete.toLowerCase()));
 		}
-		
+
 		if (fechaEmisDesde != null && fechaEmisHasta != null) {
-			predicates.add(builder.between(retencionRoot.<LocalDate> get("fechaEmis"), fechaEmisDesde, fechaEmisHasta));
+			predicates.add(builder.between(retencionRoot.<LocalDate>get("fechaEmis"), fechaEmisDesde, fechaEmisHasta));
 		}
 
 		Integer RetencionNumero = retencion.getNumero();
 		if (RetencionNumero != null) {
 			predicates.add(builder.equal(retencionRoot.get("numero"), RetencionNumero));
 		}
-		
+
 		String estado = retencion.getEstado();
 		if (estado != null) {
 			predicates.add(builder.equal(builder.lower(retencionRoot.<String>get("estado")), estado.toLowerCase()));
 		}
-		
+
 		String estadoDocuElec = retencion.getEstadoDocuElec();
 		if (estadoDocuElec != null) {
 			predicates.add(builder.notEqual(builder.lower(retencionRoot.<String>get("estadoDocuElec")),
@@ -186,5 +188,24 @@ public class RetencionListaImp extends GestorListaSoem<Retencion> implements Ret
 		}
 
 		return predicates.toArray(new Predicate[predicates.size()]);
+	}
+
+	@Override
+	public boolean existeNumeroAutorizacion(String autorizacion) {
+
+		if (autorizacion == null || autorizacion.isBlank()) {
+			throw new IllegalArgumentException("La autorización es obligatoria");
+		}
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<Retencion> root = cq.from(Retencion.class);
+
+		cq.select(cb.literal(1));
+		cq.where(cb.equal(root.get("autori"), autorizacion.trim()));
+
+		List<Integer> resultados = entityManager.createQuery(cq).setMaxResults(1).getResultList();
+
+		return !resultados.isEmpty();
 	}
 }

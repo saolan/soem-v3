@@ -21,5 +21,7 @@ public interface RetencionListaInt {
 			Integer pagina) throws Exception;
 
 	long contarRegistros2(Retencion retencion, LocalDate fechaEmisDesde, LocalDate fechaEmisHasta) throws Exception;
+
+	boolean existeNumeroAutorizacion(String autorizacion);
 	
 }

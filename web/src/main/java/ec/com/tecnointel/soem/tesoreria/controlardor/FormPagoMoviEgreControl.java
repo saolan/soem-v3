@@ -41,6 +41,7 @@ import ec.com.tecnointel.soem.egreso.modelo.Egreso;
 import ec.com.tecnointel.soem.egreso.modelo.PersClie;
 import ec.com.tecnointel.soem.egreso.modelo.PersCobr;
 import ec.com.tecnointel.soem.general.controlador.PaginaControl;
+import ec.com.tecnointel.soem.ingreso.listaInt.RetencionListaInt;
 import ec.com.tecnointel.soem.ingreso.modelo.ReteDeta;
 import ec.com.tecnointel.soem.ingreso.modelo.Retencion;
 import ec.com.tecnointel.soem.ingreso.registroInt.ReteDetaRegisInt;
@@ -83,6 +84,7 @@ import ec.com.tecnointel.soem.tesoreria.registroInt.FpmeFormPagoRegisInt;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UIInput;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.faces.view.ViewScoped;
@@ -1957,6 +1959,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	// Implementacion carga retenciones
 	private boolean tieneRetencion;
+	private boolean existeRetencionNumeroAutorizacion;
 
 	public static final String TABLA_RETEN_RENTA = "Tabla3";
 	public static final String TABLA_RETEN_IVA = "Tabla11";
@@ -1977,6 +1980,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	@Inject
 	RetencionServicio retencionServicio;
+
+	@Inject
+	RetencionListaInt retencionLista;
 
 	@Inject
 	ReteDetaRegisInt reteDetaRegis;
@@ -2039,6 +2045,33 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		setTieneRetencion(false);
 		iniciarCargarRetencion();
 		cargarDialogoFpmeFormPago();
+	}
+
+	public void validarRetencionNumeroAutorizacion() {
+
+		FacesContext context = FacesContext.getCurrentInstance();
+
+		existeRetencionNumeroAutorizacion = false;
+		
+		String autorizacion = retencion != null ? retencion.getAutori() : null;
+
+		if (autorizacion == null || autorizacion.isBlank()) {
+			return;
+		}
+
+		boolean existe = retencionLista.existeNumeroAutorizacion(retencion.getAutori().trim());
+
+		if (existe) {
+			existeRetencionNumeroAutorizacion = true;
+			UIComponent component = UIComponent.getCurrentComponent(context);
+
+			if (component instanceof UIInput input) {
+				input.setValid(false);
+			}
+
+			context.addMessage(component.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR,
+					null, "El número de autorización ya esta registrado en el sistema"));
+		}
 	}
 
 	public void cargarDimmRetenciones() {
@@ -2265,5 +2298,13 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	public void setTieneRetencion(boolean tieneRetencion) {
 		this.tieneRetencion = tieneRetencion;
+	}
+
+	public boolean isExisteRetencionNumeroAutorizacion() {
+		return existeRetencionNumeroAutorizacion;
+	}
+
+	public void setExisteRetencionNumeroAutorizacion(boolean existeRetencionNumeroAutorizacion) {
+		this.existeRetencionNumeroAutorizacion = existeRetencionNumeroAutorizacion;
 	}
 }
