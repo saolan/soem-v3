@@ -82,7 +82,7 @@ public class Retencion implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "INGRESO_ID", nullable = false)
+	@JoinColumn(name = "INGRESO_ID", nullable = true)
 	public Ingreso getIngreso() {
 		return this.ingreso;
 	}

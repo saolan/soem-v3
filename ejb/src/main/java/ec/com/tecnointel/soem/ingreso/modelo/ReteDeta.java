@@ -3,7 +3,11 @@ package ec.com.tecnointel.soem.ingreso.modelo;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
+import org.hibernate.Hibernate;
+
+import ec.com.tecnointel.soem.tesoreria.modelo.FpmeFormPago;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 import jakarta.persistence.Transient;
@@ -30,10 +35,13 @@ public class ReteDeta implements java.io.Serializable {
 	private String codigoImpu;
 	private BigDecimal base;
 	private BigDecimal porcen;
+	
+    private FpmeFormPago fpmeFormPago;
+
 
 //	@Transient
 	private BigDecimal reteDetaTotal;
-	
+
 	private static final long serialVersionUID = -4948870471671297275L;
 
 	public ReteDeta() {
@@ -114,4 +122,38 @@ public class ReteDeta implements java.io.Serializable {
 	public void setReteDetaTotal(BigDecimal reteDetaTotal) {
 		this.reteDetaTotal = reteDetaTotal;
 	}
+	
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "reteDeta")
+    public FpmeFormPago getFpmeFormPago() {
+        return fpmeFormPago;
+    }
+
+    public void setFpmeFormPago(FpmeFormPago fpmeFormPago) {
+        this.fpmeFormPago = fpmeFormPago;
+    }
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+
+		if (Hibernate.getClass(this) != Hibernate.getClass(obj)) {
+			return false;
+		}
+
+		ReteDeta other = (ReteDeta) obj;
+
+		return reteDetaId != null && Objects.equals(this.reteDetaId, other.reteDetaId);
+	}
+
+	@Override
+	public int hashCode() {
+		// Recomendado por Hibernate para entidades con ID generado
+		return getClass().hashCode();
+	}
+
 }
