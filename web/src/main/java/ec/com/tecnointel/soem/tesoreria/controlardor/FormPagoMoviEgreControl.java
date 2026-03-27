@@ -15,7 +15,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.TransformerUtils;
@@ -23,6 +26,8 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.RetencionServicio;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.RetencionSriServicio;
 import ec.com.tecnointel.soem.caja.listaInt.CajaMoviListaInt;
 import ec.com.tecnointel.soem.caja.modelo.Caja;
 import ec.com.tecnointel.soem.caja.modelo.CajaMovi;
@@ -36,10 +41,17 @@ import ec.com.tecnointel.soem.egreso.modelo.Egreso;
 import ec.com.tecnointel.soem.egreso.modelo.PersClie;
 import ec.com.tecnointel.soem.egreso.modelo.PersCobr;
 import ec.com.tecnointel.soem.general.controlador.PaginaControl;
+import ec.com.tecnointel.soem.ingreso.listaInt.RetencionListaInt;
+import ec.com.tecnointel.soem.ingreso.modelo.ReteDeta;
+import ec.com.tecnointel.soem.ingreso.modelo.Retencion;
+import ec.com.tecnointel.soem.ingreso.registroInt.ReteDetaRegisInt;
+import ec.com.tecnointel.soem.ingreso.registroInt.RetencionRegisInt;
+import ec.com.tecnointel.soem.parametro.listaInt.DimmListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.DocuMoviEgreListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.FormPagoListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.TranPlanDetaListaInt;
 import ec.com.tecnointel.soem.parametro.listaInt.TranPlanListaInt;
+import ec.com.tecnointel.soem.parametro.modelo.Dimm;
 import ec.com.tecnointel.soem.parametro.modelo.DocuCaja;
 import ec.com.tecnointel.soem.parametro.modelo.DocuMoviEgre;
 import ec.com.tecnointel.soem.parametro.modelo.DocuTran;
@@ -50,6 +62,7 @@ import ec.com.tecnointel.soem.parametro.modelo.Persona;
 import ec.com.tecnointel.soem.parametro.modelo.TranPlan;
 import ec.com.tecnointel.soem.parametro.modelo.TranPlanDeta;
 import ec.com.tecnointel.soem.parametro.registroInt.DocumentoRegisInt;
+import ec.com.tecnointel.soem.parametro.registroInt.FormPagoRegisInt;
 import ec.com.tecnointel.soem.parametro.registroInt.TranPlanRegisInt;
 import ec.com.tecnointel.soem.seguridad.modelo.PersUsua;
 import ec.com.tecnointel.soem.seguridad.modelo.RolDocu;
@@ -71,6 +84,7 @@ import ec.com.tecnointel.soem.tesoreria.registroInt.FpmeFormPagoRegisInt;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UIInput;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.faces.view.ViewScoped;
@@ -80,6 +94,12 @@ import jakarta.inject.Named;
 @Named
 @ViewScoped
 public class FormPagoMoviEgreControl extends PaginaControl implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger(FormPagoMoviEgreControl.class.getName());
+
+	public static final String TIPO2_VN_RR = "VN-RR";
+	public static final String TIPO2_VN_RI = "VN-RI";
 
 	private Integer egresoId;
 	private Integer paginaClie;
@@ -192,7 +212,11 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	@Inject
 	FormPagoMoviIngrRegisInt formPagoMoviIngrRegis;
 
-	private static final long serialVersionUID = -6797405619945178593L;
+	@Inject
+	FormPagoRegisInt formPagoRegis;
+
+	@Inject
+	RetencionRegisInt retencionRegis;
 
 	@PostConstruct
 	public void cargar() {
@@ -223,6 +247,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		this.cxcs = new ArrayList<>();
 		this.formPagos = new ArrayList<>();
 		this.tranPlans = new ArrayList<>();
+
+		cargarDimmRetenciones();
 	}
 
 	public String anular() {
@@ -248,17 +274,38 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				cxcRegis.modificar(cxc);
 			}
 
+			Retencion retencionEliminar = null;
 			for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
+
+				ReteDeta reteDeta = fpmeFormPago.getReteDeta();
+				if (reteDeta != null) {
+//			        Guardar referencia antes de romper relaciones para luego eliminar
+					Retencion retencion = reteDeta.getRetencion();
+					if (retencion != null) {
+						retencionEliminar = reteDeta.getRetencion();
+					}
+
+//			        Eliminar relaciones
+					fpmeFormPago.setReteDeta(null);
+					reteDeta.setFpmeFormPago(null);
+
+					fpmeFormPagoRegis.modificar(fpmeFormPago);
+					reteDetaRegis.eliminar(reteDeta);
+				}
 				fpmeFormPagoRegis.eliminar(fpmeFormPago);
+			}
+
+			if (retencionEliminar != null) {
+				retencionRegis.eliminar(retencionEliminar);
 			}
 
 			FormPagoMoviEgre fpme = formPagoMoviEgreRegis.buscarPorId(FormPagoMoviEgre.class, this.getId());
 			fpme.setEstado("AN");
-			
+
 			formPagoMoviEgreRegis.modificar(fpme);
 
 			if (fpme.getTransaccion() != null) {
-				
+
 //				Anula registro en el caso que el documento se haya cobrado con deposito
 				anularFpmi(fpme);
 
@@ -362,7 +409,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 		for (FpmeFormPago fpmeFormPago : this.fpmeFormPagos) {
 
-			fpmeFormPago.setDiasPlaz((short) ChronoUnit.DAYS.between(fpmeFormPago.getFecha(), this.formPagoMoviEgre.getFecha()));
+			fpmeFormPago.setDiasPlaz(
+					(short) ChronoUnit.DAYS.between(fpmeFormPago.getFecha(), this.formPagoMoviEgre.getFecha()));
 		}
 	}
 
@@ -377,6 +425,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	public void calcularTotalReciView() {
+
 		BigDecimal totalReci = new BigDecimal(0);
 
 		totalReci = this.calcularTotalReci();
@@ -388,24 +437,27 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		Integer transaccionId = 0;
 
 		try {
-			
+
 //			Modifica la nota del ingreso para pasar eso a la nota de la tansaccion
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			
+
 //			Revisar que la nota no tenga valores nulos
 			if (formPagoMoviEgre.getNota() == null) {
-				formPagoMoviEgre.setNota(formPagoMoviEgre.getDocuMoviEgre().getDocumento().getDescri() + " " + formPagoMoviEgre.getNumero() + " " + 
-						formPagoMoviEgre.getPersona().getApelli() + " Ref:" + formPagoMoviEgre.getRefere() + " " +  formPagoMoviEgre.getFecha().format(dateTimeFormatter));				
+				formPagoMoviEgre.setNota(formPagoMoviEgre.getDocuMoviEgre().getDocumento().getDescri() + " "
+						+ formPagoMoviEgre.getNumero() + " " + formPagoMoviEgre.getPersona().getApelli() + " Ref:"
+						+ formPagoMoviEgre.getRefere() + " " + formPagoMoviEgre.getFecha().format(dateTimeFormatter));
 			} else {
-				formPagoMoviEgre.setNota(formPagoMoviEgre.getNota() + " " + formPagoMoviEgre.getDocuMoviEgre().getDocumento().getDescri() + " " + formPagoMoviEgre.getNumero() + " " + 
-						formPagoMoviEgre.getPersona().getApelli() + " Ref:" + formPagoMoviEgre.getRefere() + " " +  formPagoMoviEgre.getFecha().format(dateTimeFormatter));
+				formPagoMoviEgre.setNota(formPagoMoviEgre.getNota() + " "
+						+ formPagoMoviEgre.getDocuMoviEgre().getDocumento().getDescri() + " "
+						+ formPagoMoviEgre.getNumero() + " " + formPagoMoviEgre.getPersona().getApelli() + " Ref:"
+						+ formPagoMoviEgre.getRefere() + " " + formPagoMoviEgre.getFecha().format(dateTimeFormatter));
 			}
-			
+
 //			Revisar que la nota no tenga mas de 255 caracateres
 			if (formPagoMoviEgre.getNota().length() > 255) {
-				formPagoMoviEgre.setNota(formPagoMoviEgre.getNota().substring(0,254));
+				formPagoMoviEgre.setNota(formPagoMoviEgre.getNota().substring(0, 254));
 			}
-			
+
 			if (formPagoMoviEgre.getDocuMoviEgre().getTipo().equals("PAGO-COBRO")) {
 
 				transaccionId = contabilizarCobro(formPagoMoviEgre);
@@ -737,7 +789,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 						new FacesMessage(FacesMessage.SEVERITY_FATAL, null, "Excepcion - Error al buscar Id"));
 				e.printStackTrace();
 			}
-			
+
 //			Buscar y asignar transaccion si no tiene asignar una vacia
 			if (this.formPagoMoviEgre.getTransaccion() != null) {
 
@@ -746,13 +798,13 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				this.formPagoMoviEgre.setTransaccion(transaccion);
 
 			} else {
-				
+
 				DocuTran docuTran = new DocuTran();
 				docuTran.setDocumento(new Documento());
 				Transaccion transaccion = new Transaccion();
 				transaccion.setDocuTran(docuTran);
 				this.formPagoMoviEgre.setTransaccion(transaccion);
-				
+
 			}
 
 		}
@@ -800,13 +852,12 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	public void validarRefere(FacesContext arg0, UIComponent arg1, Object arg2) throws ValidatorException {
 
 		String refere = (String) arg2;
-		
+
 		if (refere != null) {
 			List<Object[]> objs = new ArrayList<>();
 //			Busca si se esta ingresando una referencia duplicada
@@ -831,13 +882,11 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 		FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
 
-//		String mensaje = validarGrabar();
-//
-//		if (!mensaje.equals("validado")) {
-//			FacesContext.getCurrentInstance().addMessage(null,
-//					new FacesMessage(FacesMessage.SEVERITY_INFO, null, mensaje));
-//			return null;
-//		}
+		if (!validarAntesDeProcesar()) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_INFO, null, "No se ha grabado el cobro"));
+			return null;
+		}
 
 		try {
 
@@ -866,6 +915,11 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 				Object id = formPagoMoviEgreRegis.insertar(formPagoMoviEgre);
 				this.id = (Integer) id;
+
+//				TODO: Grabar retencion
+//				Validar que se ejecuta solamente si hay retencion
+				this.grabarRetencion();
+//				Fin Grabar retencion
 
 				this.insertarFpmeFormPagos();
 
@@ -976,6 +1030,56 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		return mensaje;
 	}
 
+	private boolean validarAntesDeProcesar() {
+		FacesContext context = FacesContext.getCurrentInstance();
+
+		if (formPagoMoviEgre == null || formPagoMoviEgre.getTotal() == null) {
+			context.addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total del cobro es obligatorio"));
+			return false;
+		}
+
+		// Validar que el total sea mayor a 0
+		if (formPagoMoviEgre.getTotal().compareTo(BigDecimal.ZERO) <= 0) {
+			context.addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total del cobro debe ser mayor a 0"));
+			return false;
+		}
+
+		// Validar que exista al menos una cuenta por cobrar seleccionada
+		if (cxcSeles == null || cxcSeles.isEmpty()) {
+			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+					"Debe seleccionar al menos una cuenta por cobrar"));
+			return false;
+		}
+
+		// Sumar lo abonado / recibido en formas de pago
+		BigDecimal totalAbonado = BigDecimal.ZERO;
+		if (fpmeFormPagos != null) {
+			for (FpmeFormPago fp : fpmeFormPagos) {
+				if (fp.getTotalReci() != null) {
+					totalAbonado = totalAbonado.add(fp.getTotalReci());
+				}
+			}
+		}
+
+		// Validar que el total abonado sea mayor a 0
+		if (totalAbonado.compareTo(BigDecimal.ZERO) <= 0) {
+			context.addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_WARN, null, "El total abonado debe ser mayor a 0"));
+			return false;
+		}
+
+		// Validar que el cobro no sea menor que el total abonado
+		if (formPagoMoviEgre.getTotal().compareTo(totalAbonado) < 0) {
+			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+					"El total del cobro no puede ser menor que el total abonado"));
+			return false;
+		}
+
+		return true;
+	}
+
 	public String modificar() {
 		return "registra?faces-redirect=true&formPagoMoviEgreId=" + this.getId();
 	}
@@ -1076,12 +1180,19 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		this.formPagoMoviEgre.setTotalReci(this.getFormPagoMoviEgre().getTotal());
 		this.fpmeFormPagos.add(fpmeFormPago);
 
-//		Siempre que se agraga una fila en cambio debe ser cero
+//		Siempre que se agrega una fila en cambio debe ser cero
 //		ya que el total en cada fila aparece automaticamene
 //		this.cambio = BigDecimal.ZERO;
 	}
 
 	public void eliminarFilaFpmeFormPago() {
+
+		if (isTieneRetencion() && (fpmeFormPagoSele.getFormPago().getTipo2().equals(TIPO2_VN_RR)
+				|| fpmeFormPagoSele.getFormPago().getTipo2().equals(TIPO2_VN_RI))) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
+					"No se puede elimimar. Tiene registrada retención"));
+			return;
+		}
 
 		this.fpmeFormPagos.remove(this.fpmeFormPagoSele);
 
@@ -1123,7 +1234,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			FormPagoMoviEgre fpme = formPagoMoviEgre.next();
 
 			List<FpmeFormPago> fpmeFormPagos = this.buscarFpmeFormPagos(new FpmeFormPago(fpme));
-			
+
 //			TODO:
 //			Solucion temporal
 //			Si se pago la factura con mas de una forma de pago cuando entra aca da error
@@ -1275,7 +1386,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			for (CobrDeta cobrDeta : cobrDetas) {
 
 				FpmeFormPago fpmeFormPago = new FpmeFormPago();
-				fpmeFormPago = this.fpmeFormPagoRegis.buscarPorId(FpmeFormPago.class, cobrDeta.getFpmeFormPago().getFpmeFormPagoId());
+				fpmeFormPago = this.fpmeFormPagoRegis.buscarPorId(FpmeFormPago.class,
+						cobrDeta.getFpmeFormPago().getFpmeFormPagoId());
 
 				cobrDeta.setFpmeFormPago(fpmeFormPago);
 			}
@@ -1845,4 +1957,354 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		this.incluirCredito = incluirCredito;
 	}
 
+	// Implementacion carga retenciones
+	private boolean tieneRetencion;
+	private boolean existeRetencionNumeroAutorizacion;
+
+	public static final String TABLA_RETEN_RENTA = "Tabla3";
+	public static final String TABLA_RETEN_IVA = "Tabla11";
+
+	public static final String IMPUESTO_RENTA = "Renta";
+	public static final String IMPUESTO_IVA = "Iva";
+
+	public static final String ESTADO_PR = "PR";
+	public static final String ESTADO_DOC_ELEC_AUTORIZADO = "AUTORIZADO";
+
+	BigDecimal retencionTotal = new BigDecimal(0);
+
+	private Retencion retencion = new Retencion();
+	private ReteDeta reteDetaSele = new ReteDeta();
+
+	private List<Dimm> dimmRetencionRentas;
+	private List<Dimm> dimmRetencionIvas;
+
+	@Inject
+	RetencionServicio retencionServicio;
+
+	@Inject
+	RetencionListaInt retencionLista;
+
+	@Inject
+	ReteDetaRegisInt reteDetaRegis;
+
+	@Inject
+	DimmListaInt dimmLista;
+
+	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
+
+	public void insertarRetencion() {
+
+		try {
+
+			retencion.setFechaHoraEmis(retencion.getFechaEmis().atTime(LocalTime.now()));
+			retencion.setFechaRegi(LocalDate.now());
+			retencion.setFechaHoraRegi(LocalDateTime.now());
+			retencion.setClaveAcce(retencion.getAutori());
+			retencion.setEstado(ESTADO_PR);
+			retencion.setEstadoDocuElec(ESTADO_DOC_ELEC_AUTORIZADO);
+			retencion.setDocumeElec(true);
+
+			retencionRegis.insertar(retencion);
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Error: Retencion no se ha grabado", e);
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, "Error: Retencion no se ha grabado"));
+		}
+	}
+
+	public void insertarReteDeta() {
+
+		for (ReteDeta reteDeta : reteDetas) {
+			reteDeta.setRetencion(retencion);
+			try {
+				reteDetaRegis.insertar(reteDeta);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+//	Se ejecuta al abrir dialogo para cargar retencion
+	public void iniciarCargarRetencion() {
+		retencion = new Retencion();
+		reteDetas = new ArrayList<ReteDeta>();
+	}
+
+//	Se ejecuta hacer click sobre le boton aceptar del dialogo para cargar retecion
+	public void cargarFpmeFormPagoRetencion() {
+
+		this.fpmeFormPagos.clear();
+		this.crearFpmeFormPagoRetencion();
+		crearFilaFpmeFormPago();
+		setTieneRetencion(true);
+	}
+
+//	Se ejecuta hacer click sobre le boton cancelar del dialogo para cargar retecion
+	public void cancelarCargarRetencion() {
+		setTieneRetencion(false);
+		iniciarCargarRetencion();
+		cargarDialogoFpmeFormPago();
+	}
+
+	public void validarRetencionNumeroAutorizacion() {
+
+		FacesContext context = FacesContext.getCurrentInstance();
+
+		existeRetencionNumeroAutorizacion = false;
+		
+		String autorizacion = retencion != null ? retencion.getAutori() : null;
+
+		if (autorizacion == null || autorizacion.isBlank()) {
+			return;
+		}
+
+		boolean existe = retencionLista.existeNumeroAutorizacion(retencion.getAutori().trim());
+
+		if (existe) {
+			existeRetencionNumeroAutorizacion = true;
+			UIComponent component = UIComponent.getCurrentComponent(context);
+
+			if (component instanceof UIInput input) {
+				input.setValid(false);
+			}
+
+			context.addMessage(component.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR,
+					null, "El número de autorización ya esta registrado en el sistema"));
+		}
+	}
+
+	public void cargarDimmRetenciones() {
+		try {
+			Dimm dimmRenta = new Dimm();
+			dimmRenta.setTablaRefe(TABLA_RETEN_RENTA);
+			dimmRenta.setEstado(true);
+			dimmRetencionRentas = dimmLista.buscar(dimmRenta, dimmRenta, null);
+
+			Dimm dimmIva = new Dimm();
+			dimmIva.setTablaRefe(TABLA_RETEN_IVA);
+			dimmIva.setEstado(true);
+			dimmRetencionIvas = dimmLista.buscar(dimmIva, dimmIva, null);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public List<Dimm> obtenerDimmRetencions(String impues) {
+		if (IMPUESTO_RENTA.equals(impues)) {
+			return dimmRetencionRentas;
+		} else if (IMPUESTO_IVA.equals(impues)) {
+			return dimmRetencionIvas;
+		}
+		return java.util.Collections.emptyList();
+	}
+
+	public void alCambiarReteDetaImpues(ReteDeta reteDeta) {
+		reteDeta.setCodigoImpu(null); // limpiar selección anterior
+		reteDeta.setPorcen(BigDecimal.ZERO); // o BigDecimal.ZERO, según tu tipo
+		reteDeta.setReteDetaTotal(BigDecimal.ZERO); // si tienes total de retención calculado
+	}
+
+	public void alSeleccionarDimmRetencion(ReteDeta reteDeta) {
+
+		if (reteDeta == null || reteDeta.getCodigoImpu() == null || reteDeta.getCodigoImpu().trim().isEmpty()) {
+			reteDeta.setPorcen(BigDecimal.ZERO);
+			return;
+		}
+
+		List<Dimm> listaRetenciones = obtenerDimmRetencions(reteDeta.getImpues());
+
+		if (listaRetenciones == null || listaRetenciones.isEmpty()) {
+			reteDeta.setPorcen(BigDecimal.ZERO);
+			return;
+		}
+
+		for (Dimm dimm : listaRetenciones) {
+			if (reteDeta.getCodigoImpu().equals(dimm.getCodigo())) {
+
+				reteDeta.setPorcen(dimm.getPorcen());
+				calcularTotalReteDeta();
+				return;
+			}
+
+		}
+		// si no encuentra coincidencia
+		reteDeta.setPorcen(BigDecimal.ZERO);
+	}
+
+	public List<FpmeFormPago> crearFpmeFormPagoRetencion() {
+
+		for (ReteDeta reteDeta : reteDetas) {
+			FpmeFormPago fpmeFormPago = new FpmeFormPago();
+			fpmeFormPago.setReteDeta(reteDeta);
+			fpmeFormPago.setFormPagoMoviEgre(formPagoMoviEgre);
+			fpmeFormPago.setFecha(this.formPagoMoviEgre.getFecha());
+			fpmeFormPago.setFechaHora(this.formPagoMoviEgre.getFecha().atTime(LocalTime.now()));
+			fpmeFormPago.setFormPago(obtenerFormaPagoRetencion(reteDeta.getImpues()));
+			fpmeFormPago.setDiasPlaz((short) 0);
+			fpmeFormPago.setTotalReci(reteDeta.getReteDetaTotal());
+
+			this.fpmeFormPagos.add(fpmeFormPago);
+		}
+		return fpmeFormPagos;
+	}
+
+	private FormPago obtenerFormaPagoRetencion(String impuesto) {
+
+		if (impuesto == null || impuesto.isBlank()) {
+			throw new IllegalArgumentException("El impuesto es obligatorio");
+		}
+
+		String tipo2;
+
+		if (IMPUESTO_RENTA.equals(impuesto)) {
+			tipo2 = TIPO2_VN_RR;
+		} else if (IMPUESTO_IVA.equals(impuesto)) {
+			tipo2 = TIPO2_VN_RI;
+		} else {
+			throw new IllegalArgumentException("No existe configuración de forma de pago para impuesto: " + impuesto);
+		}
+
+		return formPagos.stream().filter(Objects::nonNull).filter(fp -> Boolean.TRUE.equals(fp.isEstado()))
+				.filter(fp -> tipo2.equals(fp.getTipo2())).findFirst().orElseThrow(() -> new IllegalStateException(
+						"No existe forma de pago activa configurada para impuesto: " + impuesto));
+	}
+
+	public void grabarRetencion() {
+//		TODO: implementar este metodo se debe llamar a procesar el cobro
+//		Aqui se va a grabar fpmeFormPago y se debe haber grabado retencion
+		if (retencion.getAutori() != null) {
+			this.insertarRetencion();
+			this.insertarReteDeta();
+		}
+	}
+
+	public void agregarReteDeta() {
+
+		ReteDeta reteDeta = new ReteDeta();
+
+		reteDeta.setEjerciFisc(this.retencion.getFechaEmis());
+		reteDeta.setBase(new BigDecimal(0));
+		reteDeta.setPorcen(new BigDecimal(0));
+
+		this.reteDetas.add(reteDeta);
+	}
+
+	// Se elimina de la lista
+	public void eliminarReteDeta() {
+		this.reteDetas.remove(this.reteDetaSele);
+	}
+
+	public void calcularTotalReteDeta() {
+		retencionServicio.calcularReteDeta(reteDetas);
+	}
+
+// Comienza descarga archivo retencion del sri
+	@Inject
+	RetencionSriServicio retencionSriServicio;
+
+	public void cargarXmlDesdeSri() {
+
+		try {
+
+			Retencion retencionBuscada = retencionSriServicio.descargarRetencionSri(retencion.getAutori());
+
+			if (retencionBuscada == null) {
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+								"No se encontró la retención en el SRI o no está autorizada - Clave: "
+										+ retencion.getAutori()));
+
+				return;
+			}
+
+			retencion = retencionBuscada;
+			reteDetas = new ArrayList<>(retencion.getReteDetas());
+//			Se coloca este clear porque la clase Retencion viene con un set de reteDetas y 
+//			tiene cascade en persist entonces al grabar sale error porque intenta grabar nuevamente
+//			con el clear deja el set vacio y grabar el list sin errores
+//			Se hace esto porque aqui se ve la retencion en pantalla, mientras que en compra no se ve
+//			la retencion entonces graba con el set de reteDeta
+//			La IA aconseja si el elemento es visual utilizar list e lugar de set
+			retencion.getReteDetas().clear();
+
+			calcularTotalReteDeta();
+
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
+					"Documento cargado desde SRI, revisar y procesar..."));
+
+		} catch (Exception e) {
+
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, e.getMessage()));
+
+			e.printStackTrace();
+
+		}
+	}
+
+	public Retencion getRetencion() {
+		return retencion;
+	}
+
+	public void setRetencion(Retencion retencion) {
+		this.retencion = retencion;
+	}
+
+	public List<ReteDeta> getReteDetas() {
+		return reteDetas;
+	}
+
+	public void setReteDetas(List<ReteDeta> reteDetas) {
+		this.reteDetas = reteDetas;
+	}
+
+	public BigDecimal getRetencionTotal() {
+		return retencionTotal;
+	}
+
+	public void setRetencionTotal(BigDecimal retencionTotal) {
+		this.retencionTotal = retencionTotal;
+	}
+
+	public ReteDeta getReteDetaSele() {
+		return reteDetaSele;
+	}
+
+	public void setReteDetaSele(ReteDeta reteDetaSele) {
+		this.reteDetaSele = reteDetaSele;
+	}
+
+	public List<Dimm> getDimmRetencionRentas() {
+		return dimmRetencionRentas;
+	}
+
+	public void setDimmRetencionRentas(List<Dimm> dimmRetencionRentas) {
+		this.dimmRetencionRentas = dimmRetencionRentas;
+	}
+
+	public List<Dimm> getDimmRetencionIvas() {
+		return dimmRetencionIvas;
+	}
+
+	public void setDimmRetencionIvas(List<Dimm> dimmRetencionIvas) {
+		this.dimmRetencionIvas = dimmRetencionIvas;
+	}
+
+	public boolean isTieneRetencion() {
+		return tieneRetencion;
+	}
+
+	public void setTieneRetencion(boolean tieneRetencion) {
+		this.tieneRetencion = tieneRetencion;
+	}
+
+	public boolean isExisteRetencionNumeroAutorizacion() {
+		return existeRetencionNumeroAutorizacion;
+	}
+
+	public void setExisteRetencionNumeroAutorizacion(boolean existeRetencionNumeroAutorizacion) {
+		this.existeRetencionNumeroAutorizacion = existeRetencionNumeroAutorizacion;
+	}
 }

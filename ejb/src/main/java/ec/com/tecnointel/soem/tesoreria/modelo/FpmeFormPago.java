@@ -6,8 +6,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
+
+import ec.com.tecnointel.soem.ingreso.modelo.ReteDeta;
 import ec.com.tecnointel.soem.parametro.modelo.FormPago;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +25,7 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 import jakarta.validation.constraints.Min;
@@ -32,7 +37,8 @@ import jakarta.validation.constraints.Min;
 @Table(name = "fpme_form_pago", schema = "public")
 @NamedEntityGraph(name = "fpmeFormPago.Graph", attributeNodes = { 
 @NamedAttributeNode(value = "formPago", subgraph = "dimm.Graph"),
-@NamedAttributeNode(value = "formPagoMoviEgre")},
+@NamedAttributeNode(value = "formPagoMoviEgre"),
+@NamedAttributeNode(value = "reteDeta")},
 subgraphs = { @NamedSubgraph
 		(
 			name = "dimm.Graph", attributeNodes = {
@@ -52,6 +58,8 @@ public class FpmeFormPago implements Serializable {
 	private BigDecimal totalReci;
 	private String refere;
 	private String unidadTiem;
+	
+    private ReteDeta reteDeta;
 	
 	private Set<CobrDeta> cobrDetas = new HashSet<CobrDeta>(0); 
 
@@ -138,6 +146,15 @@ public class FpmeFormPago implements Serializable {
 		return this.totalReci;
 	}
 
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "rete_deta_id", unique = true, nullable = true)
+    public ReteDeta getReteDeta() {
+        return reteDeta;
+    }
+
+    public void setReteDeta(ReteDeta reteDeta) {
+        this.reteDeta = reteDeta;
+    }
 	public void setTotalReci(BigDecimal totalReci) {
 		this.totalReci = totalReci;
 	}
@@ -158,5 +175,24 @@ public class FpmeFormPago implements Serializable {
 
 	public void setUnidadTiem(String unidadTiem) {
 		this.unidadTiem = unidadTiem;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+	    if (this == obj) {
+	        return true;
+	    }
+	    if (obj == null) {
+	        return false;
+	    }
+
+	    if (Hibernate.getClass(this) != Hibernate.getClass(obj)) {
+	        return false;
+	    }
+
+	    FpmeFormPago other = (FpmeFormPago) obj;
+
+	    return fpmeFormPagoId != null &&
+	           Objects.equals(this.fpmeFormPagoId, other.fpmeFormPagoId);
 	}
 }

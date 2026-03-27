@@ -1,0 +1,2 @@
+En este paquete iria las clases que estan en el paquete ec.com.tecnointel.soem.serWebSri.registroImpl
+Pero se le podria cambiar en la version 4 que es la que el front-end sera React
