@@ -32,6 +32,8 @@ import jakarta.inject.Inject;
 
 public class EgresoModuloControl extends PaginaControl implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	protected String rutaJrxml;
 	protected String rutaReporteCompilado = "\\jasperReportes\\egreso\\";
 	
@@ -76,8 +78,6 @@ public class EgresoModuloControl extends PaginaControl implements Serializable {
 	
 	@Inject
 	RolSucuListaInt rolSucuLista;
-
-	private static final long serialVersionUID = 6283273060501774406L;
 
 	@PostConstruct
 	public void cargar() {
