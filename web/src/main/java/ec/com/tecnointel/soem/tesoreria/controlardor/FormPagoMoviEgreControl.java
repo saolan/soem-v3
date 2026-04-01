@@ -218,6 +218,41 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	@Inject
 	RetencionRegisInt retencionRegis;
 
+	// Implementacion carga retenciones
+	private boolean tieneRetencion;
+	private boolean existeRetencionNumeroAutorizacion;
+
+	public static final String TABLA_RETEN_RENTA = "Tabla3";
+	public static final String TABLA_RETEN_IVA = "Tabla11";
+
+	public static final String IMPUESTO_RENTA = "Renta";
+	public static final String IMPUESTO_IVA = "Iva";
+
+	public static final String ESTADO_PR = "PR";
+	public static final String ESTADO_DOC_ELEC_AUTORIZADO = "AUTORIZADO";
+
+	BigDecimal retencionTotal = new BigDecimal(0);
+
+	private Retencion retencion = new Retencion();
+	private ReteDeta reteDetaSele = new ReteDeta();
+
+	private List<Dimm> dimmRetencionRentas;
+	private List<Dimm> dimmRetencionIvas;
+
+	@Inject
+	RetencionServicio retencionServicio;
+
+	@Inject
+	RetencionListaInt retencionLista;
+
+	@Inject
+	ReteDetaRegisInt reteDetaRegis;
+
+	@Inject
+	DimmListaInt dimmLista;
+
+	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
+
 	@PostConstruct
 	public void cargar() {
 
@@ -916,10 +951,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				Object id = formPagoMoviEgreRegis.insertar(formPagoMoviEgre);
 				this.id = (Integer) id;
 
-//				TODO: Grabar retencion
-//				Validar que se ejecuta solamente si hay retencion
 				this.grabarRetencion();
-//				Fin Grabar retencion
 
 				this.insertarFpmeFormPagos();
 
@@ -1740,258 +1772,6 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		return sumaCobrDeta;
 	}
 
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GETTER & SETTER
-	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GETTER & SETTER
-	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GETTER & SETTER
-	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-	public FormPagoMoviEgre getFormPagoMoviEgre() {
-		return formPagoMoviEgre;
-	}
-
-	public void setFormPagoMoviEgre(FormPagoMoviEgre formPagoMoviEgre) {
-		this.formPagoMoviEgre = formPagoMoviEgre;
-	}
-
-	public List<FormPagoMoviEgre> getFormPagoMoviEgres() {
-		return formPagoMoviEgres;
-	}
-
-	public void setFormPagoMoviEgres(List<FormPagoMoviEgre> formPagoMoviEgres) {
-		this.formPagoMoviEgres = formPagoMoviEgres;
-	}
-
-	public List<FormPago> getFormPagos() {
-		return formPagos;
-	}
-
-	public void setFormPagos(List<FormPago> formPagos) {
-		this.formPagos = formPagos;
-	}
-
-	public List<DocuMoviEgre> getDocuMoviEgres() {
-		return docuMoviEgres;
-	}
-
-	public void setDocuMoviEgres(List<DocuMoviEgre> docuMoviEgres) {
-		this.docuMoviEgres = docuMoviEgres;
-	}
-
-	public List<Cxc> getCxcs() {
-		return cxcs;
-	}
-
-	public void setCxcs(List<Cxc> cxcs) {
-		this.cxcs = cxcs;
-	}
-
-	public List<CobrDeta> getCobrDetas() {
-		return cobrDetas;
-	}
-
-	public void setCobrDetas(List<CobrDeta> cobrDetas) {
-		this.cobrDetas = cobrDetas;
-	}
-
-	public List<PersCobr> getPersCobrs() {
-		return persCobrs;
-	}
-
-	public void setPersCobrs(List<PersCobr> persCobrs) {
-		this.persCobrs = persCobrs;
-	}
-
-	public Integer getEgresoId() {
-		return egresoId;
-	}
-
-	public void setEgresoId(Integer egresoId) {
-		this.egresoId = egresoId;
-	}
-
-	public List<PersClie> getPersClies() {
-		return persClies;
-	}
-
-	public void setPersClies(List<PersClie> persClies) {
-		this.persClies = persClies;
-	}
-
-	public List<Persona> getPersonas() {
-		return personas;
-	}
-
-	public void setPersonas(List<Persona> personas) {
-		this.personas = personas;
-	}
-
-	public CajaMovi getCajaMovi() {
-		return cajaMovi;
-	}
-
-	public void setCajaMovi(CajaMovi cajaMovi) {
-		this.cajaMovi = cajaMovi;
-	}
-
-	public Integer getPaginaClie() {
-		return paginaClie;
-	}
-
-	public void setPaginaClie(Integer paginaClie) {
-		this.paginaClie = paginaClie;
-	}
-
-	public long getContadorRegClie() {
-		return contadorRegClie;
-	}
-
-	public void setContadorRegClie(long contadorRegClie) {
-		this.contadorRegClie = contadorRegClie;
-	}
-
-	public int getNumeroRegClie() {
-		return numeroRegClie;
-	}
-
-	public void setNumeroRegClie(int numeroRegClie) {
-		this.numeroRegClie = numeroRegClie;
-	}
-
-	public int getFilasClientes() {
-		return variablesSesion.getFilasClientesEgreso();
-	}
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NOTAS
-	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NOTAS
-	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< NOTAS
-	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-	public Integer getCxcId() {
-		return cxcId;
-	}
-
-	public void setCxcId(Integer cxcId) {
-		this.cxcId = cxcId;
-	}
-
-	public Persona getPersonaBuscar() {
-		return personaBuscar;
-	}
-
-	public void setPersonaBuscar(Persona personaBuscar) {
-		this.personaBuscar = personaBuscar;
-	}
-
-	public Cxc getCxcSele() {
-		return cxcSele;
-	}
-
-	public void setCxcSele(Cxc cxcSele) {
-		this.cxcSele = cxcSele;
-	}
-
-	public Set<Cxc> getCxcSeles() {
-		return cxcSeles;
-	}
-
-	public void setCxcSeles(Set<Cxc> cxcSeles) {
-		this.cxcSeles = cxcSeles;
-	}
-
-	public BigDecimal getSaldoCliente() {
-		return saldoCliente;
-	}
-
-	public void setSaldoCliente(BigDecimal saldoCliente) {
-		this.saldoCliente = saldoCliente;
-	}
-
-	public TranPlan getTranPlan() {
-		return tranPlan;
-	}
-
-	public void setTranPlan(TranPlan tranPlan) {
-		this.tranPlan = tranPlan;
-	}
-
-	public List<TranPlan> getTranPlans() {
-		return tranPlans;
-	}
-
-	public void setTranPlans(List<TranPlan> tranPlans) {
-		this.tranPlans = tranPlans;
-	}
-
-	public List<TranPlanDeta> getTranPlanDetas() {
-		return tranPlanDetas;
-	}
-
-	public void setTranPlanDetas(List<TranPlanDeta> tranPlanDetas) {
-		this.tranPlanDetas = tranPlanDetas;
-	}
-
-	public FpmeFormPago getFpmeFormPagoSele() {
-		return fpmeFormPagoSele;
-	}
-
-	public void setFpmeFormPagoSele(FpmeFormPago fpmeFormPagoSele) {
-		this.fpmeFormPagoSele = fpmeFormPagoSele;
-	}
-
-	public List<FpmeFormPago> getFpmeFormPagos() {
-		return fpmeFormPagos;
-	}
-
-	public void setFpmeFormPagos(List<FpmeFormPago> fpmeFormPagos) {
-		this.fpmeFormPagos = fpmeFormPagos;
-	}
-
-	public boolean isIncluirCredito() {
-		return incluirCredito;
-	}
-
-	public void setIncluirCredito(boolean incluirCredito) {
-		this.incluirCredito = incluirCredito;
-	}
-
-	// Implementacion carga retenciones
-	private boolean tieneRetencion;
-	private boolean existeRetencionNumeroAutorizacion;
-
-	public static final String TABLA_RETEN_RENTA = "Tabla3";
-	public static final String TABLA_RETEN_IVA = "Tabla11";
-
-	public static final String IMPUESTO_RENTA = "Renta";
-	public static final String IMPUESTO_IVA = "Iva";
-
-	public static final String ESTADO_PR = "PR";
-	public static final String ESTADO_DOC_ELEC_AUTORIZADO = "AUTORIZADO";
-
-	BigDecimal retencionTotal = new BigDecimal(0);
-
-	private Retencion retencion = new Retencion();
-	private ReteDeta reteDetaSele = new ReteDeta();
-
-	private List<Dimm> dimmRetencionRentas;
-	private List<Dimm> dimmRetencionIvas;
-
-	@Inject
-	RetencionServicio retencionServicio;
-
-	@Inject
-	RetencionListaInt retencionLista;
-
-	@Inject
-	ReteDetaRegisInt reteDetaRegis;
-
-	@Inject
-	DimmListaInt dimmLista;
-
-	private List<ReteDeta> reteDetas = new ArrayList<ReteDeta>();
-
 	public void insertarRetencion() {
 
 		try {
@@ -2019,8 +1799,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			try {
 				reteDetaRegis.insertar(reteDeta);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Error: Detalles de retencion no se han grabado", e);
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_ERROR, null, "Error: Detalles de retencion no se ha grabado"));
 			}
 		}
 	}
@@ -2172,8 +1953,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	public void grabarRetencion() {
-//		TODO: implementar este metodo se debe llamar a procesar el cobro
-//		Aqui se va a grabar fpmeFormPago y se debe haber grabado retencion
+		
 		if (retencion.getAutori() != null) {
 			this.insertarRetencion();
 			this.insertarReteDeta();
@@ -2242,6 +2022,218 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 			e.printStackTrace();
 
 		}
+	}
+
+	
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GETTER & SETTER
+	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GETTER & SETTER
+	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GETTER & SETTER
+	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+	public FormPagoMoviEgre getFormPagoMoviEgre() {
+		return formPagoMoviEgre;
+	}
+
+	public void setFormPagoMoviEgre(FormPagoMoviEgre formPagoMoviEgre) {
+		this.formPagoMoviEgre = formPagoMoviEgre;
+	}
+
+	public List<FormPagoMoviEgre> getFormPagoMoviEgres() {
+		return formPagoMoviEgres;
+	}
+
+	public void setFormPagoMoviEgres(List<FormPagoMoviEgre> formPagoMoviEgres) {
+		this.formPagoMoviEgres = formPagoMoviEgres;
+	}
+
+	public List<FormPago> getFormPagos() {
+		return formPagos;
+	}
+
+	public void setFormPagos(List<FormPago> formPagos) {
+		this.formPagos = formPagos;
+	}
+
+	public List<DocuMoviEgre> getDocuMoviEgres() {
+		return docuMoviEgres;
+	}
+
+	public void setDocuMoviEgres(List<DocuMoviEgre> docuMoviEgres) {
+		this.docuMoviEgres = docuMoviEgres;
+	}
+
+	public List<Cxc> getCxcs() {
+		return cxcs;
+	}
+
+	public void setCxcs(List<Cxc> cxcs) {
+		this.cxcs = cxcs;
+	}
+
+	public List<CobrDeta> getCobrDetas() {
+		return cobrDetas;
+	}
+
+	public void setCobrDetas(List<CobrDeta> cobrDetas) {
+		this.cobrDetas = cobrDetas;
+	}
+
+	public List<PersCobr> getPersCobrs() {
+		return persCobrs;
+	}
+
+	public void setPersCobrs(List<PersCobr> persCobrs) {
+		this.persCobrs = persCobrs;
+	}
+
+	public Integer getEgresoId() {
+		return egresoId;
+	}
+
+	public void setEgresoId(Integer egresoId) {
+		this.egresoId = egresoId;
+	}
+
+	public List<PersClie> getPersClies() {
+		return persClies;
+	}
+
+	public void setPersClies(List<PersClie> persClies) {
+		this.persClies = persClies;
+	}
+
+	public List<Persona> getPersonas() {
+		return personas;
+	}
+
+	public void setPersonas(List<Persona> personas) {
+		this.personas = personas;
+	}
+
+	public CajaMovi getCajaMovi() {
+		return cajaMovi;
+	}
+
+	public void setCajaMovi(CajaMovi cajaMovi) {
+		this.cajaMovi = cajaMovi;
+	}
+
+	public Integer getPaginaClie() {
+		return paginaClie;
+	}
+
+	public void setPaginaClie(Integer paginaClie) {
+		this.paginaClie = paginaClie;
+	}
+
+	public long getContadorRegClie() {
+		return contadorRegClie;
+	}
+
+	public void setContadorRegClie(long contadorRegClie) {
+		this.contadorRegClie = contadorRegClie;
+	}
+
+	public int getNumeroRegClie() {
+		return numeroRegClie;
+	}
+
+	public void setNumeroRegClie(int numeroRegClie) {
+		this.numeroRegClie = numeroRegClie;
+	}
+
+	public int getFilasClientes() {
+		return variablesSesion.getFilasClientesEgreso();
+	}
+
+	public Integer getCxcId() {
+		return cxcId;
+	}
+
+	public void setCxcId(Integer cxcId) {
+		this.cxcId = cxcId;
+	}
+
+	public Persona getPersonaBuscar() {
+		return personaBuscar;
+	}
+
+	public void setPersonaBuscar(Persona personaBuscar) {
+		this.personaBuscar = personaBuscar;
+	}
+
+	public Cxc getCxcSele() {
+		return cxcSele;
+	}
+
+	public void setCxcSele(Cxc cxcSele) {
+		this.cxcSele = cxcSele;
+	}
+
+	public Set<Cxc> getCxcSeles() {
+		return cxcSeles;
+	}
+
+	public void setCxcSeles(Set<Cxc> cxcSeles) {
+		this.cxcSeles = cxcSeles;
+	}
+
+	public BigDecimal getSaldoCliente() {
+		return saldoCliente;
+	}
+
+	public void setSaldoCliente(BigDecimal saldoCliente) {
+		this.saldoCliente = saldoCliente;
+	}
+
+	public TranPlan getTranPlan() {
+		return tranPlan;
+	}
+
+	public void setTranPlan(TranPlan tranPlan) {
+		this.tranPlan = tranPlan;
+	}
+
+	public List<TranPlan> getTranPlans() {
+		return tranPlans;
+	}
+
+	public void setTranPlans(List<TranPlan> tranPlans) {
+		this.tranPlans = tranPlans;
+	}
+
+	public List<TranPlanDeta> getTranPlanDetas() {
+		return tranPlanDetas;
+	}
+
+	public void setTranPlanDetas(List<TranPlanDeta> tranPlanDetas) {
+		this.tranPlanDetas = tranPlanDetas;
+	}
+
+	public FpmeFormPago getFpmeFormPagoSele() {
+		return fpmeFormPagoSele;
+	}
+
+	public void setFpmeFormPagoSele(FpmeFormPago fpmeFormPagoSele) {
+		this.fpmeFormPagoSele = fpmeFormPagoSele;
+	}
+
+	public List<FpmeFormPago> getFpmeFormPagos() {
+		return fpmeFormPagos;
+	}
+
+	public void setFpmeFormPagos(List<FpmeFormPago> fpmeFormPagos) {
+		this.fpmeFormPagos = fpmeFormPagos;
+	}
+
+	public boolean isIncluirCredito() {
+		return incluirCredito;
+	}
+
+	public void setIncluirCredito(boolean incluirCredito) {
+		this.incluirCredito = incluirCredito;
 	}
 
 	public Retencion getRetencion() {
