@@ -13,14 +13,14 @@ import jakarta.inject.Named;
 
 @Named
 @ViewScoped
-public class VentaSesionReportControl extends EgresoModuloControl implements Serializable {
+public class VentaReteCodiImpuReportControl extends EgresoModuloControl implements Serializable {
 
-	private static final long serialVersionUID = -5940012523537540731L;
-
-	String nombreReporte = "ventasSesion";
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void descargar() {
+
+		String nombreReporte = "ventasReteCodiImpus";
 
 		Map<String, Object> parametrosJasper = new HashMap<String, Object>();
 
@@ -28,22 +28,19 @@ public class VentaSesionReportControl extends EgresoModuloControl implements Ser
 
 			super.descargar();
 
-			parametrosJasper.put("cajaMoviFechaDesd",
-					Date.from(this.getCajaMoviDesd().getFecha().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-			parametrosJasper.put("cajaMoviFechaHast",
-					Date.from(this.getCajaMoviHast().getFecha().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			parametrosJasper.put("fechaDesd",
+					Date.from(this.getEgresoDesd().getFechaEmis().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			parametrosJasper.put("fechaHast",
+					Date.from(this.getEgresoHast().getFechaEmis().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-			parametrosJasper.put("cajaIds", this.cajaIds);
-			parametrosJasper.put("docuEgreIds", this.docuEgreIds);
-
-			parametrosJasper.put("persClieEstado", this.persClieEstado);
+			parametrosJasper.put("sucursalIds", this.sucursalIds);
 
 			generaJasperReportes.crearArchivo(nombreReporte, parametrosJasper, rutaJrxml, rutaReporteCompilado,
 					formatoReporte);
 
 		} catch (Exception e) {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, null,
-					"Excepcion - Error al descargar reporte de ventas"));
+					"Excepcion - Error al descargar reporte de compras"));
 			e.printStackTrace();
 		}
 	}

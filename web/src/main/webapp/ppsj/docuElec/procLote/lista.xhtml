@@ -11,7 +11,7 @@
 		<f:event type="preRenderView" listener='#{docuElecControl.buscar}' />
 
 	</f:metadata>
-
+    
 	<ui:define name="main">
 
 		<h:form>
@@ -30,7 +30,7 @@
 						action="#{docuElecControl.procesarTodos}"
 						disabled="#{docuElecControl.bloquearBotonProcesarTodos}" />
 				</h:panelGroup>
-				
+
 				<p:link value="Cancelar" outcome="lista" includeViewParams="false"
 					styleClass="boton" />
 			</div>
@@ -124,7 +124,7 @@
 
 							<p:dataViewListItem>
 
-								<div class="product-list-item">
+								<div class="product-list-item flex gap-6">
 
 									<div class="product-list-detail">
 										<span><i class="pi pi-building" />#{_egreso.sucursal.descri}</span>
@@ -143,11 +143,12 @@
 											<f:convertDateTime type="localDate"
 												pattern="dd-MM-yyyy HH:mm" />
 										</h:outputText>
+										<div>#{_egreso.claveAcce}</div>
 									</div>
 
 									<div class="product-list-detail">
 										<div>#{_egreso.estadoDocuElec}</div>
-										<div style="width: 100px;">#{_egreso.motivoRech}</div>
+										<div>#{_egreso.motivoRech}</div>
 									</div>
 								</div>
 							</p:dataViewListItem>
@@ -167,7 +168,8 @@
 							</f:facet>
 
 							<p:dataViewListItem>
-								<div class="product-list-item">
+
+								<div class="product-list-item gap-6">
 
 									<div class="product-list-detail">
 										<div>#{_ingreso.docuIngr.documento.descri}
@@ -185,6 +187,7 @@
 											<f:convertDateTime type="localDate"
 												pattern="dd-MM-yyyy HH:mm" />
 										</h:outputText>
+										<div>#{_ingreso.autori}</div>
 									</div>
 
 									<div class="product-list-detail">
@@ -204,14 +207,17 @@
 						<p:dataView id="retencionList" emptyMessage="No se encontro datos"
 							value="#{docuElecControl.retencions}" var="_retencion">
 
-
 							<f:facet name="header">
 								<h:outputText value="Retenciones" />
 							</f:facet>
 
 							<p:dataViewListItem>
-								<div class="product-list-item">
+								<div class="product-list-item flex gap-6">
 
+									<div class="product-list-detail">
+										<div>#{_retencion.serie1}-#{_retencion.serie2}-#{_retencion.numero}</div>
+									</div>
+									
 									<div class="product-list-detail">
 										<div>#{_retencion.ingreso.persProv.persona.cedulaRuc}</div>
 										<div>#{_retencion.ingreso.persProv.persona.apelli}
@@ -223,10 +229,7 @@
 											<f:convertDateTime type="localDate"
 												pattern="dd-MM-yyyy HH:mm" />
 										</h:outputText>
-									</div>
-
-									<div class="product-list-detail">
-										<div>#{_retencion.serie1}-#{_retencion.serie2}-#{_retencion.numero}</div>
+										<div>#{_retencion.autori}</div>
 									</div>
 
 									<div class="product-list-detail">

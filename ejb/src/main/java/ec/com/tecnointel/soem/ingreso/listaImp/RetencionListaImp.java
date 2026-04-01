@@ -67,6 +67,8 @@ public class RetencionListaImp extends GestorListaSoem<Retencion> implements Ret
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicates = new ArrayList<Predicate>();
 
+		predicates.add(builder.isNotNull(retencionRoot.get("ingreso").get("ingresoId")));
+
 		Integer retencionId = retencion.getRetencionId();
 		if (retencionId != null) {
 			predicates.add(builder.equal(retencionRoot.get("retencionId"), retencionId));
