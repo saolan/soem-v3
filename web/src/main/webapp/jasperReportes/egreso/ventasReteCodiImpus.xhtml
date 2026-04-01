@@ -13,37 +13,36 @@
 			<p:focus context="panel" />
 			<p:defaultCommand target="descargar" />
 
-			<p:panel id="panel" header="Reporte Retenciones Compras - Código Impuesto">
+			<p:panel id="panel" header="Reporte Retenciones Ventas - Código Impuesto">
 
 				<div class="card ui-fluid">
 					<div class="formgrid grid">
 
 						<div class="field col-12 md:col-6">
-							<p:outputLabel for="ingresoFechaDesd" value="Fecha Desde" />
-							<p:calendar id="ingresoFechaDesd"
-								value="#{reteCodiImpuReportControl.ingresoDesd.fechaEmis}"
+							<p:outputLabel for="egresoFechaDesd" value="Fecha Desde" />
+							<p:calendar id="egresoFechaDesd"
+								value="#{ventaReteCodiImpuReportControl.egresoDesd.fechaEmis}"
 								pattern="dd-MM-yyyy" required="true"
 								requiredMessage="Ingrese fecha desde" />
 						</div>
 
 						<div class="field col-12 md:col-6">
-							<p:outputLabel for="ingresoFechaHast" value="Fecha Hasta" />
-							<p:calendar id="ingresoFechaHast"
-								value="#{reteCodiImpuReportControl.ingresoHast.fechaEmis}"
+							<p:outputLabel for="egresoFechaHast" value="Fecha Hasta" />
+							<p:calendar id="egresoFechaHast"
+								value="#{ventaReteCodiImpuReportControl.egresoHast.fechaEmis}"
 								pattern="dd-MM-yyyy" required="true"
 								requiredMessage="Ingrese fecha hasta" />
 						</div>
 
 						<div class="field col-12 md:col-6">
-							<p:outputLabel for="sucursalList" value="Sucursal"
-								 />
+							<p:outputLabel for="sucursalList" value="Sucursal" />
 							<p:selectManyMenu id="sucursalList"
-								value="#{reteCodiImpuReportControl.sucursalIds}"
+								value="#{ventaReteCodiImpuReportControl.sucursalIds}"
 								converter="omnifaces.SelectItemsConverter" showCheckbox="true"
-								 required="true"
-								requiredMessage="Seleccione sucursales">
+								required="true" requiredMessage="Seleccione sucursales">
 
-								<f:selectItems value="#{reteCodiImpuReportControl.sucursals}"
+								<f:selectItems
+									value="#{ventaReteCodiImpuReportControl.sucursals}"
 									var="sucursal" itemLabel="#{sucursal.descri}"
 									itemValue="#{sucursal.sucursalId}" />
 
@@ -51,21 +50,11 @@
 						</div>
 
 						<div class="field col-12 md:col-6">
-							<p:outputLabel for="estado" value="Proveedor Estado"
-								 />
-							<p:selectBooleanCheckbox id="estado"
-								value="#{reteCodiImpuReportControl.persProvEstado}"
-								required="false">
-								<f:validateBean for="estado" disabled="true" />
-							</p:selectBooleanCheckbox>
-						</div>
-
-						<div class="field col-12 md:col-6">
-							<p:outputLabel value="Formato"  />
+							<p:outputLabel value="Formato" />
 							<p:selectOneRadio
-								value="#{reteCodiImpuReportControl.formatoReporte}">
+								value="#{ventaReteCodiImpuReportControl.formatoReporte}">
 								<f:selectItems
-									value="#{reteCodiImpuReportControl.formatoReportes}"
+									value="#{ventaReteCodiImpuReportControl.formatoReportes}"
 									var="formatoReporte" itemValue="#{formatoReporte.descri}"
 									itemLabel="#{formatoReporte.descri}" />
 							</p:selectOneRadio>
@@ -77,9 +66,10 @@
 			<div class="barraBotones">
 
 				<p:commandLink id="descargar" ajax="false" styleClass="boton"
-					value="Descargar" action="#{reteCodiImpuReportControl.descargar}" />
+					value="Descargar"
+					action="#{ventaReteCodiImpuReportControl.descargar}" />
 
-				<p:link value="Cancelar" outcome="reteCodiImpus"
+				<p:link value="Cancelar" outcome="ventasReteCodiImpus"
 					includeViewParams="false" styleClass="boton" />
 
 			</div>
