@@ -1812,12 +1812,20 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		reteDetas = new ArrayList<ReteDeta>();
 	}
 
-//	Se ejecuta hacer click sobre le boton aceptar del dialogo para cargar retecion
+//	Se ejecuta hacer click sobre le boton aceptar del dialogo para cargar retencion
 	public void cargarFpmeFormPagoRetencion() {
 
 		this.fpmeFormPagos.clear();
 		this.crearFpmeFormPagoRetencion();
-		crearFilaFpmeFormPago();
+		
+//		Valida que el total recibido sea diferente de cero para crear o no una nueva linea de forma de pago
+		BigDecimal totalReci = this.calcularTotalReci();
+		if (totalReci.compareTo(formPagoMoviEgre.getTotal()) != 0) {
+			crearFilaFpmeFormPago();	
+		}
+		
+//		Es true porque se ha cargado una retencion manual o desde el SRI
+//		No permite modificar o eliminar las formas de pago que tengan relacion con retencion
 		setTieneRetencion(true);
 	}
 
@@ -2009,7 +2017,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 //			La IA aconseja si el elemento es visual utilizar list e lugar de set
 			retencion.getReteDetas().clear();
 
-			calcularTotalReteDeta();
+//			Ya no se calcula porque al descargar del SRI viene incluido el valor que se esta reteniendo
+//			calcularTotalReteDeta();
 
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
 					"Documento cargado desde SRI, revisar y procesar..."));

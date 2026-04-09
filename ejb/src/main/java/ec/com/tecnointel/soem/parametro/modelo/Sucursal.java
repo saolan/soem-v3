@@ -52,6 +52,8 @@ public class Sucursal implements java.io.Serializable {
 	private boolean matriz;
 	private String descri;
 	private String ruc;
+	private String razonSoci;
+	private String nombreCome;
 	private String ciudad;
 	private String direcc;
 	private String direccEsta;
@@ -207,6 +209,24 @@ public class Sucursal implements java.io.Serializable {
 		this.ruc = ruc;
 	}
 
+	@Column(name = "RAZON_SOCI", nullable = false, length = 256)
+	public String getRazonSoci() {
+		return razonSoci;
+	}
+
+	public void setRazonSoci(String razonSoci) {
+		this.razonSoci = razonSoci;
+	}
+
+	@Column(name = "NOMBRE_COME", nullable = false, length = 256)
+	public String getNombreCome() {
+		return nombreCome;
+	}
+
+	public void setNombreCome(String nombreCome) {
+		this.nombreCome = nombreCome;
+	}
+	
 	@Column(name = "CIUDAD", nullable = false, length = 100)
 	public String getCiudad() {
 		return this.ciudad;
