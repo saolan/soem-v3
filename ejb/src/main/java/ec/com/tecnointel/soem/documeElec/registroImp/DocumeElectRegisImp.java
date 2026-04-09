@@ -92,12 +92,12 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 	public InfoTributaria cargarInfoTributaria(Sucursal sucursal, String codigoDocu, String serie1, String serie2,
 			String numero, String ambien, String tipoEmis, String claveAcce) {
 
-		String nombreComercial = sucursal.getDescri();
+		String nombreComercial = sucursal.getNombreCome();
 
 		InfoTributaria infoTributaria = new InfoTributaria();
 
 		infoTributaria.setRuc(sucursal.getRuc());
-		infoTributaria.setRazonSocial(sucursal.getRepres());
+		infoTributaria.setRazonSocial(sucursal.getRazonSoci());
 		if (nombreComercial != null && !nombreComercial.isEmpty()) {
 			infoTributaria.setNombreComercial(nombreComercial);
 		}
@@ -375,7 +375,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 				notaCreditoDetalle
 						.setCantidad(egreDeta.getCantid().setScale(2, RoundingMode.HALF_UP).stripTrailingZeros());
 				notaCreditoDetalle.setPrecioUnitario(
-						egreDeta.getPrecioVent().setScale(2, RoundingMode.HALF_UP).stripTrailingZeros());
+						egreDeta.getPrecioVent().setScale(4, RoundingMode.HALF_UP).stripTrailingZeros());
 
 				// Descuento en valor no en porcentaje
 				notaCreditoDetalle.setDescuento(descueDeta.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros());
@@ -635,7 +635,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 			if (infoAdicional.getCampoAdicional().size() > 0) {
 				notaCredito.setInfoAdicional(infoAdicional);
 			}
-			notaCredito.setVersion("1.0.0");
+			notaCredito.setVersion("1.1.0");
 			notaCredito.setId("comprobante");
 
 			object = notaCredito;
@@ -676,7 +676,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 				guiaRemision.setInfoAdicional(infoAdicional);
 			}
 
-			guiaRemision.setVersion("1.0.0");
+			guiaRemision.setVersion("1.1.0");
 			guiaRemision.setId("comprobante");
 
 			object = guiaRemision;

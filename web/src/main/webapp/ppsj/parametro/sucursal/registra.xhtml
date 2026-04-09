@@ -1,10 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="jakarta.faces.html"
-	xmlns:f="jakarta.faces.core"
-	xmlns:ui="jakarta.faces.facelets"
-	xmlns:c="jakarta.tags.core"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
 	xmlns:p="http://primefaces.org/ui"
 	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
 
@@ -20,74 +18,101 @@
 			<p:panel id="panelRegistrar" header="Sucursal"
 				style="margin-bottom:5px; ">
 
-				<p:focus for="panelRegistrar"/>
+				<p:focus for="panelRegistrar" />
 
 				<h:panelGrid id="grid" columns="2">
 
 					<p:outputLabel for="codigo" value="Código" />
-					<p:inputText id="codigo" value="#{sucursalControl.sucursal.codigo}"  
+					<p:inputText id="codigo" value="#{sucursalControl.sucursal.codigo}"
 						required="true" requiredMessage="Ingrese código" />
 
 					<p:outputLabel for="matriz" value="Matriz" />
-					<p:selectBooleanCheckbox id="matriz" value="#{sucursalControl.sucursal.matriz}" required="true"
+					<p:selectBooleanCheckbox id="matriz"
+						value="#{sucursalControl.sucursal.matriz}" required="true"
 						requiredMessage="Ingrese matriz" />
 
 					<p:outputLabel for="descripcion" value="Descripción" />
-					<p:inputText id="descripcion" value="#{sucursalControl.sucursal.descri}" styleClass="cajaTextoDescri" 
-						required="true" requiredMessage="Ingrese descripción" />
+					<p:inputText id="descripcion"
+						value="#{sucursalControl.sucursal.descri}"
+						styleClass="cajaTextoDescri" required="true"
+						requiredMessage="Ingrese descripción" />
 
 					<p:outputLabel for="ruc" value="Ruc" />
-					<p:inputText id="ruc" value="#{sucursalControl.sucursal.ruc}"  
+					<p:inputText id="ruc" value="#{sucursalControl.sucursal.ruc}"
 						required="true" requiredMessage="Ingrese ruc" />
 
+					<p:outputLabel for="razonSoci" value="Razón Social" />
+					<p:inputText id="razonSoci"
+						value="#{sucursalControl.sucursal.razonSoci}"
+						styleClass="cajaTextoDescri" required="true"
+						requiredMessage="Ingrese razón social" />
+
+					<p:outputLabel for="nombreCome" value="Nombre Comercial" />
+					<p:inputText id="nombreCome"
+						value="#{sucursalControl.sucursal.nombreCome}"
+						styleClass="cajaTextoDescri" />
+
 					<p:outputLabel for="ciudad" value="Ciudad" />
-					<p:inputText id="ciudad" value="#{sucursalControl.sucursal.ciudad}"  
+					<p:inputText id="ciudad" value="#{sucursalControl.sucursal.ciudad}"
 						required="true" requiredMessage="Ingrese ciudad" />
 
 					<p:outputLabel for="direcc" value="Dirección" />
-					<p:inputText id="direcc" value="#{sucursalControl.sucursal.direcc}" styleClass="cajaTextoDescri"  
-						required="true" requiredMessage="Ingrese dirección" />
+					<p:inputText id="direcc" value="#{sucursalControl.sucursal.direcc}"
+						styleClass="cajaTextoDescri" required="true"
+						requiredMessage="Ingrese dirección" />
 
 					<p:outputLabel for="direccEsta" value="Dirección Sucursal" />
-					<p:inputText id="direccEsta" value="#{sucursalControl.sucursal.direccEsta}" styleClass="cajaTextoDescri" />
+					<p:inputText id="direccEsta"
+						value="#{sucursalControl.sucursal.direccEsta}"
+						styleClass="cajaTextoDescri" />
 
 					<p:outputLabel for="telef1" value="Teléfono" />
-					<p:inputText id="telef1" value="#{sucursalControl.sucursal.telef1}"  
+					<p:inputText id="telef1" value="#{sucursalControl.sucursal.telef1}"
 						required="true" requiredMessage="Ingrese teléfono" />
 
 					<p:outputLabel for="telef2" value="Teléfono" />
-					<p:inputText id="telef2" value="#{sucursalControl.sucursal.telef2}"  
+					<p:inputText id="telef2" value="#{sucursalControl.sucursal.telef2}"
 						required="true" requiredMessage="Ingrese teléfono" />
 
 					<p:outputLabel for="correo" value="Correo" />
-					<p:inputText id="correo" value="#{sucursalControl.sucursal.correo}" styleClass="cajaTextoDescri"
-						required="true" requiredMessage="Ingrese correo" />
+					<p:inputText id="correo" value="#{sucursalControl.sucursal.correo}"
+						styleClass="cajaTextoDescri" required="true"
+						requiredMessage="Ingrese correo" />
 
 					<p:outputLabel for="repres" value="Representante" />
-					<p:inputText id="repres" value="#{sucursalControl.sucursal.repres}" styleClass="cajaTextoDescri"
-						required="true" requiredMessage="Ingrese representante" />
+					<p:inputText id="repres" value="#{sucursalControl.sucursal.repres}"
+						styleClass="cajaTextoDescri" required="true"
+						requiredMessage="Ingrese representante" />
 
 					<p:outputLabel for="represCedu" value="Cédula Representante" />
-					<p:inputText id="represCedu" value="#{sucursalControl.sucursal.represCedu}"  
-						required="true" requiredMessage="Ingrese cédula representante" />
+					<p:inputText id="represCedu"
+						value="#{sucursalControl.sucursal.represCedu}" required="true"
+						requiredMessage="Ingrese cédula representante" />
 
 					<p:outputLabel for="represDire" value="Dirección Representante" />
-					<p:inputText id="represDire" value="#{sucursalControl.sucursal.represDire}" styleClass="cajaTextoDescri"
-						required="true" requiredMessage="Ingrese dirección representante" />
+					<p:inputText id="represDire"
+						value="#{sucursalControl.sucursal.represDire}"
+						styleClass="cajaTextoDescri" required="true"
+						requiredMessage="Ingrese dirección representante" />
 
 					<p:outputLabel for="rucCont" value="Ruc Contador" />
-					<p:inputText id="rucCont" value="#{sucursalControl.sucursal.rucCont}"  
-						required="true" requiredMessage="Ingrese ruc contador" />
+					<p:inputText id="rucCont"
+						value="#{sucursalControl.sucursal.rucCont}" required="true"
+						requiredMessage="Ingrese ruc contador" />
 
-					<p:outputLabel for="contriEspe" value="Contribuyente Especial Número" />
-					<p:inputText id="contriEspe" value="#{sucursalControl.sucursal.contriEspe}" />
+					<p:outputLabel for="contriEspe"
+						value="Contribuyente Especial Número" />
+					<p:inputText id="contriEspe"
+						value="#{sucursalControl.sucursal.contriEspe}" />
 
 					<p:outputLabel for="obligaCont" value="Obligado Contabilidad" />
-					<p:selectBooleanCheckbox id="obligaCont" value="#{sucursalControl.sucursal.obligaCont}" required="true"
+					<p:selectBooleanCheckbox id="obligaCont"
+						value="#{sucursalControl.sucursal.obligaCont}" required="true"
 						requiredMessage="Ingrese obligado a llevar contabilidad" />
 
 					<p:outputLabel for="estado" value="Estado" />
-					<p:selectBooleanCheckbox id="estado" value="#{sucursalControl.sucursal.estado}" required="true"
+					<p:selectBooleanCheckbox id="estado"
+						value="#{sucursalControl.sucursal.estado}" required="true"
 						requiredMessage="Ingrese estado" />
 
 				</h:panelGrid>
@@ -96,23 +121,23 @@
 
 			<div>
 
-				<p:commandLink id="grabar" value="Grabar" 
-					styleClass="boton" action="#{sucursalControl.grabar}"
+				<p:commandLink id="grabar" value="Grabar" styleClass="boton"
+					action="#{sucursalControl.grabar}"
 					rendered="#{(sucursalControl.id != null and sucursalControl.rolPermiso.get(6001)) or 
 					(sucursalControl.id == null and sucursalControl.rolPermiso.get(6000)) }" />
 
 				<p:spacer height="2" />
 
-				<p:commandLink id="eliminar" value="Eliminar" 
-					styleClass="boton" action="#{sucursalControl.eliminar}"  
-					rendered="#{sucursalControl.id != null and sucursalControl.rolPermiso.get(6002)}"/>
+				<p:commandLink id="eliminar" value="Eliminar" styleClass="boton"
+					action="#{sucursalControl.eliminar}"
+					rendered="#{sucursalControl.id != null and sucursalControl.rolPermiso.get(6002)}" />
 
 				<p:spacer height="2" />
 
 				<p:link styleClass="boton" type="link" value="Cancelar"
 					outcome="lista" />
-					
-				<p:defaultCommand target="grabar"/>
+
+				<p:defaultCommand target="grabar" />
 			</div>
 		</h:form>
 	</ui:define>
