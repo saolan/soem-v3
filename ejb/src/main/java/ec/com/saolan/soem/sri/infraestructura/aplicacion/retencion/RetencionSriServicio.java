@@ -136,6 +136,7 @@ public class RetencionSriServicio implements Serializable {
 				reteDeta.setCodigoImpu(reteDetaInfo.getCodigoRetencion());
 				reteDeta.setPorcen(reteDetaInfo.getPorcentajeRetener());
 				reteDeta.setBase(reteDetaInfo.getBaseImponible());
+				reteDeta.setReteDetaTotal(reteDetaInfo.getValorRetenido());
 
 				reteDetas.add(reteDeta);
 			}

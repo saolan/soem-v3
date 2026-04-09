@@ -1,10 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="jakarta.faces.html"
-	xmlns:f="jakarta.faces.core"
-	xmlns:ui="jakarta.faces.facelets"
-	xmlns:c="jakarta.tags.core"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets" xmlns:c="jakarta.tags.core"
 	xmlns:p="http://primefaces.org/ui"
 	template="/WEB-INF/facelets/templates/soemTemplate.xhtml">
 
@@ -25,17 +23,18 @@
 				<h:panelGrid columns="2">
 
 					<p:outputLabel value="Código" />
-					<p:inputText value="#{sucursalControl.sucursal.codigo}"
-						styleClass="cajaTextoCodigo" />
+					<p:inputText value="#{sucursalControl.sucursal.codigo}" />
 
 					<p:outputLabel value="Descripción" />
 					<p:inputText value="#{sucursalControl.sucursal.descri}"
 						styleClass="cajaTextoDescri" />
 
 					<p:outputLabel value="Ruc" />
-					<p:inputText value="#{sucursalControl.sucursal.ruc}"
-						styleClass="cajaTextoCodigo" />
+					<p:inputText value="#{sucursalControl.sucursal.ruc}" />
 
+					<p:outputLabel value="Razón Social" />
+					<p:inputText value="#{sucursalControl.sucursal.razonSoci}"
+						styleClass="cajaTextoDescri" />
 
 				</h:panelGrid>
 
@@ -47,7 +46,8 @@
 			</div>
 		</h:form>
 
-		<p:tabView rendered="#{sucursalControl.rolPermiso.get(6003)}" style="margin-top:5px">
+		<p:tabView rendered="#{sucursalControl.rolPermiso.get(6003)}"
+			style="margin-top:5px">
 
 			<p:tab title="Certificado">
 
