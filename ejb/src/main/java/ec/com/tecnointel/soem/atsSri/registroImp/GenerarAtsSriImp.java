@@ -301,10 +301,10 @@ public class GenerarAtsSriImp implements GenerarAtsSriInt, Serializable {
 		AirType airType = new AirType();
 		
 		List<Object[]> airs = selectAir(ingresoId, impuesto);
-			
-		DetalleAirComprasType detalleAirComprasType = new DetalleAirComprasType();
-			
+				
 		for (Object[] detalleAir : airs) {
+			
+			DetalleAirComprasType detalleAirComprasType = new DetalleAirComprasType();
 				
 			detalleAirComprasType.setCodRetAir((String) detalleAir[1]);
 			detalleAirComprasType.setBaseImpAir(((BigDecimal) detalleAir[2]).setScale(2, RoundingMode.HALF_UP));
