@@ -864,7 +864,7 @@ public class CompraImp implements CompraInt {
 
 		return comprobante;
 	}
-	
+
 	/**
 	 * Sobreescribe en comprobante seleccionado sin la autorizacion
 	 * 
@@ -963,7 +963,7 @@ public class CompraImp implements CompraInt {
 //				Se coloca justo aqui luego de haber registrado en ingreso
 			List<PersProvDimm> persProvDimms = buscarPersProvDimm(ingreso);
 			copiarPersProvDimmAIngrDimm(persProvDimms, ingreso);
-			
+
 			RolPrec rolPrec = new RolPrec(new Precio(), null, ingreso.getSucursal(), null, null);
 //				Set<RolPersUsua> rolPersUsuas = variablesSesion.getPersUsua().getRolPersUsuas();
 			Set<RolPersUsua> rolPersUsuas = persUsua.getRolPersUsuas();
@@ -1308,7 +1308,7 @@ public class CompraImp implements CompraInt {
 
 		return ingrDetas;
 	}
-	
+
 	public List<PersProvDimm> buscarPersProvDimm(Ingreso ingreso) throws Exception {
 
 		PersProvDimm persProvDimm = new PersProvDimm();
@@ -1322,7 +1322,7 @@ public class CompraImp implements CompraInt {
 			e.printStackTrace();
 			throw new Exception("Error al buscar retenciones del proveedor");
 		}
-		
+
 		return persProvDimms;
 	}
 
@@ -1341,7 +1341,7 @@ public class CompraImp implements CompraInt {
 			ingrDimms.add(ingrDimm);
 
 		}
-		
+
 		ingreso.setIngrDimms(ingrDimms);
 	}
 
@@ -1581,9 +1581,11 @@ public class CompraImp implements CompraInt {
 	}
 
 	public Parametro buscarParametroPorId(Parametro parametroBuscar) throws Exception {
-
 		return parametroRegis.buscarPorId(Parametro.class, parametroBuscar.getParametroId());
+	}
 
+	public boolean existeNumeroAutorizacion(String autori) {
+		return ingresoLista.existeNumeroAutorizacion(autori);
 	}
 
 }

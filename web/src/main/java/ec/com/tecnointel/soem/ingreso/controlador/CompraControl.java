@@ -35,6 +35,11 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.model.file.UploadedFile;
 
+import ec.com.saolan.soem.compartido.excepcion.InfraestructuraExcepcion;
+import ec.com.saolan.soem.compartido.excepcion.IntegracionExcepcion;
+import ec.com.saolan.soem.compartido.excepcion.ValidacionNegocioExcepcion;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriParametros;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.ImportarFacturaSriServicio;
 import ec.com.tecnointel.soem.contabilidad.modelo.Transaccion;
 import ec.com.tecnointel.soem.contabilidad.registroInt.TransaccionCompraInt;
 import ec.com.tecnointel.soem.contabilidad.registroInt.TransaccionFpmiInt;
@@ -111,6 +116,8 @@ import jakarta.annotation.Resource;
 import jakarta.enterprise.context.Conversation;
 import jakarta.enterprise.context.ConversationScoped;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UIInput;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
@@ -399,12 +406,12 @@ public class CompraControl extends PaginaControl implements Serializable {
 
 //	Muestra los datos del producto en el dialogo de de modificar precios ingrDetaPrec
 	public void productoExplorarDesdeIngrDeta() {
-		
+
 		ordenarIngrDetaPrec();
 
 //		Muestra inventario
 		buscarKardTotaViews();
-		
+
 //		Muestra Costos
 		ProdCost prodCostBuscar = new ProdCost();
 
@@ -412,7 +419,7 @@ public class CompraControl extends PaginaControl implements Serializable {
 		prodCostBuscar.setProducto(new Producto());
 
 		prodCostBuscar.getProducto().setProductoId(productoId);
-		
+
 		prodCostDialogos = this.buscarProdCosts(prodCostBuscar);
 	}
 
@@ -1513,7 +1520,7 @@ public class CompraControl extends PaginaControl implements Serializable {
 
 //							if (this.validarConexion() == true) {
 
-								this.procesarComprobanteElectronicoLiquidacion();
+						this.procesarComprobanteElectronicoLiquidacion();
 
 //								Esto ya se hace al autorizar el documento 
 //								String estadoDocuElec = this.procesarComprobanteElectronicoLiquidacion();
@@ -1611,24 +1618,23 @@ public class CompraControl extends PaginaControl implements Serializable {
 
 //									if (this.validarConexion() == true) {
 
-										String estadoDocuElec = this.procesarComprobanteElectronico();
+								String estadoDocuElec = this.procesarComprobanteElectronico();
 
-										this.retencion = this.buscarRetencionPorId(retencionId);
-										this.retencion.setMotivoRech(this.detalleProceso);
-										this.retencion.setEstadoDocuElec(estadoDocuElec);
+								this.retencion = this.buscarRetencionPorId(retencionId);
+								this.retencion.setMotivoRech(this.detalleProceso);
+								this.retencion.setEstadoDocuElec(estadoDocuElec);
 
-										try {
+								try {
 
-											compra.modificarRetencion(this.retencion);
+									compra.modificarRetencion(this.retencion);
 
-										} catch (Exception e) {
-											FacesContext.getCurrentInstance().addMessage(null,
-													new FacesMessage(FacesMessage.SEVERITY_INFO, null,
-															"Error al cambiar estado del documento"));
-											e.printStackTrace();
-										}
+								} catch (Exception e) {
+									FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+											FacesMessage.SEVERITY_INFO, null, "Error al cambiar estado del documento"));
+									e.printStackTrace();
+								}
 
-										// this.crearRideRetencionPdf(retencionId);
+								// this.crearRideRetencionPdf(retencionId);
 
 //									} else {
 //										FacesContext.getCurrentInstance().addMessage(null,
@@ -3258,7 +3264,7 @@ public class CompraControl extends PaginaControl implements Serializable {
 		prodPrec.getProducto().setEstado(true);
 
 		prodPrecDialogos = buscarProdPrecs(prodPrec);
-		
+
 //		Muestra Costos
 		ProdCost prodCostBuscar = new ProdCost();
 
@@ -3266,7 +3272,7 @@ public class CompraControl extends PaginaControl implements Serializable {
 		prodCostBuscar.setProducto(new Producto());
 
 		prodCostBuscar.getProducto().setProductoId(productoId);
-		
+
 		prodCostDialogos = this.buscarProdCosts(prodCostBuscar);
 	}
 
@@ -3950,13 +3956,13 @@ public class CompraControl extends PaginaControl implements Serializable {
 
 			ingrDetaPrec
 					.setPrecioSinImpu(ingrDetaPrec.getPrecioConImpu().divide(impuestoInverso, 6, RoundingMode.HALF_UP));
-			
-			if (costo.compareTo(BigDecimal.ZERO) == 0 ) {
+
+			if (costo.compareTo(BigDecimal.ZERO) == 0) {
 				ingrDetaPrec.setUtilid(new BigDecimal(100));
 			} else {
 				ingrDetaPrec.setUtilid(((ingrDetaPrec.getPrecioSinImpu().divide(costo, 4, RoundingMode.HALF_UP))
 						.subtract(new BigDecimal(1))).multiply(new BigDecimal(100)));
-			} 
+			}
 		}
 	}
 
@@ -4530,16 +4536,15 @@ public class CompraControl extends PaginaControl implements Serializable {
 
 		return navegar;
 	}
-	
-    public List<RolSucu> obtenerRolSucuUnicosPorSucursal(List<RolSucu> listaRolSucu) {
-    	
-        Set<Integer> sucursalIdsVistos = ConcurrentHashMap.newKeySet();
 
-        return listaRolSucu.stream()
-                .filter(rs -> rs.getSucursal() != null)
-                .filter(rs -> sucursalIdsVistos.add(rs.getSucursal().getSucursalId())) // filtra duplicados
-                .collect(Collectors.toList());
-    }
+	public List<RolSucu> obtenerRolSucuUnicosPorSucursal(List<RolSucu> listaRolSucu) {
+
+		Set<Integer> sucursalIdsVistos = ConcurrentHashMap.newKeySet();
+
+		return listaRolSucu.stream().filter(rs -> rs.getSucursal() != null)
+				.filter(rs -> sucursalIdsVistos.add(rs.getSucursal().getSucursalId())) // filtra duplicados
+				.collect(Collectors.toList());
+	}
 
 	public void cargarDatosConvertir() {
 
@@ -4555,10 +4560,10 @@ public class CompraControl extends PaginaControl implements Serializable {
 			// Se llena esta lista pero en el caso que un usuario tenga dos roles
 			// se va a duplicar la sucursal, se tendría que sacar en otra lista aparte solo
 			// las sucursales
-			//rolSucuConvertirs = compra.buscarRolSucus(persUsuaSesion.getRolPersUsuas());
-			
-			List<RolSucu> rolSucus= compra.buscarRolSucus(persUsuaSesion.getRolPersUsuas());
-			//PARA NO HACER ESTO SE PUEDE AUMETNAR EN LA CONSULTA UN GROUPBY
+			// rolSucuConvertirs = compra.buscarRolSucus(persUsuaSesion.getRolPersUsuas());
+
+			List<RolSucu> rolSucus = compra.buscarRolSucus(persUsuaSesion.getRolPersUsuas());
+			// PARA NO HACER ESTO SE PUEDE AUMETNAR EN LA CONSULTA UN GROUPBY
 			rolSucuConvertirs = obtenerRolSucuUnicosPorSucursal(rolSucus);
 
 		} catch (Exception e) {
@@ -5902,7 +5907,7 @@ public class CompraControl extends PaginaControl implements Serializable {
 	public void setProdCostDialogos(List<ProdCost> prodCostDialogos) {
 		this.prodCostDialogos = prodCostDialogos;
 	}
-	
+
 	private IngrDetaImpu ingrDetaImpuSele;
 	private List<IngrDetaImpu> ingrDetaImpusCopia;
 	private Set<IngrDetaImpu> ingrDetaImpus;
@@ -6088,34 +6093,84 @@ public class CompraControl extends PaginaControl implements Serializable {
 		claveAcce = null;
 	}
 
-	public void cargarXmlDesdeSri() {
+	@Inject
+	ImportarFacturaSriServicio importarFacturaSriServicio;
 
-		ingreso.setSucursal(variablesSesion.getSucursal());
+	public void cargarXmlDesdeSri() {
 
 		try {
 
-			compra.cargarXmlDesdeSri(ingreso, variablesSesion.getPersUsua(), claveAcce, persProvCorreo);
+			ImportarDocumeElecSriParametros importarDocumeElecSriParametros = new ImportarDocumeElecSriParametros(
+					variablesSesion.getSucursal(), variablesSesion.getPersUsua(), persProvCorreo);
 
-			this.ingrDetaDataTable.addAll(ingreso.getIngrDetas());
+			Ingreso ingresoBuscado = importarFacturaSriServicio.importarFacturaSri(claveAcce,
+					importarDocumeElecSriParametros);
+
+			if (ingresoBuscado == null) {
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+						"No se encontró la factura en el SRI o no está autorizado - Clave: " + claveAcce));
+
+				return;
+			}
+
+			ingresoBuscado.setDocuIngr(ingreso.getDocuIngr());
+			ingreso = ingresoBuscado;
+			ingrDetaDataTable = new ArrayList<>(ingreso.getIngrDetas());
+//			Se coloca este clear porque la clase Retencion viene con un set de reteDetas y 
+//			tiene cascade en persist entonces al grabar sale error porque intenta grabar nuevamente
+//			con el clear deja el set vacio y grabar el list sin errores
+//			Se hace esto porque aqui se ve la retencion en pantalla, mientras que en compra no se ve
+//			la retencion entonces graba con el set de reteDeta
+//			La IA aconseja si el elemento es visual utilizar list e lugar de set
+			ingreso.getIngrDetas().clear();
 
 			calcularTotalIngres();
 
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
 					"Documento cargado desde SRI, revisar y procesar..."));
-
-		} catch (ExceptArchivoNoExiste eane) {
-
+		} catch (ValidacionNegocioExcepcion e) {
 			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, eane.getMessage()));
-
+					new FacesMessage(FacesMessage.SEVERITY_WARN, null, e.getMessage()));
+		} catch (IntegracionExcepcion e) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"Ocurrió un error al importar el documento electrónico del SRI."));
+		} catch (InfraestructuraExcepcion e) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"Ocurrió un error interno al procesar la información."));
 		} catch (Exception e) {
-
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, e.getMessage()));
-
-			e.printStackTrace();
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"Ocurrió un error inesperado al cargar el documento desde el SRI."));
 		}
 	}
+	
+//	public void cargarXmlDesdeSri() {
+//
+//		ingreso.setSucursal(variablesSesion.getSucursal());
+//
+//		try {
+//
+//			compra.cargarXmlDesdeSri(ingreso, variablesSesion.getPersUsua(), claveAcce, persProvCorreo);
+//
+//			this.ingrDetaDataTable.addAll(ingreso.getIngrDetas());
+//
+//			calcularTotalIngres();
+//
+//			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
+//					"Documento cargado desde SRI, revisar y procesar..."));
+//
+//		} catch (ExceptArchivoNoExiste eane) {
+//
+//			FacesContext.getCurrentInstance().addMessage(null,
+//					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, eane.getMessage()));
+//
+//		} catch (Exception e) {
+//
+//			FacesContext.getCurrentInstance().addMessage(null,
+//					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, e.getMessage()));
+//
+//			e.printStackTrace();
+//		}
+//	}
 
 	public String getClaveAcce() {
 		return claveAcce;
@@ -6239,5 +6294,40 @@ public class CompraControl extends PaginaControl implements Serializable {
 
 	public void setUploadedFile(UploadedFile uploadedFile) {
 		this.uploadedFile = uploadedFile;
+	}
+	
+	private boolean existeRetencionNumeroAutorizacion;
+	
+	public void validarIngresoNumeroAutorizacion() {
+
+		FacesContext context = FacesContext.getCurrentInstance();
+
+		existeRetencionNumeroAutorizacion = false;
+
+		if (claveAcce == null || claveAcce.isBlank()) {
+			return;
+		}
+
+		boolean existe = compra.existeNumeroAutorizacion(claveAcce);
+
+		if (existe) {
+			existeRetencionNumeroAutorizacion = true;
+			UIComponent component = UIComponent.getCurrentComponent(context);
+
+			if (component instanceof UIInput input) {
+				input.setValid(false);
+			}
+
+			context.addMessage(component.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"El número de autorización ya esta registrado en el sistema"));
+		}
+	}
+
+	public boolean isExisteRetencionNumeroAutorizacion() {
+		return existeRetencionNumeroAutorizacion;
+	}
+
+	public void setExisteRetencionNumeroAutorizacion(boolean existeRetencionNumeroAutorizacion) {
+		this.existeRetencionNumeroAutorizacion = existeRetencionNumeroAutorizacion;
 	}
 }

@@ -20,7 +20,7 @@ import jakarta.persistence.criteria.Root;
 @Stateless
 public class IngresoListaImp extends GestorListaSoem<Ingreso> implements IngresoListaInt, Serializable {
 
-	private static final long serialVersionUID = 6529969720872352365L;
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public List<Ingreso> buscar(Ingreso ingreso, Integer pagina) {
@@ -173,75 +173,85 @@ public class IngresoListaImp extends GestorListaSoem<Ingreso> implements Ingreso
 	}
 
 	@Override
-	public List<Object[]> buscarIngresAtsSri(LocalDate fechaDesd, LocalDate fechaHast) throws Exception{
+	public List<Object[]> buscarIngresAtsSri(LocalDate fechaDesd, LocalDate fechaHast) throws Exception {
 
 		StringBuilder selectDetalleCompras = new StringBuilder();
-			selectDetalleCompras.append("select i.ingreso_id as ingreso_id, ");
-			selectDetalleCompras.append("dimm_ingr.codigo as codigo_sust, ");
-			selectDetalleCompras.append("dimm_prov.codigo as tipo_iden_prov, ");
-			selectDetalleCompras.append("p.cedula_ruc as nume_iden_prov, ");
-			selectDetalleCompras.append("di.tipo_comp as tipo_compr, ");
-			selectDetalleCompras.append("pp.natura as tipo_prov, ");
-			selectDetalleCompras.append("p.apelli as pers_apelli, ");
-			selectDetalleCompras.append("p.nombre as pers_nombre, ");
-			selectDetalleCompras.append("pp.parte_rela as parte_rela, "); 
-			selectDetalleCompras.append("i.fecha_regi as ingres_fecha_regi, ");
-			selectDetalleCompras.append("i.serie1 as ingres_esta, ");
-			selectDetalleCompras.append("i.serie2 as ingres_punt_emis, ");
-			selectDetalleCompras.append("i.numero as ingres_secu, ");
-			selectDetalleCompras.append("i.fecha_emis as ingres_fecha_emis, ");
-			selectDetalleCompras.append("i.autori as ingres_auto, ");
+		selectDetalleCompras.append("select i.ingreso_id as ingreso_id, ");
+		selectDetalleCompras.append("dimm_ingr.codigo as codigo_sust, ");
+		selectDetalleCompras.append("dimm_prov.codigo as tipo_iden_prov, ");
+		selectDetalleCompras.append("p.cedula_ruc as nume_iden_prov, ");
+		selectDetalleCompras.append("di.tipo_comp as tipo_compr, ");
+		selectDetalleCompras.append("pp.natura as tipo_prov, ");
+		selectDetalleCompras.append("p.apelli as pers_apelli, ");
+		selectDetalleCompras.append("p.nombre as pers_nombre, ");
+		selectDetalleCompras.append("pp.parte_rela as parte_rela, ");
+		selectDetalleCompras.append("i.fecha_regi as ingres_fecha_regi, ");
+		selectDetalleCompras.append("i.serie1 as ingres_esta, ");
+		selectDetalleCompras.append("i.serie2 as ingres_punt_emis, ");
+		selectDetalleCompras.append("i.numero as ingres_secu, ");
+		selectDetalleCompras.append("i.fecha_emis as ingres_fecha_emis, ");
+		selectDetalleCompras.append("i.autori as ingres_auto, ");
 //			esto da error cuando se ejecuta la sentencia			
 //			sentencia.append(" null as base_no_obje, "); 
-			selectDetalleCompras.append("sum( (");
-			selectDetalleCompras.append("    ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) - ");
-			selectDetalleCompras.append("    (((((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) * (idi.porcen / 100))) / COALESCE((nullif((idi.porcen / 100),0)),1))");
-			selectDetalleCompras.append(") * d.factor ");
-			selectDetalleCompras.append(") as base_tari_0, ");
-			selectDetalleCompras.append("sum(((((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) * (idi.porcen / 100)) * d.factor) / COALESCE((nullif((idi.porcen / 100),0)),1)) as base_grab, ");
+		selectDetalleCompras.append("sum( (");
+		selectDetalleCompras.append(
+				"    ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) - ");
+		selectDetalleCompras.append(
+				"    (((((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) * (idi.porcen / 100))) / COALESCE((nullif((idi.porcen / 100),0)),1))");
+		selectDetalleCompras.append(") * d.factor ");
+		selectDetalleCompras.append(") as base_tari_0, ");
+		selectDetalleCompras.append(
+				"sum(((((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) * (idi.porcen / 100)) * d.factor) / COALESCE((nullif((idi.porcen / 100),0)),1)) as base_grab, ");
 //			esto da error cuando se ejecuta la sentencia			
 //			sentencia.append("null as base_exen, null as monto_ice, ");
-			selectDetalleCompras.append("sum(((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) * (idi.porcen / 100)) * d.factor as monto_iva, ");
-			
-			selectDetalleCompras.append("sum(((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) + ");
-			selectDetalleCompras.append("(((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) * (case when di.genera_impu then  idi.porcen / 100 else 0 end))) * d.factor as ingr_total, ");
+		selectDetalleCompras.append(
+				"sum(((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) * (idi.porcen / 100)) * d.factor as monto_iva, ");
 
-			selectDetalleCompras.append("r.serie1 as retenc_esta, r.serie2 as retenc_punt_emis, r.numero as retenc_secu, r.autori as retenc_auto, r.fecha_emis as retenc_fecha_emis, ");
-			selectDetalleCompras.append("di_supe.tipo_comp as ingr_supe_tipo_docu, ingr_supe.serie1 as ingr_supe_estab, ingr_supe.serie2 as ingr_supe_punt_emis, ingr_supe.numero as ingr_supe_secu, ingr_supe.autori as ingr_supe_auto ");
-			selectDetalleCompras.append("from ingr_deta_impu idi ");
-			selectDetalleCompras.append("inner join ingr_deta id on id.ingr_deta_id = idi.ingr_deta_id ");
-			selectDetalleCompras.append("inner join ingreso i on i.ingreso_id = id.ingreso_id ");
-			selectDetalleCompras.append("left join ingreso ingr_supe on ingr_supe.ingreso_id = i.ingreso_supe_id ");
-			selectDetalleCompras.append("left join docu_ingr di_supe on di_supe.documento_id = ingr_supe.documento_id ");
-			selectDetalleCompras.append("left join retencion r on r.ingreso_id = i.ingreso_id ");
-			selectDetalleCompras.append("inner join dimm dimm_ingr on dimm_ingr.dimm_id = i.dimm_id ");
-			selectDetalleCompras.append("inner join sucursal s on s.sucursal_id = i.sucursal_id ");
-			selectDetalleCompras.append("inner join pers_prov pp on pp.persona_id = i.persona_id ");
-			selectDetalleCompras.append("inner join persona p on p.persona_id = pp.persona_id ");
-			selectDetalleCompras.append("inner join dimm dimm_prov on dimm_prov.dimm_id = pp.dimm_id ");
-			selectDetalleCompras.append("inner join docu_ingr di on di.documento_id = i.documento_id ");
-			selectDetalleCompras.append("inner join documento d on d.documento_id = di.documento_id ");
-			selectDetalleCompras.append("inner join dimm dimm_docu on dimm_docu.dimm_id = di.dimm_id ");
-			selectDetalleCompras.append("where i.fecha_emis between ?1 and ?2 and ");
-			selectDetalleCompras.append("di.genera_anex = ?3 and ");
-			selectDetalleCompras.append("idi.tipo = 'IVA' and i.estado = 'PR' ");
-			selectDetalleCompras.append("group by dimm_ingr.dimm_id, dimm_prov.dimm_id, dimm_docu.dimm_id, p.persona_id, pp.persona_id, ");
-			selectDetalleCompras.append("d.documento_id, di.documento_id, i.ingreso_id, ingr_supe.ingreso_id, di_supe.documento_id, r.retencion_id ");
-			selectDetalleCompras.append("order by p.apelli, p.nombre, d.descri, i.fecha_emis, i.numero");
-		
-			Query query = (Query) this.entityManager.createNativeQuery(selectDetalleCompras.toString());
-			query.setParameter(1, fechaDesd);
-			query.setParameter(2, fechaHast);
-			query.setParameter(3, true);
+		selectDetalleCompras.append(
+				"sum(((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) + ");
+		selectDetalleCompras.append(
+				"(((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100) - ((id.cantid * id.costo) - (id.cantid * id.costo * id.descue / 100)) * (i.descue / 100)) * (case when di.genera_impu then  idi.porcen / 100 else 0 end))) * d.factor as ingr_total, ");
+
+		selectDetalleCompras.append(
+				"r.serie1 as retenc_esta, r.serie2 as retenc_punt_emis, r.numero as retenc_secu, r.autori as retenc_auto, r.fecha_emis as retenc_fecha_emis, ");
+		selectDetalleCompras.append(
+				"di_supe.tipo_comp as ingr_supe_tipo_docu, ingr_supe.serie1 as ingr_supe_estab, ingr_supe.serie2 as ingr_supe_punt_emis, ingr_supe.numero as ingr_supe_secu, ingr_supe.autori as ingr_supe_auto ");
+		selectDetalleCompras.append("from ingr_deta_impu idi ");
+		selectDetalleCompras.append("inner join ingr_deta id on id.ingr_deta_id = idi.ingr_deta_id ");
+		selectDetalleCompras.append("inner join ingreso i on i.ingreso_id = id.ingreso_id ");
+		selectDetalleCompras.append("left join ingreso ingr_supe on ingr_supe.ingreso_id = i.ingreso_supe_id ");
+		selectDetalleCompras.append("left join docu_ingr di_supe on di_supe.documento_id = ingr_supe.documento_id ");
+		selectDetalleCompras.append("left join retencion r on r.ingreso_id = i.ingreso_id ");
+		selectDetalleCompras.append("inner join dimm dimm_ingr on dimm_ingr.dimm_id = i.dimm_id ");
+		selectDetalleCompras.append("inner join sucursal s on s.sucursal_id = i.sucursal_id ");
+		selectDetalleCompras.append("inner join pers_prov pp on pp.persona_id = i.persona_id ");
+		selectDetalleCompras.append("inner join persona p on p.persona_id = pp.persona_id ");
+		selectDetalleCompras.append("inner join dimm dimm_prov on dimm_prov.dimm_id = pp.dimm_id ");
+		selectDetalleCompras.append("inner join docu_ingr di on di.documento_id = i.documento_id ");
+		selectDetalleCompras.append("inner join documento d on d.documento_id = di.documento_id ");
+		selectDetalleCompras.append("inner join dimm dimm_docu on dimm_docu.dimm_id = di.dimm_id ");
+		selectDetalleCompras.append("where i.fecha_emis between ?1 and ?2 and ");
+		selectDetalleCompras.append("di.genera_anex = ?3 and ");
+		selectDetalleCompras.append("idi.tipo = 'IVA' and i.estado = 'PR' ");
+		selectDetalleCompras.append(
+				"group by dimm_ingr.dimm_id, dimm_prov.dimm_id, dimm_docu.dimm_id, p.persona_id, pp.persona_id, ");
+		selectDetalleCompras.append(
+				"d.documento_id, di.documento_id, i.ingreso_id, ingr_supe.ingreso_id, di_supe.documento_id, r.retencion_id ");
+		selectDetalleCompras.append("order by p.apelli, p.nombre, d.descri, i.fecha_emis, i.numero");
+
+		Query query = (Query) this.entityManager.createNativeQuery(selectDetalleCompras.toString());
+		query.setParameter(1, fechaDesd);
+		query.setParameter(2, fechaHast);
+		query.setParameter(3, true);
 
 		return query.getResultList();
 	}
-	
+
 	@Override
 	public List<Object[]> buscarFormaPago(Integer ingresoId) throws Exception {
-		
+
 		StringBuilder selectFormaPago = new StringBuilder();
-		
+
 		selectFormaPago.append("select cxp.ingreso_id as ingreso_id, COALESCE(dimm.codigo,'01') as forma_pago ");
 		selectFormaPago.append("from pago_deta pd ");
 		selectFormaPago.append("inner join form_pago_movi_ingr fpmi on fpmi.fpmi_id = pd.fpmi_id ");
@@ -250,10 +260,10 @@ public class IngresoListaImp extends GestorListaSoem<Ingreso> implements Ingreso
 		selectFormaPago.append("inner join ingreso i on i.ingreso_id = cxp.ingreso_id ");
 		selectFormaPago.append("inner join pers_prov pp on pp.persona_id = i.persona_id ");
 		selectFormaPago.append("inner join docu_ingr di on di.documento_id = i.documento_id ");
-		selectFormaPago.append("left join dimm dimm on dimm.dimm_id = fp.dimm_id "); 
+		selectFormaPago.append("left join dimm dimm on dimm.dimm_id = fp.dimm_id ");
 		selectFormaPago.append("where i.ingreso_id = ?1 ");
 		selectFormaPago.append("and i.total > ?2");
-	
+
 		Query query = (Query) this.entityManager.createNativeQuery(selectFormaPago.toString());
 		query.setParameter(1, ingresoId);
 //		TODO: parametrizar este valor ya que lo determina el SRI
@@ -262,12 +272,12 @@ public class IngresoListaImp extends GestorListaSoem<Ingreso> implements Ingreso
 
 		return query.getResultList();
 	}
-	
+
 	@Override
-	public List<Object[]> buscarAir(Integer ingresoId, String impuesto) throws Exception{
-		
+	public List<Object[]> buscarAir(Integer ingresoId, String impuesto) throws Exception {
+
 		StringBuilder selectAir = new StringBuilder();
-		
+
 		selectAir.append("select i.ingreso_id as ingreso_id, ");
 		selectAir.append("codigo_impu as codigo_rete, ");
 		selectAir.append("base as base_impo, ");
@@ -278,14 +288,14 @@ public class IngresoListaImp extends GestorListaSoem<Ingreso> implements Ingreso
 		selectAir.append("inner join ingreso i on i.ingreso_id = r.ingreso_id ");
 		selectAir.append("where i.ingreso_id = ?1 ");
 		selectAir.append("and impues = ?2");
-	
+
 		Query query = (Query) this.entityManager.createNativeQuery(selectAir.toString());
 		query.setParameter(1, ingresoId);
 		query.setParameter(2, impuesto);
 
 		return query.getResultList();
 	}
-	
+
 	@Override
 	public List<Ingreso> buscar2(Ingreso ingreso, LocalDate fechaEmisDesde, LocalDate fechaEmisHasta, Integer pagina) {
 
@@ -301,8 +311,8 @@ public class IngresoListaImp extends GestorListaSoem<Ingreso> implements Ingreso
 			query.orderBy(builder.asc(ingresoRoot.get("ingresoId")));
 		}
 
-		TypedQuery<Ingreso> consulta = this.entityManager
-				.createQuery(query.select(ingresoRoot).where(getSearchPredicates(ingresoRoot, ingreso, fechaEmisDesde, fechaEmisHasta)));
+		TypedQuery<Ingreso> consulta = this.entityManager.createQuery(query.select(ingresoRoot)
+				.where(getSearchPredicates(ingresoRoot, ingreso, fechaEmisDesde, fechaEmisHasta)));
 		consulta.setHint("jakarta.persistence.loadgraph", ingresoGraph);
 
 		if (pagina != null) {
@@ -319,12 +329,14 @@ public class IngresoListaImp extends GestorListaSoem<Ingreso> implements Ingreso
 		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
 		Root<Ingreso> ingresoRoot = countQuery.from(Ingreso.class);
 
-		countQuery = countQuery.select(builder.count(ingresoRoot)).where(getSearchPredicates(ingresoRoot, ingreso, fechaEmisDesde, fechaEmisHasta));
+		countQuery = countQuery.select(builder.count(ingresoRoot))
+				.where(getSearchPredicates(ingresoRoot, ingreso, fechaEmisDesde, fechaEmisHasta));
 		return this.entityManager.createQuery(countQuery).getSingleResult();
 
 	}
 
-	private Predicate[] getSearchPredicates(Root<Ingreso> ingresoRoot, Ingreso ingreso, LocalDate fechaEmisDesde, LocalDate fechaEmisHasta) {
+	private Predicate[] getSearchPredicates(Root<Ingreso> ingresoRoot, Ingreso ingreso, LocalDate fechaEmisDesde,
+			LocalDate fechaEmisHasta) {
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicates = new ArrayList<Predicate>();
@@ -333,7 +345,7 @@ public class IngresoListaImp extends GestorListaSoem<Ingreso> implements Ingreso
 		if (sucursalId != null) {
 			predicates.add(builder.equal(ingresoRoot.get("sucursal").<Integer>get("sucursalId"), sucursalId));
 		}
-		
+
 		String docuEgreDocumeElec = ingreso.getDocuIngr().getDocumeElec();
 		if (docuEgreDocumeElec != null) {
 			predicates.add(builder.notEqual(builder.lower(ingresoRoot.get("docuIngr").<String>get("documeElec")),
@@ -343,9 +355,9 @@ public class IngresoListaImp extends GestorListaSoem<Ingreso> implements Ingreso
 		if (numero != null) {
 			predicates.add(builder.equal(ingresoRoot.get("numero"), numero));
 		}
-		
+
 		if (fechaEmisDesde != null && fechaEmisHasta != null) {
-			predicates.add(builder.between(ingresoRoot.<LocalDate> get("fechaEmis"), fechaEmisDesde, fechaEmisHasta));
+			predicates.add(builder.between(ingresoRoot.<LocalDate>get("fechaEmis"), fechaEmisDesde, fechaEmisHasta));
 		}
 
 		String estadoDocuElec = ingreso.getEstadoDocuElec();
@@ -357,4 +369,25 @@ public class IngresoListaImp extends GestorListaSoem<Ingreso> implements Ingreso
 		return predicates.toArray(new Predicate[predicates.size()]);
 	}
 
+	@Override
+	public boolean existeNumeroAutorizacion(String autorizacion) {
+
+		if (autorizacion == null || autorizacion.isBlank()) {
+			throw new IllegalArgumentException("La autorización es obligatoria");
+		}
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<Ingreso> root = cq.from(Ingreso.class);
+
+		cq.select(cb.literal(1));
+
+		cq.where(cb.and(cb.equal(root.get("autori"), autorizacion.trim()), cb.notEqual(root.get("estado"), "AN")));
+
+//		cq.where(cb.equal(root.get("autori"), autorizacion.trim()));
+
+		List<Integer> resultados = entityManager.createQuery(cq).setMaxResults(1).getResultList();
+
+		return !resultados.isEmpty();
+	}
 }

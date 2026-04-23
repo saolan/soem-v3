@@ -27,7 +27,11 @@ import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 
 import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.RetencionServicio;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.RetencionSriServicio;
+import ec.com.saolan.soem.compartido.excepcion.InfraestructuraExcepcion;
+import ec.com.saolan.soem.compartido.excepcion.IntegracionExcepcion;
+import ec.com.saolan.soem.compartido.excepcion.ValidacionNegocioExcepcion;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriParametros;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.ImportarRetencionSriServicio;
 import ec.com.tecnointel.soem.caja.listaInt.CajaMoviListaInt;
 import ec.com.tecnointel.soem.caja.modelo.Caja;
 import ec.com.tecnointel.soem.caja.modelo.CajaMovi;
@@ -1800,8 +1804,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				reteDetaRegis.insertar(reteDeta);
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, "Error: Detalles de retencion no se han grabado", e);
-				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage(FacesMessage.SEVERITY_ERROR, null, "Error: Detalles de retencion no se ha grabado"));
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+						"Error: Detalles de retencion no se ha grabado"));
 			}
 		}
 	}
@@ -1817,13 +1821,13 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 		this.fpmeFormPagos.clear();
 		this.crearFpmeFormPagoRetencion();
-		
+
 //		Valida que el total recibido sea diferente de cero para crear o no una nueva linea de forma de pago
 		BigDecimal totalReci = this.calcularTotalReci();
 		if (totalReci.compareTo(formPagoMoviEgre.getTotal()) != 0) {
-			crearFilaFpmeFormPago();	
+			crearFilaFpmeFormPago();
 		}
-		
+
 //		Es true porque se ha cargado una retencion manual o desde el SRI
 //		No permite modificar o eliminar las formas de pago que tengan relacion con retencion
 		setTieneRetencion(true);
@@ -1841,7 +1845,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		FacesContext context = FacesContext.getCurrentInstance();
 
 		existeRetencionNumeroAutorizacion = false;
-		
+
 		String autorizacion = retencion != null ? retencion.getAutori() : null;
 
 		if (autorizacion == null || autorizacion.isBlank()) {
@@ -1858,8 +1862,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 				input.setValid(false);
 			}
 
-			context.addMessage(component.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR,
-					null, "El número de autorización ya esta registrado en el sistema"));
+			context.addMessage(component.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"El número de autorización ya esta registrado en el sistema"));
 		}
 	}
 
@@ -1961,7 +1965,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	}
 
 	public void grabarRetencion() {
-		
+
 		if (retencion.getAutori() != null) {
 			this.insertarRetencion();
 			this.insertarReteDeta();
@@ -1990,13 +1994,15 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 // Comienza descarga archivo retencion del sri
 	@Inject
-	RetencionSriServicio retencionSriServicio;
+	ImportarRetencionSriServicio importarRetencionSriServicio;
 
 	public void cargarXmlDesdeSri() {
 
 		try {
 
-			Retencion retencionBuscada = retencionSriServicio.descargarRetencionSri(retencion.getAutori());
+			ImportarDocumeElecSriParametros importarDocumeElecSriParametros = new ImportarDocumeElecSriParametros();
+			Retencion retencionBuscada = importarRetencionSriServicio.importarRetencionSri(retencion.getAutori(),
+					importarDocumeElecSriParametros);
 
 			if (retencionBuscada == null) {
 				FacesContext.getCurrentInstance().addMessage(null,
@@ -2022,18 +2028,22 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
 					"Documento cargado desde SRI, revisar y procesar..."));
+		} catch (ValidacionNegocioExcepcion e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_WARN, null, e.getMessage()));
+		} catch (IntegracionExcepcion e) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"Ocurrió un error al importar el documento electrónico del SRI."));
+		} catch (InfraestructuraExcepcion e) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"Ocurrió un error interno al procesar la información."));
 
 		} catch (Exception e) {
-
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, e.getMessage()));
-
-			e.printStackTrace();
-
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"Ocurrió un error inesperado al cargar el documento desde el SRI."));
 		}
 	}
 
-	
 	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GETTER & SETTER
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< GETTER & SETTER

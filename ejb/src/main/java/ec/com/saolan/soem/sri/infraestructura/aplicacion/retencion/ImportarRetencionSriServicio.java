@@ -3,92 +3,64 @@ package ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import ec.com.saolan.soem.compartido.cache.ParametroDocuElectronicoCache;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.DocumentoSriUnmarshaller;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriParametros;
+import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriServicio;
 import ec.com.saolan.soem.sri.infraestructura.unmarshaller.RetencionSriUnmarshaller;
 import ec.com.tecnointel.soem.documeElec.modelo.retencion.ComprobanteRetencion;
 import ec.com.tecnointel.soem.documeElec.modelo.retencion.DocSustento;
 import ec.com.tecnointel.soem.ingreso.modelo.ReteDeta;
 import ec.com.tecnointel.soem.ingreso.modelo.Retencion;
-import ec.com.tecnointel.soem.serWebClientSri.autorizacion.RespuestaComprobante;
 import ec.com.tecnointel.soem.serWebClientSri.general.AutorizacionDTO;
-import ec.com.tecnointel.soem.serWebSri.registroInt.AutorizacionComprobantesWsInt;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 
 @Stateless
-public class RetencionSriServicio implements Serializable {
+public class ImportarRetencionSriServicio extends ImportarDocumeElecSriServicio<Retencion, ComprobanteRetencion>
+		implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = Logger.getLogger(RetencionSriServicio.class.getName());
-
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	private static final String AMBIENTE_PRODUCCION = "2";
-	private static final String NOMBRE_SERVICIO = "AutorizacionComprobantesOffline";
-	private static final String ESTADO_PROCESADO = "PR";
-	private static final String ESTADO_DOCUMENTO_ELECTRONICO_AUTORIZADO = "AUTORIZADO";
-	private static final Map<String, String> CODIGO_IMPUESTO = Map.of("1", "Renta", "2", "Iva", "6", "ISD");
-
+	
 	@Inject
-	AutorizacionComprobantesWsInt autorizacionComprobantes;
-
-	@Inject
-	RetencionSriUnmarshaller unmarshaller;
+	RetencionSriUnmarshaller retencionSriUnmarshaller;
 
 	@Inject
 	ParametroDocuElectronicoCache parametroDocuElectronicoCache;
 
-	public Retencion descargarRetencionSri(String claveAcce) {
-
-		Retencion retencion = null;
-
-		ComprobanteRetencion comprobanteRetencion = new ComprobanteRetencion();
-
-		String xmlRetencion = null;
-
-		try {
-
-			RespuestaComprobante respuestaComprobante = autorizacionComprobantes.autorizarComprobante(
-					parametroDocuElectronicoCache.getProxyIp().getDescri(),
-					parametroDocuElectronicoCache.getProxyPuerto().getDescri(), AMBIENTE_PRODUCCION,
-					parametroDocuElectronicoCache.getUrlProduccion().getDescri(),
-					parametroDocuElectronicoCache.getUrlPruebas().getDescri(), NOMBRE_SERVICIO, claveAcce);
-
-			if (respuestaComprobante.getAutorizaciones().getAutorizacion().isEmpty()) {
-				return null;
-			}
-
-			AutorizacionDTO autorizacionDTO = autorizacionComprobantes.obtenerEstadoAutorizacion(respuestaComprobante);
-			xmlRetencion = cargarXmlRetencion(claveAcce, respuestaComprobante);
-
-			// 2. Unmarshall XML → objeto Java
-			comprobanteRetencion = unmarshaller.unmarshall(xmlRetencion);
-
-			// 3. Mapear a entidades de dominio
-			retencion = mapearRetencion(comprobanteRetencion, autorizacionDTO);
-
-		} catch (
-
-		Exception e) {
-			LOGGER.log(Level.SEVERE, "Error: Retencion del SRI no se ha procesado", e);
-			e.printStackTrace();
-		}
-
-		return retencion;
+	@Override
+	protected DocumentoSriUnmarshaller<ComprobanteRetencion> getUnmarshaller() {
+		return retencionSriUnmarshaller;
 	}
 
-	public String cargarXmlRetencion(String claveAcce, RespuestaComprobante respuestaComprobante) {
-		return respuestaComprobante.getAutorizaciones().getAutorizacion().stream().findFirst()
-				.orElseThrow(() -> new RuntimeException("Sin autorización para clave: " + claveAcce)).getComprobante(); // aquí
+	/*
+	 * En este caso recive esta clase (importarDocumeElecSriParametros) vacia, no es
+	 * necesario ningun parametro
+	 * 
+	 */
+	@Override
+	protected Retencion mapearDocumento(ComprobanteRetencion comprobanteRetencion, AutorizacionDTO autorizacionDTO,
+			ImportarDocumeElecSriParametros importarDocumeElecSriParametros) {
+		return mapearRetencion(comprobanteRetencion, autorizacionDTO, importarDocumeElecSriParametros);
 	}
 
-	public Retencion mapearRetencion(ComprobanteRetencion comprobanteRetencion, AutorizacionDTO autorizacionDTO) {
+	@Override
+	protected String codigoDocumentoEsperado() {
+		return CODIGO_RETENCION;
+	}
+	
+//	LLama al metodo descargar de la clase abstracta
+	public Retencion importarRetencionSri(String claveAcceso,
+			ImportarDocumeElecSriParametros importarDocumeElecSriParametros) {
+		return importar(claveAcceso, importarDocumeElecSriParametros);
+	}
+
+	public Retencion mapearRetencion(ComprobanteRetencion comprobanteRetencion, AutorizacionDTO autorizacionDTO,
+			ImportarDocumeElecSriParametros importarDocumeElecSriParametros) {
 		Retencion retencion = mapearCabecera(comprobanteRetencion, autorizacionDTO);
 		retencion.setReteDetas(mapearReteDetas(comprobanteRetencion, retencion));
 		return retencion;
@@ -147,7 +119,7 @@ public class RetencionSriServicio implements Serializable {
 	private String definirTipoImpuesto(String codigo) {
 		String nombre = CODIGO_IMPUESTO.get(codigo);
 		if (nombre == null) {
-			LOGGER.warning(() -> "Código de impuesto no reconocido: " + codigo);
+			LOGGER.log(Level.WARNING, "Código de impuesto no mapeado: {0}", codigo);
 			return "Desconocido";
 		}
 		return nombre;

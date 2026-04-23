@@ -227,4 +227,6 @@ public interface CompraInt {
 	void cargarXmlDesdeSri(Ingreso ingreso, PersUsua persUsua, String claveAcceso, String correo)
 			throws ExceptArchivoNoExiste, Exception;
 
+	public boolean existeNumeroAutorizacion(String trim);
+
 }
