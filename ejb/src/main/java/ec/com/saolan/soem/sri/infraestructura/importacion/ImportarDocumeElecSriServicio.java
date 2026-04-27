@@ -21,14 +21,8 @@ public abstract class ImportarDocumeElecSriServicio<T, D> implements ImportarDoc
 	private static final long serialVersionUID = 1L;
 
 	protected static final Logger LOGGER = Logger.getLogger(ImportarDocumeElecSriServicio.class.getName());
-
-	protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	protected static final String AMBIENTE_PRODUCCION = "2";
 	protected static final String NOMBRE_SERVICIO = "AutorizacionComprobantesOffline";
-	protected static final String ESTADO_PROCESADO = "PR";
-	protected static final String ESTADO_DOCUMENTO_ELECTRONICO_AUTORIZADO = "AUTORIZADO";
-	protected static final Map<String, String> CODIGO_IMPUESTO = Map.of("1", "Renta", "2", "Iva", "6", "ISD");
-
 	protected static final String CODIGO_FACTURA = "01";
 	protected static final String CODIGO_RETENCION = "07";
 

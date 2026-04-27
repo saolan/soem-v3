@@ -22,7 +22,7 @@ public class ImportarFacturaSriServicio extends ImportarDocumeElecSriServicio<In
 	FacturaSriUnmarshaller facturaSriUnmarshaller;
 
 	@Inject
-	MapearIngresoServicio mapearIngresoServicio;
+	IngresoXmlMapeador IngresoXmlMapeador;
 
 	@Override
 	protected DocumentoSriUnmarshaller<Factura> getUnmarshaller() {
@@ -37,7 +37,7 @@ public class ImportarFacturaSriServicio extends ImportarDocumeElecSriServicio<In
 	@Override
 	protected Ingreso mapearDocumento(Factura factura, AutorizacionDTO autorizacionDTO,
 			ImportarDocumeElecSriParametros importarDocumeElecSriParametros) {
-		return mapearIngresoServicio.mapearFactura(factura, autorizacionDTO, importarDocumeElecSriParametros);
+		return IngresoXmlMapeador.mapearFactura(factura, autorizacionDTO, importarDocumeElecSriParametros);
 	}
 
 //	LLama al metodo descargar de la clase abstracta

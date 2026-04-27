@@ -32,7 +32,7 @@ public class ImportarFacturaArchivoServicio implements Serializable {
 	FacturaSriUnmarshaller facturaSriUnmarshaller;
 
 	@Inject
-	MapearIngresoServicio mapeadorFacturaSriServicio;
+	IngresoXmlMapeador mapeadorFacturaSriServicio;
 
 	@Inject
 	private ParametroRutaCache parametroRutaCache;

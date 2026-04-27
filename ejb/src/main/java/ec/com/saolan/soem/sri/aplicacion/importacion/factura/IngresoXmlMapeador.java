@@ -58,10 +58,10 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 
 @ApplicationScoped
-public class MapearIngresoServicio implements Serializable {
+public class IngresoXmlMapeador implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = Logger.getLogger(MapearIngresoServicio.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(IngresoXmlMapeador.class.getName());
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	@Inject
@@ -207,7 +207,7 @@ public class MapearIngresoServicio implements Serializable {
 			ingrDeta.setIngreso(ingreso);
 		}
 
-		return new HashSet<IngrDeta>(ingrDetas);
+		return new HashSet<>(ingrDetas);
 	}
 
 	public ProdCost buscarProdCost(Ingreso ingreso, IngrDeta ingrDeta) {
@@ -349,7 +349,7 @@ public class MapearIngresoServicio implements Serializable {
 
 		try {
 
-			var ingrDimms = new HashSet<IngrDimm>();
+			Set<IngrDimm> ingrDimms = new HashSet<>();
 
 			PersProvDimm persProvDimmFiltro = new PersProvDimm();
 			persProvDimmFiltro.setPersProv(ingreso.getPersProv());
@@ -488,7 +488,7 @@ public class MapearIngresoServicio implements Serializable {
 
 	public Set<IngrDetaPrec> crearIngrDetaPrec(IngrDeta ingrDeta, Ingreso ingreso, PersUsua persUsua) {
 
-		Set<IngrDetaPrec> ingrDetaPrecs = new HashSet<IngrDetaPrec>();
+		Set<IngrDetaPrec> ingrDetaPrecs = new HashSet<>();
 
 		ProdGrup prodGrup = new ProdGrup(null, "Todo", true, false, false, false, true);
 		Producto producto = new Producto(prodGrup, null, ingrDeta.getProducto().getCodigo(), null, true);
@@ -606,7 +606,7 @@ public class MapearIngresoServicio implements Serializable {
 
 	public Set<IngrDetaImpu> crearImpuestos(String ingrDetaTipoImpu, IngrDeta ingrDeta) {
 
-		Set<IngrDetaImpu> ingrDetaImpus = new HashSet<IngrDetaImpu>();
+		Set<IngrDetaImpu> ingrDetaImpus = new HashSet<>();
 
 		List<ProdDimm> prodDimms = new ArrayList<ProdDimm>();
 
