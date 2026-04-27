@@ -1,4 +1,4 @@
-package ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion;
+package ec.com.saolan.soem.sri.aplicacion.importacion.factura;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -6,19 +6,18 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ec.com.saolan.soem.compartido.excepcion.InfraestructuraExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.IntegracionExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.ValidacionNegocioExcepcion;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.DocumentoSriUnmarshaller;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriParametros;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriServicio;
-import ec.com.saolan.soem.sri.infraestructura.unmarshaller.FacturaSriUnmarshaller;
+import ec.com.saolan.soem.sri.infraestructura.importacion.ImportarDocumeElecSriParametros;
 import ec.com.tecnointel.soem.documeElec.modelo.InfoTributaria;
 import ec.com.tecnointel.soem.documeElec.modelo.factura.Factura;
 import ec.com.tecnointel.soem.documeElec.modelo.factura.Factura.Detalles.Detalle;
@@ -54,18 +53,16 @@ import ec.com.tecnointel.soem.seguridad.modelo.Rol;
 import ec.com.tecnointel.soem.seguridad.modelo.RolPersUsua;
 import ec.com.tecnointel.soem.seguridad.modelo.RolPrec;
 import ec.com.tecnointel.soem.serWebClientSri.general.AutorizacionDTO;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 
-@Stateless
-public class ImportarFacturaSriServicio extends ImportarDocumeElecSriServicio<Ingreso, Factura>
-		implements Serializable {
+@ApplicationScoped
+public class MapearIngresoServicio implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	@Inject
-	FacturaSriUnmarshaller facturaSriUnmarshaller;
+	private static final Logger LOGGER = Logger.getLogger(MapearIngresoServicio.class.getName());
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	@Inject
 	PersProvListaInt persProvLista;
@@ -94,28 +91,10 @@ public class ImportarFacturaSriServicio extends ImportarDocumeElecSriServicio<In
 	@Inject
 	PersProvRegisInt persProvRegis;
 
-	@Override
-	protected DocumentoSriUnmarshaller<Factura> getUnmarshaller() {
-		return facturaSriUnmarshaller;
-	}
-
-	@Override
-	protected Ingreso mapearDocumento(Factura factura, AutorizacionDTO autorizacionDTO,
-			ImportarDocumeElecSriParametros importarDocumeElecSriParametros) {
-		return mapearFactura(factura, autorizacionDTO, importarDocumeElecSriParametros);
-	}
-	
-	@Override
-	protected String codigoDocumentoEsperado() {
-		return CODIGO_FACTURA;
-	}
-
-//	LLama al metodo descargar de la clase abstracta
-	public Ingreso importarFacturaSri(String claveAcceso,
-			ImportarDocumeElecSriParametros importarDocumeElecSriParametros) {
-		return importar(claveAcceso, importarDocumeElecSriParametros);
-	}
-
+	/**
+	 * Convierte una factura SRI en una entidad Ingreso. Esta clase concentra toda
+	 * la lógica reutilizable de mapeo.
+	 */
 	public Ingreso mapearFactura(Factura factura, AutorizacionDTO autorizacionDTO,
 			ImportarDocumeElecSriParametros importarDocumeElecSriParametros) {
 
@@ -148,11 +127,11 @@ public class ImportarFacturaSriServicio extends ImportarDocumeElecSriServicio<In
 			LOGGER.log(Level.SEVERE, "Error al importar datos en detalle de factura", e);
 			throw new IntegracionExcepcion("Error al importar datos en detalle de factura", e);
 		}
-		
+
 		if (ingreso.getPersProv().getPersonaId() == null) {
 			insertarPersProv(ingreso.getPersProv());
 		}
-		
+
 		return ingreso;
 	}
 
@@ -206,7 +185,7 @@ public class ImportarFacturaSriServicio extends ImportarDocumeElecSriServicio<In
 			LOGGER.log(Level.SEVERE, "Error al cargar impuestos y retenciones del proveedor", e);
 			throw new InfraestructuraExcepcion("Error al cargar impuestos y retenciones del proveedor", e);
 		}
-				
+
 		return ingreso;
 	}
 

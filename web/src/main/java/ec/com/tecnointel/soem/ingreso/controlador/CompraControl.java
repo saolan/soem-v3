@@ -38,8 +38,9 @@ import org.primefaces.model.file.UploadedFile;
 import ec.com.saolan.soem.compartido.excepcion.InfraestructuraExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.IntegracionExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.ValidacionNegocioExcepcion;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriParametros;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.ImportarFacturaSriServicio;
+import ec.com.saolan.soem.sri.aplicacion.importacion.factura.ImportarFacturaArchivoServicio;
+import ec.com.saolan.soem.sri.aplicacion.importacion.factura.ImportarFacturaSriServicio;
+import ec.com.saolan.soem.sri.infraestructura.importacion.ImportarDocumeElecSriParametros;
 import ec.com.tecnointel.soem.contabilidad.modelo.Transaccion;
 import ec.com.tecnointel.soem.contabilidad.registroInt.TransaccionCompraInt;
 import ec.com.tecnointel.soem.contabilidad.registroInt.TransaccionFpmiInt;
@@ -53,7 +54,6 @@ import ec.com.tecnointel.soem.documeElec.tareas.ManejadorTareaEnviarDocu;
 import ec.com.tecnointel.soem.egreso.modelo.EgreDeta;
 import ec.com.tecnointel.soem.firmaElec.registroInt.FirmarArchivoInt;
 import ec.com.tecnointel.soem.general.controlador.PaginaControl;
-import ec.com.tecnointel.soem.general.excepcion.ExceptArchivoNoExiste;
 import ec.com.tecnointel.soem.general.util.IdenSistema;
 import ec.com.tecnointel.soem.ingreso.listaInt.ProvGrupPlanCuenListaInt;
 import ec.com.tecnointel.soem.ingreso.modelo.IngrDeta;
@@ -6096,6 +6096,9 @@ public class CompraControl extends PaginaControl implements Serializable {
 	@Inject
 	ImportarFacturaSriServicio importarFacturaSriServicio;
 
+	@Inject
+	ImportarFacturaArchivoServicio importarFacturaArchivoServicio;
+
 	public void cargarXmlDesdeSri() {
 
 		try {
@@ -6142,35 +6145,6 @@ public class CompraControl extends PaginaControl implements Serializable {
 					"Ocurrió un error inesperado al cargar el documento desde el SRI."));
 		}
 	}
-	
-//	public void cargarXmlDesdeSri() {
-//
-//		ingreso.setSucursal(variablesSesion.getSucursal());
-//
-//		try {
-//
-//			compra.cargarXmlDesdeSri(ingreso, variablesSesion.getPersUsua(), claveAcce, persProvCorreo);
-//
-//			this.ingrDetaDataTable.addAll(ingreso.getIngrDetas());
-//
-//			calcularTotalIngres();
-//
-//			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
-//					"Documento cargado desde SRI, revisar y procesar..."));
-//
-//		} catch (ExceptArchivoNoExiste eane) {
-//
-//			FacesContext.getCurrentInstance().addMessage(null,
-//					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, eane.getMessage()));
-//
-//		} catch (Exception e) {
-//
-//			FacesContext.getCurrentInstance().addMessage(null,
-//					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, e.getMessage()));
-//
-//			e.printStackTrace();
-//		}
-//	}
 
 	public String getClaveAcce() {
 		return claveAcce;
@@ -6200,33 +6174,50 @@ public class CompraControl extends PaginaControl implements Serializable {
 
 	public void cargarXmlDesdeArchivo() {
 
-		FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
-
-		subirArchivo();
-
-		ingreso.setSucursal(variablesSesion.getSucursal());
-
 		try {
-			compra.cargarXmlDesdeArchivo(ingreso, variablesSesion.getPersUsua(), claveAcce, persProvCorreo);
 
-			this.ingrDetaDataTable.addAll(ingreso.getIngrDetas());
+			subirArchivo();
+
+			ImportarDocumeElecSriParametros importarDocumeElecSriParametros = new ImportarDocumeElecSriParametros(
+					variablesSesion.getSucursal(), variablesSesion.getPersUsua(), persProvCorreo);
+
+			Ingreso ingresoBuscado = importarFacturaArchivoServicio.importarXmlDesdeArchivo(claveAcce,
+					importarDocumeElecSriParametros);
+
+			if (ingresoBuscado == null) {
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, null,
+						"No se encontró la factura en el SRI o no está autorizado - Clave: " + claveAcce));
+
+				return;
+			}
+
+			ingresoBuscado.setDocuIngr(ingreso.getDocuIngr());
+			ingreso = ingresoBuscado;
+			ingrDetaDataTable = new ArrayList<>(ingreso.getIngrDetas());
+//			Se coloca este clear porque la clase Retencion viene con un set de reteDetas y 
+//			tiene cascade en persist entonces al grabar sale error porque intenta grabar nuevamente
+//			con el clear deja el set vacio y grabar el list sin errores
+//			Se hace esto porque aqui se ve la retencion en pantalla, mientras que en compra no se ve
+//			la retencion entonces graba con el set de reteDeta
+//			La IA aconseja si el elemento es visual utilizar list e lugar de set
+			ingreso.getIngrDetas().clear();
 
 			calcularTotalIngres();
 
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
-					"Documento cargado desde archivo XML, revisar y procesar..."));
-
-		} catch (ExceptArchivoNoExiste eane) {
-
+					"Documento cargado desde SRI, revisar y procesar..."));
+		} catch (ValidacionNegocioExcepcion e) {
 			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_FATAL, null, eane.getMessage()));
-			eane.printStackTrace();
-
+					new FacesMessage(FacesMessage.SEVERITY_WARN, null, e.getMessage()));
+		} catch (IntegracionExcepcion e) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"Ocurrió un error al importar el documento electrónico del SRI."));
+		} catch (InfraestructuraExcepcion e) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"Ocurrió un error interno al procesar la información."));
 		} catch (Exception e) {
-
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_FATAL, null, e.getMessage()));
-			e.printStackTrace();
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
+					"Ocurrió un error inesperado al cargar el documento desde el SRI."));
 		}
 	}
 
@@ -6295,9 +6286,9 @@ public class CompraControl extends PaginaControl implements Serializable {
 	public void setUploadedFile(UploadedFile uploadedFile) {
 		this.uploadedFile = uploadedFile;
 	}
-	
+
 	private boolean existeRetencionNumeroAutorizacion;
-	
+
 	public void validarIngresoNumeroAutorizacion() {
 
 		FacesContext context = FacesContext.getCurrentInstance();

@@ -1,4 +1,4 @@
-package ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido;
+package ec.com.saolan.soem.sri.infraestructura.importacion;
 
 import java.io.Serializable;
 

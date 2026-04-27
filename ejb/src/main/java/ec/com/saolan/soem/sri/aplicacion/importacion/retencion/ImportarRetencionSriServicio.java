@@ -1,4 +1,4 @@
-package ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion;
+package ec.com.saolan.soem.sri.aplicacion.importacion.retencion;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
-import ec.com.saolan.soem.compartido.cache.ParametroDocuElectronicoCache;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.DocumentoSriUnmarshaller;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriParametros;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriServicio;
+import ec.com.saolan.soem.compartido.cache.ParametroConexionSriCache;
+import ec.com.saolan.soem.sri.infraestructura.importacion.ImportarDocumeElecSriParametros;
+import ec.com.saolan.soem.sri.infraestructura.importacion.ImportarDocumeElecSriServicio;
+import ec.com.saolan.soem.sri.infraestructura.unmarshaller.DocumentoSriUnmarshaller;
 import ec.com.saolan.soem.sri.infraestructura.unmarshaller.RetencionSriUnmarshaller;
 import ec.com.tecnointel.soem.documeElec.modelo.retencion.ComprobanteRetencion;
 import ec.com.tecnointel.soem.documeElec.modelo.retencion.DocSustento;
@@ -30,7 +30,7 @@ public class ImportarRetencionSriServicio extends ImportarDocumeElecSriServicio<
 	RetencionSriUnmarshaller retencionSriUnmarshaller;
 
 	@Inject
-	ParametroDocuElectronicoCache parametroDocuElectronicoCache;
+	ParametroConexionSriCache parametroDocuElectronicoCache;
 
 	@Override
 	protected DocumentoSriUnmarshaller<ComprobanteRetencion> getUnmarshaller() {

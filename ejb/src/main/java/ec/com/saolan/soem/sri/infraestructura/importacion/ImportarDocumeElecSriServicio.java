@@ -1,4 +1,4 @@
-package ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido;
+package ec.com.saolan.soem.sri.infraestructura.importacion;
 
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
@@ -6,10 +6,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ec.com.saolan.soem.compartido.cache.ParametroDocuElectronicoCache;
+import ec.com.saolan.soem.compartido.cache.ParametroConexionSriCache;
 import ec.com.saolan.soem.compartido.excepcion.InfraestructuraExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.IntegracionExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.ValidacionNegocioExcepcion;
+import ec.com.saolan.soem.sri.infraestructura.unmarshaller.DocumentoSriUnmarshaller;
 import ec.com.tecnointel.soem.serWebClientSri.autorizacion.RespuestaComprobante;
 import ec.com.tecnointel.soem.serWebClientSri.general.AutorizacionDTO;
 import ec.com.tecnointel.soem.serWebSri.registroInt.AutorizacionComprobantesWsInt;
@@ -35,7 +36,7 @@ public abstract class ImportarDocumeElecSriServicio<T, D> implements ImportarDoc
 	protected AutorizacionComprobantesWsInt autorizacionComprobantes;
 
 	@Inject
-	protected ParametroDocuElectronicoCache parametroDocuElectronicoCache;
+	protected ParametroConexionSriCache ParametroConexionSriCache;
 
 	/**
 	 * Unmarshaller específico del tipo de comprobante.
@@ -60,10 +61,10 @@ public abstract class ImportarDocumeElecSriServicio<T, D> implements ImportarDoc
 	public T importar(String claveAcceso, ImportarDocumeElecSriParametros importarDocumeElecSriParametros) {
 		try {
 			RespuestaComprobante respuesta = autorizacionComprobantes.autorizarComprobante(
-					parametroDocuElectronicoCache.getProxyIp().getDescri(),
-					parametroDocuElectronicoCache.getProxyPuerto().getDescri(), AMBIENTE_PRODUCCION,
-					parametroDocuElectronicoCache.getUrlProduccion().getDescri(),
-					parametroDocuElectronicoCache.getUrlPruebas().getDescri(), NOMBRE_SERVICIO, claveAcceso);
+					ParametroConexionSriCache.getProxyIp().getDescri(),
+					ParametroConexionSriCache.getProxyPuerto().getDescri(), AMBIENTE_PRODUCCION,
+					ParametroConexionSriCache.getUrlProduccion().getDescri(),
+					ParametroConexionSriCache.getUrlPruebas().getDescri(), NOMBRE_SERVICIO, claveAcceso);
 
 			if (respuesta.getAutorizaciones().getAutorizacion().isEmpty()) {
 				return null;

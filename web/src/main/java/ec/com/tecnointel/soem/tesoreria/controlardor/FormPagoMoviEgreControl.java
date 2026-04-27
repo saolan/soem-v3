@@ -26,12 +26,12 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.RetencionServicio;
 import ec.com.saolan.soem.compartido.excepcion.InfraestructuraExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.IntegracionExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.ValidacionNegocioExcepcion;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.compartido.ImportarDocumeElecSriParametros;
-import ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion.ImportarRetencionSriServicio;
+import ec.com.saolan.soem.sri.aplicacion.importacion.retencion.ImportarRetencionSriServicio;
+import ec.com.saolan.soem.sri.aplicacion.importacion.retencion.RetencionServicio;
+import ec.com.saolan.soem.sri.infraestructura.importacion.ImportarDocumeElecSriParametros;
 import ec.com.tecnointel.soem.caja.listaInt.CajaMoviListaInt;
 import ec.com.tecnointel.soem.caja.modelo.Caja;
 import ec.com.tecnointel.soem.caja.modelo.CajaMovi;

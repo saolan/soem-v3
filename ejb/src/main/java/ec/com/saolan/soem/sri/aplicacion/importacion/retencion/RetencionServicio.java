@@ -1,4 +1,4 @@
-package ec.com.saolan.soem.sri.infraestructura.aplicacion.retencion;
+package ec.com.saolan.soem.sri.aplicacion.importacion.retencion;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
