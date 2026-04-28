@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import ec.com.saolan.soem.compartido.excepcion.InfraestructuraExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.IntegracionExcepcion;
@@ -189,6 +190,8 @@ public class IngresoXmlMapeador implements Serializable {
 		return ingreso;
 	}
 
+//	En este procedimiento se podria solamente listar los productos no registrados
+//	se cargaria los productos que existan y se listaria los no registrados
 	private Set<IngrDeta> mapearIngrDetas(Factura factura, Ingreso ingreso,
 			ImportarDocumeElecSriParametros importarDocumeElecSriParametros) {
 
@@ -260,10 +263,16 @@ public class IngresoXmlMapeador implements Serializable {
 		List<IngrDeta> ingrDetas = revisarIngrDetas(ingreso, rolPrecPrec, factura);
 
 		if (!ingrDetas.isEmpty()) {
-			LOGGER.log(Level.WARNING, "Factura importada con productos no registrados. Cantidad: {0}",
-					ingrDetas.size());
-			throw new ValidacionNegocioExcepcion("Existen " + ingrDetas.size()
-					+ " productos no registrados. Cree los productos nuevos y cargue nuevamente el documento.");
+
+			String detalleProductos = ingrDetas.stream()
+					.map(detalleProducto -> String.format("Código: %s - Nombre: %s",
+							detalleProducto.getProducto().getCodigo(), detalleProducto.getProducto().getDescri()))
+					.collect(Collectors.joining("\n"));
+
+			LOGGER.log(Level.WARNING, "Factura importada con productos no registrados: {0}", detalleProductos);
+
+			throw new ValidacionNegocioExcepcion("Existen productos no registrados:\n" + detalleProductos
+					+ ". Cree los productos nuevos y cargue nuevamente el documento.");
 		}
 	}
 
@@ -383,22 +392,20 @@ public class IngresoXmlMapeador implements Serializable {
 
 		for (Detalle detalle : factura.getDetalles().getDetalle()) {
 
-			ProdGrup prodGrup = new ProdGrup(null, "Todo", true, false, false, false, true);
-			Producto producto = new Producto(prodGrup, null, detalle.getCodigoPrincipal(), null, true);
-			ProdPrec prodPrecFiltro = new ProdPrec(ingreso.getSucursal(), rolPrecPred.getPrecio(), producto);
-			List<ProdPrec> prodPrecs = buscarProdPrecs(prodPrecFiltro);
+			List<ProdPrec> prodPrecs = buscarProdPrecs(construirProdPrecFiltro(ingreso, detalle, rolPrecPred));
 
 			if (prodPrecs.isEmpty()) {
 
-				ProdPrec prodPrecNuevo = new ProdPrec(null, null, producto);
-//				Se coloca el codigo de barra ya que la busqueda se hace por codigo
-//				y por lo tanto como se esta creando un nuevo prodPrec no tiene esta valor
-				prodPrecNuevo.getProducto().setCodigoBarra(detalle.getCodigoPrincipal());
+				ProdGrup prodGrup = new ProdGrup(null, "Todo", true, false, false, false, true);
+				Producto producto = new Producto(prodGrup, null, detalle.getCodigoPrincipal().strip(), null, true);
+				ProdPrec prodPrec = new ProdPrec(null, null, producto);
+//				Se coloca la descripcion para que en el mensaje al usuario tambien salga el nombre del proucto
+				prodPrec.getProducto().setDescri(detalle.getDescripcion());
 
-				IngrDeta ingrDeta = new IngrDeta(ingreso, prodPrecNuevo.getProducto(), prodPrecNuevo.getPrecio(),
+				IngrDeta ingrDeta = new IngrDeta(ingreso, prodPrec.getProducto(), prodPrec.getPrecio(),
 						ingreso.getFechaRegi(), ingreso.getFechaEmis().atTime(LocalTime.now()), detalle.getCantidad(),
-						prodPrecNuevo.getFactor(), detalle.getPrecioUnitario(), detalle.getPrecioUnitario(),
-						BigDecimal.ZERO, detalle.getDescuento(), BigDecimal.ZERO, prodPrecNuevo.getPrecioConImpu());
+						prodPrec.getFactor(), detalle.getPrecioUnitario(), detalle.getPrecioUnitario(), BigDecimal.ZERO,
+						detalle.getDescuento(), BigDecimal.ZERO, prodPrec.getPrecioConImpu());
 				ingrDetas.add(ingrDeta);
 			}
 		}
@@ -412,10 +419,7 @@ public class IngresoXmlMapeador implements Serializable {
 
 		for (Detalle detalle : factura.getDetalles().getDetalle()) {
 
-			ProdGrup prodGrup = new ProdGrup(null, "Todo", true, false, false, false, true);
-			Producto producto = new Producto(prodGrup, null, detalle.getCodigoPrincipal(), null, true);
-			ProdPrec prodPrecFiltro = new ProdPrec(ingreso.getSucursal(), rolPrecPred.getPrecio(), producto);
-			List<ProdPrec> prodPrecs = buscarProdPrecs(prodPrecFiltro);
+			List<ProdPrec> prodPrecs = buscarProdPrecs(construirProdPrecFiltro(ingreso, detalle, rolPrecPred));
 
 			if (!prodPrecs.isEmpty()) {
 //				Cuando se busca el código del producto puede ser que haya mas de uno, 
@@ -441,6 +445,12 @@ public class IngresoXmlMapeador implements Serializable {
 			}
 		}
 		return ingrDetas;
+	}
+
+	public ProdPrec construirProdPrecFiltro(Ingreso ingreso, Detalle detalle, RolPrec rolPrecPred) {
+		ProdGrup prodGrup = new ProdGrup(null, "Todo", true, false, false, false, true);
+		Producto producto = new Producto(prodGrup, null, detalle.getCodigoPrincipal().strip(), null, true);
+		return new ProdPrec(ingreso.getSucursal(), rolPrecPred.getPrecio(), producto);
 	}
 
 	public static BigDecimal calcularIngrDetaDescue(Detalle detalle) {
