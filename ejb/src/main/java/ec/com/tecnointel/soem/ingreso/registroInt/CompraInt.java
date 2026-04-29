@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
-import ec.com.tecnointel.soem.general.excepcion.ExceptArchivoNoExiste;
 import ec.com.tecnointel.soem.ingreso.modelo.IngrDeta;
 import ec.com.tecnointel.soem.ingreso.modelo.IngrDetaImpu;
 import ec.com.tecnointel.soem.ingreso.modelo.IngrDetaPrec;
@@ -221,10 +220,6 @@ public interface CompraInt {
 
 	List<Object[]> buscarPagosPorFpmeId(List<Object[]> objs, Ingreso ingreso) throws Exception;
 
-	void cargarXmlDesdeArchivo(Ingreso ingreso, PersUsua persUsua, String claveAcceso, String correo)
-			throws ExceptArchivoNoExiste, Exception;
-
-	void cargarXmlDesdeSri(Ingreso ingreso, PersUsua persUsua, String claveAcceso, String correo)
-			throws ExceptArchivoNoExiste, Exception;
+	public boolean existeNumeroAutorizacion(String trim);
 
 }

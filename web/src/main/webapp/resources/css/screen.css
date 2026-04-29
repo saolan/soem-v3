@@ -162,11 +162,41 @@ a:hover {
 }
 
 .ui-growl {
+	width: 650px !important;
 	position: fixed;
 	top: 20% !important;
 	left: 50% !important;
 	transform: translate(-50%, -50%);
 	z-index: 9999; /* Asegúrate de que tenga un alto índice de capa */
+}
+
+.ui-growl-item-container {
+    width: 720px !important;
+    opacity: 1 !important;
+}
+
+.ui-growl-item {
+    width: 100% !important;
+    padding: 16px 20px !important;
+}
+
+.ui-growl-image {
+    float: left;
+    margin-right: 15px;
+}
+
+.ui-growl-message {
+    float: none !important;
+    display: block !important;
+    width: 610px !important;
+    margin-left: 70px !important;
+}
+
+.ui-growl-message p {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word;
+    line-height: 1.45;
 }
 
 /*
