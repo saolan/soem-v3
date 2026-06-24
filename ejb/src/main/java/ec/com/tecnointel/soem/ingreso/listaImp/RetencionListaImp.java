@@ -19,7 +19,8 @@ import jakarta.persistence.criteria.Root;
 @Stateless
 public class RetencionListaImp extends GestorListaSoem<Retencion> implements RetencionListaInt, Serializable {
 
-	private static final long serialVersionUID = -4929515347113141615L;
+
+	private static final long serialVersionUID = 1L;
 
 	// Busca con paginaci�n
 	@Override

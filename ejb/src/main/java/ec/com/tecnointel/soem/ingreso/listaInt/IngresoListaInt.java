@@ -32,4 +32,6 @@ public interface IngresoListaInt {
 
 	long contarRegistros2(Ingreso ingreso, LocalDate fechaEmisDesde, LocalDate fechaEmisHasta) throws Exception;
 
+	boolean existeNumeroAutorizacion(String autorizacion);
+
 }

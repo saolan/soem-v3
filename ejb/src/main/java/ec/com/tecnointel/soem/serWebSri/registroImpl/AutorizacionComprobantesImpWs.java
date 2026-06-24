@@ -12,7 +12,7 @@ import jakarta.ejb.Stateless;
 @Stateless
 public class AutorizacionComprobantesImpWs implements AutorizacionComprobantesWsInt, Serializable {
 
-	private static final long serialVersionUID = -7105591308924058363L;
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public RespuestaComprobante autorizarComprobante(String proxyIpUrl, String puerto, String ambiente,
@@ -31,23 +31,14 @@ public class AutorizacionComprobantesImpWs implements AutorizacionComprobantesWs
 		return autorizacionComprobantesUtil.obtenerEstadoAutorizacion();
 
 	}
-	
-	@Override
-	public void validarRespuestaAutorizacion(AutorizacionDTO autorizacionDTO, String nombreArchivo, String rutaAutorizados) throws Exception {
-		
-		AutorizacionComprobantesUtil autorizacionComprobantesUtil = new AutorizacionComprobantesUtil(nombreArchivo);
-		
-		autorizacionComprobantesUtil.validarRespuestaAutorizacion(autorizacionDTO, rutaAutorizados);
-		
-	}
 
-	// Metodo creado para descargar xml y cargar la compra con la clave de acceso
 	@Override
-	public void crearArchivoXml(AutorizacionDTO autorizacionDTO, String nombreArchivo, String rutaDescargados) throws Exception {
-		
+	public void validarRespuestaAutorizacion(AutorizacionDTO autorizacionDTO, String nombreArchivo,
+			String rutaAutorizados) throws Exception {
+
 		AutorizacionComprobantesUtil autorizacionComprobantesUtil = new AutorizacionComprobantesUtil(nombreArchivo);
-		
-		autorizacionComprobantesUtil.crearArchivoXml(autorizacionDTO, rutaDescargados);
-		
+
+		autorizacionComprobantesUtil.validarRespuestaAutorizacion(autorizacionDTO, rutaAutorizados);
+
 	}
 }

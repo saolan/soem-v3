@@ -424,8 +424,7 @@
 
 									<ui:fragment rendered="#{ventaControl.rolPermiso.get(3200)}">
 										<div class="col-12 md:col-1">
-											<p:outputLabel value="Disponible"
-												style="text-align:left" />
+											<p:outputLabel value="Disponible" style="text-align:left" />
 										</div>
 
 										<div class="field col-12 md:col-3">
@@ -636,7 +635,8 @@
 
 
 			<p:dialog widgetVar="productoDetalleDialogo" fitViewport="true"
-				width="99%" header="Producto Detalle" modal="true" resizable="false">
+				width="99%" header="Producto Detalle" modal="true" resizable="false"
+				onHide="enfocarComponente('#{ventaControl.ventaDetaAlSeleProd}')">
 
 				<p:ajax event="close" update="ventaForm:panelBuscar" />
 
@@ -751,7 +751,8 @@
 
 			<p:dialog id="controlStock" widgetVar="controlStockDialogo"
 				fitViewport="true" width="99%" closable="false" modal="true"
-				resizable="false" focus="aceptarcontrolStockDialogo">
+				resizable="false" focus="aceptarcontrolStockDialogo"
+				onHide="enfocarComponente('#{ventaControl.ventaDetaAlSeleProd}')">
 
 				<p:panel id="controlStockInfo">
 
@@ -838,7 +839,7 @@
 
 			<p:dialog id="formaPago" widgetVar="formaPagoDialogo"
 				responsive="true" width="99%" fitViewport="true"
-				onHide="moverCursor('seleccionCxc','#{ventaControl.ventaDetaAlSeleProd}')"
+				onHide="enfocarComponente('#{ventaControl.ventaDetaAlSeleProd}')"
 				focus="procesarDialogo" header="Cobro" modal="true">
 
 				<div class="card ui-fluid">
@@ -1312,10 +1313,9 @@
 		</h:form>
 
 		<p:dialog id="seleccionarClienteDialogo" fitViewport="true"
-			onHide="moverCursor('seleccionarClienteDialogo','#{ventaControl.ventaDetaAlSeleProd}')"
+			onHide="enfocarComponente('#{ventaControl.ventaDetaAlSeleProd}')"
 			widgetVar="seleccionarClienteDialogo" width="99%" header="Clientes"
 			modal="true" resizable="false">
-
 
 			<h:form>
 
@@ -1621,7 +1621,8 @@
 
 		<p:dialog id="egreNotaDialogo" widgetVar="egreNotaDialogo" width="99%"
 			header="Información Adicional" modal="true" resizable="false"
-			fitViewport="true" closable="false">
+			fitViewport="true" closable="false"
+			onHide="enfocarComponente('#{ventaControl.ventaDetaAlSeleProd}')">
 
 			<h:form id="egreNotaForm">
 
@@ -1724,6 +1725,11 @@
 		         document.getElementById(capturarFocus).focus();
             });
 
+	        function enfocarComponente(id, tiempo = 100){
+	            setTimeout(function(){
+	                PrimeFaces.focus(id);
+	            }, tiempo);
+	        }
 	        
 		</script>
 	</ui:define>

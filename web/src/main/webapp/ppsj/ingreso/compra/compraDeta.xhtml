@@ -1737,8 +1737,9 @@
 								<p:outputLabel for="claveAcce" value="Autorización" />
 								<p:inputText id="claveAcce" value="#{compraControl.claveAcce}"
 									required="true" requiredMessage="Ingrese autorizacion a cargar">
-									<p:ajax event="change"
-										update="aceptarCargarDesdeArchivo,aceptarCargarDesdeSri" />
+									<p:ajax event="blur"
+										listener="#{compraControl.validarIngresoNumeroAutorizacion}"
+										process="@this" update="aceptarCargarDesdeSri, aceptarCargarDesdeArchivo" />
 								</p:inputText>
 							</div>
 
@@ -1770,7 +1771,7 @@
 					value="Cargar desde archivo XML"
 					action="#{compraControl.cargarXmlDesdeArchivo}"
 					oncomplete="PF('cargarCompraDialogo').hide();"
-					disabled="#{compraControl.claveAcce == null}"
+					disabled="#{compraControl.claveAcce == null or compraControl.existeRetencionNumeroAutorizacion}"
 					update="compraForm:autori, compraForm:serie1, compraForm:serie2, compraForm:numero, compraForm:fechaRegistro, compraForm:fechaEmision, compraForm:persProvApelli, compraForm:ingresoDetaList,
 							compraForm:totalDocu,compraForm:gridTotal, compraForm:ingrDimmList">
 					<o:skipValidators />
@@ -1780,7 +1781,7 @@
 					ajax="true" value="Cargar desde SRI"
 					action="#{compraControl.cargarXmlDesdeSri}"
 					oncomplete="PF('cargarCompraDialogo').hide();"
-					disabled="#{compraControl.claveAcce == null}"
+					disabled="#{compraControl.claveAcce == null or compraControl.existeRetencionNumeroAutorizacion}"
 					update="compraForm:autori, compraForm:serie1, compraForm:serie2, compraForm:numero, compraForm:fechaRegistro, compraForm:fechaEmision, compraForm:persProvApelli, compraForm:ingresoDetaList,
 							compraForm:totalDocu,compraForm:gridTotal, compraForm:ingrDimmList">
 

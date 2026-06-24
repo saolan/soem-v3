@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ec.com.saolan.soem.compartido.excepcion.InfraestructuraExcepcion;
 import ec.com.tecnointel.soem.parametro.modelo.Parametro;
 import ec.com.tecnointel.soem.parametro.registroInt.ParametroRegisInt;
 import jakarta.annotation.PostConstruct;
@@ -16,10 +17,10 @@ import jakarta.inject.Inject;
 @Singleton
 @Startup
 @Lock(LockType.READ)
-public class ParametroDocuElectronicoCache implements Serializable {
+public class ParametroConexionSriCache implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = Logger.getLogger(ParametroDocuElectronicoCache.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ParametroConexionSriCache.class.getName());
 
 	@Inject
 	ParametroRegisInt parametroRegis;
@@ -29,7 +30,6 @@ public class ParametroDocuElectronicoCache implements Serializable {
 	private Parametro proxyPuerto;
 	private Parametro urlProduccion;
 	private Parametro urlPruebas;
-	private Parametro rutaDescargados;
 
 	// -- Parámetros generales --
 //	private Parametro filasPagina;
@@ -40,21 +40,21 @@ public class ParametroDocuElectronicoCache implements Serializable {
 
 	@PostConstruct
 	public void inicializar() {
-		cargarParametrosSri();
+		cargarParametroDocuElectronico();
 //		cargarParametrosGenerales();
 //		cargarParametrosEmail();
 	}
 
 	// Métodos privados por grupo, fácil de mantener
-	private void cargarParametrosSri() {
+	private void cargarParametroDocuElectronico() {
 		try {
 			proxyIp = parametroRegis.buscarPorId(Parametro.class, 3211);
 			proxyPuerto = parametroRegis.buscarPorId(Parametro.class, 3212);
 			urlProduccion = parametroRegis.buscarPorId(Parametro.class, 3220);
 			urlPruebas = parametroRegis.buscarPorId(Parametro.class, 3221);
-			rutaDescargados = parametroRegis.buscarPorId(Parametro.class, 4251);
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error al cargar parámetros SRI", e);
+			LOGGER.log(Level.SEVERE, "Error al buscar parametros de conexión al SRI", e);
+			throw new InfraestructuraExcepcion("Error al buscar parametros de conexión al SRI", e);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class ParametroDocuElectronicoCache implements Serializable {
 	// Refresco por grupo o total
 	@Lock(LockType.WRITE)
 	public void refrescarSri() {
-		cargarParametrosSri();
+		cargarParametroDocuElectronico();
 	}
 
 	@Lock(LockType.WRITE)
@@ -102,20 +102,4 @@ public class ParametroDocuElectronicoCache implements Serializable {
 	public Parametro getUrlPruebas() {
 		return urlPruebas;
 	}
-
-	public Parametro getRutaDescargados() {
-		return rutaDescargados;
-	}
-
-//	public Parametro getFilasPagina() {
-//		return filasPagina;
-//	}
-
-//	public Parametro getEmailHost() {
-//		return emailHost;
-//	}
-//
-//	public Parametro getEmailPuerto() {
-//		return emailPuerto;
-//	}
 }
