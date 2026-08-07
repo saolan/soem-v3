@@ -80,6 +80,8 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 	String leyenda2;
 	String msgInfoAdicional;
 
+	public static final String RUC_PROVEEDOR_SISTEMA = "RUC Proveedor";
+
 	private static final long serialVersionUID = 6269695413974755962L;
 
 	@Inject
@@ -87,7 +89,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 
 	@Inject
 	ProdDimmListaInt prodDimmLista;
-	
+
 	@Override
 	public InfoTributaria cargarInfoTributaria(Sucursal sucursal, String codigoDocu, String serie1, String serie2,
 			String numero, String ambien, String tipoEmis, String claveAcce) {
@@ -713,8 +715,8 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 
 	@Override
 	public Object generarComprobanteElectronicoLiquidacion(Ingreso ingreso, List<IngrDeta> ingrDetas,
-			FormPagoMoviIngr formPagoMoviIngr, String codigoReteIva, String codigoReteRenta,
-			String codigoReteIsd, String codigoIva, String codigoIce, String codigoIrbpnr) {
+			FormPagoMoviIngr formPagoMoviIngr, String codigoReteIva, String codigoReteRenta, String codigoReteIsd,
+			String codigoIva, String codigoIce, String codigoIrbpnr) {
 
 //		Este codigo es una parte de calcularTotalDocu
 		BigDecimal totalBrutoDeta = new BigDecimal(0);
@@ -760,10 +762,12 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 
 						impuesto.setCodigo(codigoIva);
 						impuesto.setBaseImponible(ingrDeta.getTotal().setScale(2, RoundingMode.HALF_UP));
-						impuesto.setValor(ingrDeta.getTotal().multiply(ingrDetaImpu.getPorcen().divide(new BigDecimal(100)))
-								.setScale(2, RoundingMode.HALF_UP));
+						impuesto.setValor(
+								ingrDeta.getTotal().multiply(ingrDetaImpu.getPorcen().divide(new BigDecimal(100)))
+										.setScale(2, RoundingMode.HALF_UP));
 						impuesto.setCodigoPorcentaje(ingrDetaImpu.getCodigo());
-						impuesto.setTarifa(ingrDetaImpu.getPorcen().setScale(2, RoundingMode.HALF_UP).stripTrailingZeros());
+						impuesto.setTarifa(
+								ingrDetaImpu.getPorcen().setScale(2, RoundingMode.HALF_UP).stripTrailingZeros());
 
 						impuestos.getImpuesto().add(impuesto);
 						detalle.setImpuestos(impuestos);
@@ -778,7 +782,8 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 
 		InfoAdicional infoAdicional = generarInformacionAdicionalLiquidacion(ingreso);
 		liquidacionCompra.setInfoTributaria(this.cargarInfoTributaria(ingreso));
-		liquidacionCompra.setInfoLiquidacionCompra(this.cargarInfoLiquidacion(ingreso, codigoIva, totalDocus, formPagoMoviIngr));
+		liquidacionCompra
+				.setInfoLiquidacionCompra(this.cargarInfoLiquidacion(ingreso, codigoIva, totalDocus, formPagoMoviIngr));
 
 		if (detalles != null) {
 			liquidacionCompra.setDetalles(detalles);
@@ -899,7 +904,8 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 
 						// Se cambia el valor del totalNetoDeta por el valor del IVA
 //						totalNetoDeta = totalNetoDeta.multiply(this.dimmIva.getPorcen()).divide(new BigDecimal(100));
-						totalNetoDeta = totalNetoDeta.multiply(prodDimmIva.getDimm().getPorcen()).divide(new BigDecimal(100));
+						totalNetoDeta = totalNetoDeta.multiply(prodDimmIva.getDimm().getPorcen())
+								.divide(new BigDecimal(100));
 //						Se acumula iva del ice al subtotal Retencion Iva
 						totalNetoDeta = totalNetoDeta.add(ivaIceRete);
 //						Si no se coloca esta variable en cero acumula el ice para todos los productos en la factura 
@@ -1036,7 +1042,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 				prodDimmIva = prodDimmRecorrer;
 			}
 		}
-		
+
 		return prodDimmIva;
 	}
 
@@ -1048,11 +1054,10 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return prodDimms;
 	}
 
-	
 	// Se llama solo desde aqui no hay que usar @Override
 	private Factura.InfoAdicional generarInformacionAdicionalFactura(Egreso egreso) {
 
@@ -1083,11 +1088,11 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 //		y si en parametros (3172) esta activado estos mensajes 
 		if (!this.msgInfoAdicional.equals("nulo")) {
 			Factura.InfoAdicional.CampoAdicional campoAdicional = new Factura.InfoAdicional.CampoAdicional();
-			campoAdicional.setNombre(this.msgInfoAdicional);
+			campoAdicional.setNombre(RUC_PROVEEDOR_SISTEMA);
 			campoAdicional.setValue(this.msgInfoAdicional);
 			infoAdicional.getCampoAdicional().add(campoAdicional);
 		}
-		
+
 //		Agrega información adicional de la tabla egreNota
 		for (EgreNota egreNota : egreso.getEgreNotas()) {
 			Factura.InfoAdicional.CampoAdicional campoAdicional = new Factura.InfoAdicional.CampoAdicional();
@@ -1136,7 +1141,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 //		y si en parametros (3172) esta activado estos mensajes 
 		if (!this.msgInfoAdicional.equals("nulo")) {
 			NotaCredito.InfoAdicional.CampoAdicional campoAdicional = new NotaCredito.InfoAdicional.CampoAdicional();
-			campoAdicional.setNombre(this.msgInfoAdicional);
+			campoAdicional.setNombre(RUC_PROVEEDOR_SISTEMA);
 			campoAdicional.setValue(this.msgInfoAdicional);
 			infoAdicional.getCampoAdicional().add(campoAdicional);
 		}
@@ -1190,11 +1195,11 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 //		y si en parametros (3172) esta activado estos mensajes 
 		if (!this.msgInfoAdicional.equals("nulo")) {
 			NotaDebito.InfoAdicional.CampoAdicional campoAdicional = new NotaDebito.InfoAdicional.CampoAdicional();
-			campoAdicional.setNombre(this.msgInfoAdicional);
+			campoAdicional.setNombre(RUC_PROVEEDOR_SISTEMA);
 			campoAdicional.setValue(this.msgInfoAdicional);
 			infoAdicional.getCampoAdicional().add(campoAdicional);
 		}
-		
+
 //		Agrega información adicional de la tabla egreNota
 		for (EgreNota egreNota : egreso.getEgreNotas()) {
 			NotaDebito.InfoAdicional.CampoAdicional campoAdicional = new NotaDebito.InfoAdicional.CampoAdicional();
@@ -1243,7 +1248,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 //		y si en parametros (3172) esta activado estos mensajes 
 		if (!this.msgInfoAdicional.equals("nulo")) {
 			GuiaRemision.InfoAdicional.CampoAdicional campoAdicional = new GuiaRemision.InfoAdicional.CampoAdicional();
-			campoAdicional.setNombre(this.msgInfoAdicional);
+			campoAdicional.setNombre(RUC_PROVEEDOR_SISTEMA);
 			campoAdicional.setValue(this.msgInfoAdicional);
 			infoAdicional.getCampoAdicional().add(campoAdicional);
 		}
@@ -1288,9 +1293,8 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 //		Estas Leyendas sale dependiendo del tipo de contrinuyente
 //		y si en parametros (3172) esta activado estos mensajes 
 		if (!this.msgInfoAdicional.equals("nulo")) {
-
 			CampoAdicional campoAdicional = new CampoAdicional();
-			campoAdicional.setNombre(this.msgInfoAdicional);
+			campoAdicional.setNombre(RUC_PROVEEDOR_SISTEMA);
 			campoAdicional.setValue(this.msgInfoAdicional);
 			infoAdicional.getCampoAdicional().add(campoAdicional);
 		}
@@ -1328,7 +1332,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 //		y si en parametros (3172) esta activado estos mensajes 
 		if (!this.msgInfoAdicional.equals("nulo")) {
 			ComprobanteRetencion.InfoAdicional.CampoAdicional campoAdicional = new ComprobanteRetencion.InfoAdicional.CampoAdicional();
-			campoAdicional.setNombre(this.msgInfoAdicional);
+			campoAdicional.setNombre(RUC_PROVEEDOR_SISTEMA);
 			campoAdicional.setValue(this.msgInfoAdicional);
 			infoAdicional.getCampoAdicional().add(campoAdicional);
 		}
@@ -1352,7 +1356,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 		try (Formatter formatter = new Formatter()) {
 			numero = formatter.format("%09d", egreso.getNumero()).toString();
 		}
-		
+
 		infoTributaria = cargarInfoTributaria(egreso.getSucursal(), egreso.getDocuEgre().getDimm().getCodigo(),
 				egreso.getSerie1(), egreso.getSerie2(), numero, egreso.getDocuEgre().getAmbien(),
 				egreso.getDocuEgre().getTipoEmis(), egreso.getClaveAcce());
@@ -1516,7 +1520,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 		infoNotaCredito.setIdentificacionComprador(egreso.getPersClie().getPersona().getCedulaRuc());
 
 		infoNotaCredito.setFechaEmision(Util.cambiarFormatoFechaString(egreso.getFechaEmis(), "dd/MM/yyyy"));
-		
+
 		int indice;
 		TotalDocu totalDocu = new TotalDocu();
 
@@ -1539,7 +1543,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 
 			infoNotaCredito.setNumDocModificado(numDocModificado);
 		}
-		
+
 		infoNotaCredito.setFechaEmisionDocSustento(Util.cambiarFormatoFechaString(egreso.getFechaEmis(), "dd/MM/yyyy"));
 		infoNotaCredito.setMotivo(egreso.getNota());
 
@@ -1552,7 +1556,8 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 
 	}
 
-	public InfoNotaDebito cargarInfoNotaDebito(Egreso egreso, List<TotalDocu> totalDocus, FpmeFormPago fpmeFormPago) throws Exception {
+	public InfoNotaDebito cargarInfoNotaDebito(Egreso egreso, List<TotalDocu> totalDocus, FpmeFormPago fpmeFormPago)
+			throws Exception {
 
 		// infoFactura.setCompensaciones(); esta campo no existe en la ficha
 		// t�cnica
@@ -1610,10 +1615,10 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 
 			Egreso egresoModificado = egresoRegis.buscarPorId(Egreso.class, egreso.getEgreso().getEgresoId());
 			infoNotaDebito.setCodDocModificado(egresoModificado.getDocuEgre().getDimm().getCodigo());
-			
+
 			infoNotaDebito.setNumDocModificado(numDocModificado);
 		}
-		
+
 		infoNotaDebito.setFechaEmisionDocSustento(Util.cambiarFormatoFechaString(egreso.getFechaEmis(), "dd/MM/yyyy"));
 
 		infoNotaDebito.setPagos(cargarPagoNotaDebito(fpmeFormPago, totalDocus));
@@ -1657,7 +1662,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 		return infoGuiaRemision;
 	}
 
-	public InfoLiquidacionCompra cargarInfoLiquidacion(Ingreso ingreso, String codigoIva, 
+	public InfoLiquidacionCompra cargarInfoLiquidacion(Ingreso ingreso, String codigoIva,
 			List<ec.com.tecnointel.soem.ingreso.modelo.TotalDocu> totalDocus, FormPagoMoviIngr formPagoMoviIngr) {
 
 		String apellidoNombre = this.apellidoNombre(ingreso.getPersProv().getPersona().getApelli(),
@@ -1751,7 +1756,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 		} else {
 			infoComprobanteRetencion.setObligadoContabilidad("NO");
 		}
-		
+
 		infoComprobanteRetencion.setTipoIdentificacionSujetoRetenido(ingreso.getPersProv().getDimm().getCodigo());
 		infoComprobanteRetencion.setRazonSocialSujetoRetenido(apellidoNombre);
 		infoComprobanteRetencion.setIdentificacionSujetoRetenido(ingreso.getPersProv().getPersona().getCedulaRuc());
@@ -1789,17 +1794,17 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 		docSustento.setCodDocSustento(ingreso.getDocuIngr().getDimm().getCodigo());
 
 //		Opcional y poner los 15 caracteres incluir cero a la izquierda
-		
+
 		try (Formatter formatter = new Formatter()) {
 			String numero = formatter.format("%09d", ingreso.getNumero()).toString();
 			docSustento.setNumDocSustento(ingreso.getSerie1() + ingreso.getSerie2() + numero);
 		}
-		
+
 		docSustento.setFechaEmisionDocSustento(Util.cambiarFormatoFechaString(ingreso.getFechaEmis(), "dd/MM/yyyy"));
-		
+
 //		Opcional
 		docSustento.setFechaRegistroContable(Util.cambiarFormatoFechaString(ingreso.getFechaEmis(), "dd/MM/yyyy"));
-		
+
 //		Opcional
 		docSustento.setNumAutDocSustento(ingreso.getAutori());
 //		Pago a residente o a no residente
@@ -2447,12 +2452,14 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 
 		return pago;
 	}
-	
-	private ec.com.tecnointel.soem.documeElec.modelo.liquiCompra.Pagos cargarPagoLiquidacion(FormPagoMoviIngr formPagoMoviIngr, List<ec.com.tecnointel.soem.ingreso.modelo.TotalDocu> totalDocus, Ingreso ingreso) {
+
+	private ec.com.tecnointel.soem.documeElec.modelo.liquiCompra.Pagos cargarPagoLiquidacion(
+			FormPagoMoviIngr formPagoMoviIngr, List<ec.com.tecnointel.soem.ingreso.modelo.TotalDocu> totalDocus,
+			Ingreso ingreso) {
 
 		ec.com.tecnointel.soem.documeElec.modelo.liquiCompra.Pagos pagos = new ec.com.tecnointel.soem.documeElec.modelo.liquiCompra.Pagos();
 		ec.com.tecnointel.soem.documeElec.modelo.liquiCompra.Pagos.Pago pago = new ec.com.tecnointel.soem.documeElec.modelo.liquiCompra.Pagos.Pago();
-		
+
 		if (formPagoMoviIngr.getFormPago() != null) {
 			pago.setFormaPago(formPagoMoviIngr.getFormPago().getDimm().getCodigo());
 		} else {
@@ -2468,7 +2475,7 @@ public class DocumeElectRegisImp implements DocumeElecRegisInt, Serializable {
 				totalDocumento = totalDocumento.add(totalDocu.getValor().abs());
 			}
 		}
-		
+
 		pago.setPlazo(new BigDecimal(ingreso.getDiasPlaz()));
 		pago.setTotal(totalDocumento.setScale(2, RoundingMode.HALF_UP));
 
