@@ -23,7 +23,7 @@
         <artifactId>soem</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>soem-ear-3.0.3</artifactId>
+    <artifactId>soem-ear-3.0.4</artifactId>
     <packaging>ear</packaging>
     <name>soem - ear</name>
     <description>This is the EAR POM file</description>
