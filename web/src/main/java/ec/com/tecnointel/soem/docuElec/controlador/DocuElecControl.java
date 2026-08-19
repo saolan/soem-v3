@@ -593,30 +593,30 @@ public class DocuElecControl extends PaginaControl implements Serializable {
 		retencionRecibidos.clear();
 	}
 
-//	public void procesarRecibidos() {
-//
-//		this.organizarListaEgresos();
-//		List<Object> objetos = new ArrayList<Object>(this.egresoRecibidos);
-//		this.enviarRecibidos(objetos);
-//
-//		this.organizarListaIngresos();
-//		objetos = new ArrayList<Object>(this.ingresoRecibidos);
-//		this.enviarRecibidos(objetos);
-//
-//		this.organizarListaRetenciones();
-//		objetos = new ArrayList<Object>(this.retencionRecibidos);
-//		this.enviarRecibidos(objetos);
-//
-//		this.egresos.clear();
-//		this.ingresos.clear();
-//		this.retencions.clear();
-//		this.egresoRecibidos.clear();
-//		this.ingresoRecibidos.clear();
-//		this.retencionRecibidos.clear();
+	public void procesarRecibidos() {
 
-//		FacesContext.getCurrentInstance().addMessage(null,
-//				new FacesMessage(FacesMessage.SEVERITY_INFO, null, "Documentos recibidos reprocesados y reenviados"));
-//	}
+		this.separarListaEgresosRecibidosNoEnviados();
+		List<Object> objetos = new ArrayList<Object>(this.egresoRecibidos);
+		this.enviarRecibidos(objetos);
+
+		this.separarListaIngresosRecibidosNoEnviados();
+		objetos = new ArrayList<Object>(this.ingresoRecibidos);
+		this.enviarRecibidos(objetos);
+
+		this.separarListaRetencionesRecibidasNoEnviadas();
+		objetos = new ArrayList<Object>(this.retencionRecibidos);
+		this.enviarRecibidos(objetos);
+
+		this.egresos.clear();
+		this.ingresos.clear();
+		this.retencions.clear();
+		this.egresoRecibidos.clear();
+		this.ingresoRecibidos.clear();
+		this.retencionRecibidos.clear();
+
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_INFO, null, "Documentos recibidos reprocesados y reenviados"));
+	}
 
 //	public void procesarOtros() {
 //
@@ -654,11 +654,13 @@ public class DocuElecControl extends PaginaControl implements Serializable {
 
 	public void procesarTodos() {
 
-		this.organizarListaEgresos();
-		this.organizarListaIngresos();
-		this.organizarListaRetenciones();
+//		De egresos pasa a egresoRecibidos
+		this.separarListaEgresosRecibidosNoEnviados();;
+		this.separarListaIngresosRecibidosNoEnviados();
+		this.separarListaRetencionesRecibidasNoEnviadas();
 
 		if (reenviarEgresosRecibida) {
+//			De egresoRecibidos pasa a egresoNoEnviados
 			agruparEgresosRecibidas();
 		}
 
@@ -670,16 +672,7 @@ public class DocuElecControl extends PaginaControl implements Serializable {
 			agruparRetencionesRecibidas();
 		}
 
-		List<Object> objetosEgresosRecibidas = new ArrayList<Object>(this.egresoRecibidos);
-		this.enviarRecibidos(objetosEgresosRecibidas);
-
-		List<Object> objetosIngresosRecibidas = new ArrayList<Object>(this.ingresoRecibidos);
-		this.enviarRecibidos(objetosIngresosRecibidas);
-
-		List<Object> objetosRetencionesRecibidas = new ArrayList<Object>(this.retencionRecibidos);
-		this.enviarRecibidos(objetosRetencionesRecibidas);
-
-//		Envia los que tiene otro estado diferenta a RECIBIDA
+//		Procesa las listas egresoNoEnviados, ingresosNoEnviados, retencionNoEnviados
 		this.procesarComprobantesElectronicos();
 
 		this.egresos.clear();
@@ -693,77 +686,67 @@ public class DocuElecControl extends PaginaControl implements Serializable {
 				new FacesMessage(FacesMessage.SEVERITY_INFO, null, "Documentos Reprocesados"));
 	}
 
-	public void organizarListaEgresos() {
+	public void separarListaEgresosRecibidosNoEnviados() {
 
-		egresoRecibidos.addAll(egresos);
+		for (Egreso egreso : this.egresos) {
 
-//		Se comento estas lineas porque en el estado que devuelve el SRI es inconsistente
-//		a veces sale recibida, Could no send a message, html, o no sale el mensaje NO AUTORIZADO
-//		Entonces se pone toda las lista para consultar la autorizacion
-//		y cuando se marca la casilla reenviar se vuelve a firmar, enviar, autorizar y enviar correo.
-//		for (Egreso egreso : this.egresos) {
-//
-//			switch (egreso.getEstadoDocuElec().toLowerCase()) {
-//
-//			case "recibida":
-//
-//				egresoRecibidos.add(egreso);
-//
-//				break;
-//
-//			default:
-//
-//				egresoNoEnviados.add(egreso);
-//
-//				break;
-//			}
-//		}
+			switch (egreso.getEstadoDocuElec().toLowerCase()) {
+
+			case "recibida":
+
+				egresoRecibidos.add(egreso);
+
+				break;
+
+			default:
+
+				egresoNoEnviados.add(egreso);
+
+				break;
+			}
+		}
 	}
 
-	public void organizarListaIngresos() {
+	public void separarListaIngresosRecibidosNoEnviados() {
 
-		ingresoRecibidos.addAll(ingresos);
+		for (Ingreso ingreso : this.ingresos) {
 
-//		for (Ingreso ingreso : this.ingresos) {
-//
-//			switch (ingreso.getEstadoDocuElec().toLowerCase()) {
-//
-//			case "recibida":
-//
-//				ingresoRecibidos.add(ingreso);
-//
-//				break;
-//
-//			default:
-//
-//				ingresoNoEnviados.add(ingreso);
-//
-//				break;
-//			}
-//		}
+			switch (ingreso.getEstadoDocuElec().toLowerCase()) {
+
+			case "recibida":
+
+				ingresoRecibidos.add(ingreso);
+
+				break;
+
+			default:
+
+				ingresoNoEnviados.add(ingreso);
+
+				break;
+			}
+		}
 	}
 
-	public void organizarListaRetenciones() {
+	public void separarListaRetencionesRecibidasNoEnviadas() {
 
-		retencionRecibidos.addAll(retencions);
+		for (Retencion retencion : this.retencions) {
 
-//		for (Retencion retencion : this.retencions) {
-//
-//			switch (retencion.getEstadoDocuElec().toLowerCase()) {
-//
-//			case "recibida":
-//
-//				retencionRecibidos.add(retencion);
-//
-//				break;
-//
-//			default:
-//
-//				retencionNoEnviados.add(retencion);
-//
-//				break;
-//			}
-//		}
+			switch (retencion.getEstadoDocuElec().toLowerCase()) {
+
+			case "recibida":
+
+				retencionRecibidos.add(retencion);
+
+				break;
+
+			default:
+
+				retencionNoEnviados.add(retencion);
+
+				break;
+			}
+		}
 	}
 
 	public void enviarRecibidos(List<Object> objectos) {
@@ -920,8 +903,8 @@ public class DocuElecControl extends PaginaControl implements Serializable {
 				try {
 					fpmeFormPagos = fpmeFormPagoLista.buscar(fpmeFormpago, null);
 				} catch (Exception e) {
-					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, null,
-							"Error al buscar forma de pago - FpmeFormPago: " + egreso.getNumero()));
+					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL,
+							null, "Error al buscar forma de pago - FpmeFormPago: " + egreso.getNumero()));
 					e.printStackTrace();
 				}
 			}
@@ -963,7 +946,7 @@ public class DocuElecControl extends PaginaControl implements Serializable {
 //			se manda fpmeFormPago vacio
 			for (FpmeFormPago fpmeFormPagoRecorrer : fpmeFormPagos) {
 //				if (fpmeFormPagoRecorrer.getFormPago().getTipo().equals("FP")) {
-					fpmeFormPago = fpmeFormPagoRecorrer;
+				fpmeFormPago = fpmeFormPagoRecorrer;
 //				}
 			}
 
