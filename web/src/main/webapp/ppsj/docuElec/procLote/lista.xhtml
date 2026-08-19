@@ -11,7 +11,7 @@
 		<f:event type="preRenderView" listener='#{docuElecControl.buscar}' />
 
 	</f:metadata>
-    
+
 	<ui:define name="main">
 
 		<h:form>
@@ -24,9 +24,13 @@
 				<p:commandLink id="buscar" ajax="false" value="Buscar"
 					styleClass="boton" action="#{docuElecControl.iniciarPagina}" />
 
+				<p:commandLink id="procesarRecibidos" ajax="false"
+					value="Consultar Autorizacion Recibidos" styleClass="boton"
+					action="#{docuElecControl.procesarRecibidos}" />
+
 				<h:panelGroup id="panelProcesarTodos">
 					<p:commandLink id="procesarTodos" ajax="false"
-						value="Procesar Todos" styleClass="boton"
+						value="Reprocesar No Autorizados" styleClass="boton"
 						action="#{docuElecControl.procesarTodos}"
 						disabled="#{docuElecControl.bloquearBotonProcesarTodos}" />
 				</h:panelGroup>
@@ -73,20 +77,20 @@
 
 						<div class="col-12 md:col-4">
 							<p:selectBooleanCheckbox id="reenviarEgresos"
-								itemLabel="Reenviar&#160;Ventas"
+								itemLabel="Reenviar&#160;Ventas&#160;Recibidas"
 								value="#{docuElecControl.reenviarEgresosRecibida}" />
 						</div>
 
 						<div class="col-12 md:col-4">
 							<p:selectBooleanCheckbox id="reenviarIngresos"
-								itemLabel="Reenviar&#160;Compras"
+								itemLabel="Reenviar&#160;Compras&#160;Recibidas"
 								value="#{docuElecControl.reenviarIngresosRecibida}" />
 						</div>
 
 						<div class="col-12 md:col-4">
 
 							<p:selectBooleanCheckbox id="reenviarRetenciones"
-								itemLabel="Reenviar&#160;Retenciones"
+								itemLabel="Reenviar&#160;Retenciones&#160;Recibidas"
 								value="#{docuElecControl.reenviarRetencionesRecibida}" />
 						</div>
 
@@ -217,7 +221,7 @@
 									<div class="product-list-detail">
 										<div>#{_retencion.serie1}-#{_retencion.serie2}-#{_retencion.numero}</div>
 									</div>
-									
+
 									<div class="product-list-detail">
 										<div>#{_retencion.ingreso.persProv.persona.cedulaRuc}</div>
 										<div>#{_retencion.ingreso.persProv.persona.apelli}
