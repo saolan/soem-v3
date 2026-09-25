@@ -40,6 +40,7 @@ import ec.com.saolan.soem.compartido.excepcion.IntegracionExcepcion;
 import ec.com.saolan.soem.compartido.excepcion.ValidacionNegocioExcepcion;
 import ec.com.saolan.soem.sri.aplicacion.importacion.factura.ImportarFacturaArchivoServicio;
 import ec.com.saolan.soem.sri.aplicacion.importacion.factura.ImportarFacturaSriServicio;
+import ec.com.saolan.soem.sri.aplicacion.importacion.factura.IngresoParcialExcepcion;
 import ec.com.saolan.soem.sri.infraestructura.importacion.ImportarDocumeElecSriParametros;
 import ec.com.tecnointel.soem.contabilidad.modelo.Transaccion;
 import ec.com.tecnointel.soem.contabilidad.registroInt.TransaccionCompraInt;
@@ -6116,21 +6117,10 @@ public class CompraControl extends PaginaControl implements Serializable {
 				return;
 			}
 
-			ingresoBuscado.setDocuIngr(ingreso.getDocuIngr());
-			ingreso = ingresoBuscado;
-			ingrDetaDataTable = new ArrayList<>(ingreso.getIngrDetas());
-//			Se coloca este clear porque la clase Retencion viene con un set de reteDetas y 
-//			tiene cascade en persist entonces al grabar sale error porque intenta grabar nuevamente
-//			con el clear deja el set vacio y grabar el list sin errores
-//			Se hace esto porque aqui se ve la retencion en pantalla, mientras que en compra no se ve
-//			la retencion entonces graba con el set de reteDeta
-//			La IA aconseja si el elemento es visual utilizar list e lugar de set
-			ingreso.getIngrDetas().clear();
-
-			calcularTotalIngres();
-
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
-					"Documento cargado desde SRI, revisar y procesar..."));
+			mostrarIngresoImportado(ingresoBuscado, FacesMessage.SEVERITY_INFO,
+					"Documento cargado desde SRI, revisar y procesar...");
+		} catch (IngresoParcialExcepcion e) {
+			mostrarIngresoImportado(e.getIngresoParcial(), FacesMessage.SEVERITY_WARN, e.getMessage());
 		} catch (ValidacionNegocioExcepcion e) {
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_WARN, null, e.getMessage()));
@@ -6144,6 +6134,25 @@ public class CompraControl extends PaginaControl implements Serializable {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, null,
 					"Ocurrió un error inesperado al cargar el documento desde el SRI."));
 		}
+	}
+
+//	Muestra en pantalla el Ingreso importado (completo o parcial) y el mensaje correspondiente
+	private void mostrarIngresoImportado(Ingreso ingresoBuscado, FacesMessage.Severity severidad, String mensaje) {
+
+		ingresoBuscado.setDocuIngr(ingreso.getDocuIngr());
+		ingreso = ingresoBuscado;
+		ingrDetaDataTable = new ArrayList<>(ingreso.getIngrDetas());
+//		Se coloca este clear porque la clase Retencion viene con un set de reteDetas y
+//		tiene cascade en persist entonces al grabar sale error porque intenta grabar nuevamente
+//		con el clear deja el set vacio y grabar el list sin errores
+//		Se hace esto porque aqui se ve la retencion en pantalla, mientras que en compra no se ve
+//		la retencion entonces graba con el set de reteDeta
+//		La IA aconseja si el elemento es visual utilizar list e lugar de set
+		ingreso.getIngrDetas().clear();
+
+		calcularTotalIngres();
+
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severidad, null, mensaje));
 	}
 
 	public String getClaveAcce() {
@@ -6191,21 +6200,10 @@ public class CompraControl extends PaginaControl implements Serializable {
 				return;
 			}
 
-			ingresoBuscado.setDocuIngr(ingreso.getDocuIngr());
-			ingreso = ingresoBuscado;
-			ingrDetaDataTable = new ArrayList<>(ingreso.getIngrDetas());
-//			Se coloca este clear porque la clase Retencion viene con un set de reteDetas y 
-//			tiene cascade en persist entonces al grabar sale error porque intenta grabar nuevamente
-//			con el clear deja el set vacio y grabar el list sin errores
-//			Se hace esto porque aqui se ve la retencion en pantalla, mientras que en compra no se ve
-//			la retencion entonces graba con el set de reteDeta
-//			La IA aconseja si el elemento es visual utilizar list e lugar de set
-			ingreso.getIngrDetas().clear();
-
-			calcularTotalIngres();
-
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, null,
-					"Documento cargado desde SRI, revisar y procesar..."));
+			mostrarIngresoImportado(ingresoBuscado, FacesMessage.SEVERITY_INFO,
+					"Documento cargado desde SRI, revisar y procesar...");
+		} catch (IngresoParcialExcepcion e) {
+			mostrarIngresoImportado(e.getIngresoParcial(), FacesMessage.SEVERITY_WARN, e.getMessage());
 		} catch (ValidacionNegocioExcepcion e) {
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_WARN, null, e.getMessage()));
