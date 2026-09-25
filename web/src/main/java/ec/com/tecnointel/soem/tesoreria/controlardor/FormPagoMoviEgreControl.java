@@ -1334,7 +1334,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		this.vendedorRestringido = false;
 		this.persVendPropio = null;
 
-		if (!this.rolPermiso.get(3210) || this.persUsuaSesion == null || this.persUsuaSesion.getPersonaId() == null) {
+		if (this.rolPermiso.get(3210) || this.persUsuaSesion == null || this.persUsuaSesion.getPersonaId() == null) {
 			return;
 		}
 
