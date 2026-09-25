@@ -89,6 +89,12 @@
 							itemLabel="#{dimm.descri}" itemValue="#{dimm.codigo}"/>
 					</p:selectOneMenu>
 					
+					<p:outputLabel value="Vendedor" />
+					<p:selectOneMenu id="persVendList" value="#{persClieControl.persClie.persVend}" converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{persClieControl.persVends}" var="perVend"
+							itemLabel="#{perVend.persona.apelli} #{perVend.persona.nombre}" itemValue="#{perVend}"/>
+					</p:selectOneMenu>
+
 					<p:outputLabel for="nota" value="Nota" />
 					<p:inputText id="nota"
 						value="#{persClieControl.persClie.nota}" styleClass="cajaTextoDescri"/>

@@ -227,6 +227,16 @@
 						<f:validateBean for="nombre" disabled="true" />
 					</p:inputText>
 
+					<p:outputLabel for="persVendFiltro" value="Vendedor" rendered="#{ventaControl.rolPermiso.get(3210)}" />
+					<p:selectOneMenu id="persVendFiltro"
+						value="#{ventaControl.persClie.persVend}"
+						converter="omnifaces.SelectItemsConverter"
+						rendered="#{ventaControl.rolPermiso.get(3210)}">
+						<f:selectItem itemLabel="Todos los vendedores" noSelectionOption="true" />
+						<f:selectItems value="#{ventaControl.persVends}" var="perVend"
+							itemLabel="#{perVend.persona.apelli} #{perVend.persona.nombre}" itemValue="#{perVend}" />
+					</p:selectOneMenu>
+
 				</h:panelGrid>
 				
 			</p:panel>

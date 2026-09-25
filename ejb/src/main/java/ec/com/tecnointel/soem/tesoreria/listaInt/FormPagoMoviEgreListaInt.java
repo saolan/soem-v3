@@ -2,6 +2,7 @@ package ec.com.tecnointel.soem.tesoreria.listaInt;
 
 import java.util.List;
 
+import ec.com.tecnointel.soem.egreso.modelo.PersVend;
 import ec.com.tecnointel.soem.tesoreria.modelo.FormPagoMoviEgre;
 import jakarta.ejb.Local;
 
@@ -9,13 +10,17 @@ import jakarta.ejb.Local;
 public interface FormPagoMoviEgreListaInt {
 
 	public void filasPagina(int filasPagina);
-	
-	
+
+
 	public List<FormPagoMoviEgre> buscarTodo(String columna) throws Exception;
 
 	public List<FormPagoMoviEgre> buscar(FormPagoMoviEgre formPagoMoviEgre, Integer pagina) throws Exception;
-	
+
+	public List<FormPagoMoviEgre> buscar(FormPagoMoviEgre formPagoMoviEgre, PersVend persVendFiltro, Integer pagina) throws Exception;
+
 	public long contarRegistros(FormPagoMoviEgre formPagoMoviEgre) throws Exception;
+
+	public long contarRegistros(FormPagoMoviEgre formPagoMoviEgre, PersVend persVendFiltro) throws Exception;
 
 	List<FormPagoMoviEgre> buscarTransaccion(FormPagoMoviEgre formPagoMoviEgre) throws Exception;
 

@@ -115,22 +115,29 @@ public class IngresoXmlMapeador implements Serializable {
 			throw new IntegracionExcepcion("Error al importar datos en cabecera de factura", e);
 		}
 
+		RuntimeException errorDetalle = null;
 		try {
 			ingreso.setIngrDetas(mapearIngrDetas(factura, ingreso, importarDocumeElecSriParametros));
 		} catch (ValidacionNegocioExcepcion e) {
 			LOGGER.log(Level.WARNING, e.getMessage());
-			throw e;
+			errorDetalle = e;
 		} catch (InfraestructuraExcepcion | IntegracionExcepcion e) {
 //			Se loguea donde el error nace, No en cada capa por donde pasa
 //			LOGGER.log(Level.SEVERE, e.getMessage());
-			throw e;
+			errorDetalle = e;
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Error al importar datos en detalle de factura", e);
-			throw new IntegracionExcepcion("Error al importar datos en detalle de factura", e);
+			errorDetalle = new IntegracionExcepcion("Error al importar datos en detalle de factura", e);
 		}
 
 		if (ingreso.getPersProv().getPersonaId() == null) {
 			insertarPersProv(ingreso.getPersProv());
+		}
+
+//		Si falló el detalle se informa al usuario mediante la excepción, pero se
+//		devuelve igualmente el Ingreso con la cabecera/proveedor ya cargados
+		if (errorDetalle != null) {
+			throw new IngresoParcialExcepcion(errorDetalle.getMessage(), ingreso, errorDetalle);
 		}
 
 		return ingreso;

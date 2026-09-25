@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -192,6 +193,8 @@ public class VentaControl extends PaginaControl implements Serializable {
 	private ProdPrec prodPrecSele;
 	private Precio precioPred;
 	private PersUsua persUsuaSesion;
+	private boolean vendedorRestringido;
+	private PersVend persVendPropio;
 	private PersClie persClie;
 	private PersClie persClieRegis;
 	private FormPagoMoviEgre formPagoMoviEgre;
@@ -378,6 +381,8 @@ public class VentaControl extends PaginaControl implements Serializable {
 
 		rolDocus = variablesSesion.getRolDocus();
 		rolPermiso = variablesSesion.getRolPermiso();
+
+		this.buscarPersVends();
 
 		if (variablesSesion.isActivarImagen()) {
 			ordenColumna = "codigo";
@@ -664,6 +669,10 @@ public class VentaControl extends PaginaControl implements Serializable {
 			this.persClieRegis.setDescueMaxi(new BigDecimal(0));
 			this.persClieRegis.setEstado(true);
 
+			if (this.vendedorRestringido) {
+				this.persClieRegis.setPersVend(this.persVendPropio);
+			}
+
 //			if (this.personaId != null) {
 
 //				Persona persona = new Persona();
@@ -772,7 +781,6 @@ public class VentaControl extends PaginaControl implements Serializable {
 			e.printStackTrace();
 		}
 
-		this.buscarPersVends();
 		this.mesas = this.buscarMesas();
 
 		if (this.egresoId != null) {
@@ -829,7 +837,7 @@ public class VentaControl extends PaginaControl implements Serializable {
 			this.grabarImprimirEstado = grabarImprVerificarEstado();
 //			Seleccionar cliente y vendedor predeterminado
 			this.egreso.setPersClie(variablesSesion.getPersClie());
-			this.egreso.setPersVend(variablesSesion.getPersVend());
+			this.egreso.setPersVend(this.vendedorRestringido ? this.persVendPropio : variablesSesion.getPersVend());
 
 //			Se asigna el descuento del cliente a la cabecera del documento
 			if (this.egreso.getPersClie().getDescueMaxi().compareTo(BigDecimal.ZERO) != 0) {
@@ -3295,6 +3303,31 @@ public class VentaControl extends PaginaControl implements Serializable {
 			e.printStackTrace();
 
 		}
+
+		this.restringirPersVendsPorPermiso();
+	}
+
+	private void restringirPersVendsPorPermiso() {
+
+		this.vendedorRestringido = false;
+		this.persVendPropio = null;
+
+		if (this.rolPermiso.get(3210) || this.persUsuaSesion == null || this.persUsuaSesion.getPersonaId() == null) {
+			return;
+		}
+
+		for (PersVend persVend : this.persVends) {
+			if (this.persUsuaSesion.getPersonaId().equals(persVend.getPersonaId())) {
+				this.persVendPropio = persVend;
+				break;
+			}
+		}
+
+		if (this.persVendPropio != null) {
+			this.persVends = Collections.singletonList(this.persVendPropio);
+			this.persClie.setPersVend(this.persVendPropio);
+			this.vendedorRestringido = true;
+		}
 	}
 
 	// <<<<<<<<<<<<<<<<<<<< METODOS ADICIONALES >>>>>>>>>>>>>>>>>>>>
@@ -4367,7 +4400,7 @@ public class VentaControl extends PaginaControl implements Serializable {
 
 //		Seleccionar cliente y vendedor predeterminado
 		egreso.setPersClie(variablesSesion.getPersClie());
-		egreso.setPersVend(variablesSesion.getPersVend());
+		egreso.setPersVend(this.vendedorRestringido ? this.persVendPropio : variablesSesion.getPersVend());
 
 		if (this.egreso.getDocuEgre().getDocumento().getFactor() == -1) {
 			egreso.setNota("Venta");
@@ -5315,6 +5348,10 @@ public class VentaControl extends PaginaControl implements Serializable {
 
 	public void setPersVends(List<PersVend> persVends) {
 		this.persVends = persVends;
+	}
+
+	public boolean isVendedorRestringido() {
+		return vendedorRestringido;
 	}
 
 	public List<Precio> getPrecios() {

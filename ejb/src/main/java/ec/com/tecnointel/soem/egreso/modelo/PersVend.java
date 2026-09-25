@@ -30,6 +30,7 @@ public class PersVend implements java.io.Serializable {
 	private Persona persona;
 	private boolean estado;
 	private Set<Egreso> egresos = new HashSet<Egreso>(0);
+	private Set<PersClie> persClies = new HashSet<PersClie>(0);
 
 	private static final long serialVersionUID = -2308733790406253098L;
 
@@ -90,6 +91,15 @@ public class PersVend implements java.io.Serializable {
 
 	public void setEgresos(Set<Egreso> egresos) {
 		this.egresos = egresos;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "persVend")
+	public Set<PersClie> getPersClies() {
+		return this.persClies;
+	}
+
+	public void setPersClies(Set<PersClie> persClies) {
+		this.persClies = persClies;
 	}
 
 	@Override

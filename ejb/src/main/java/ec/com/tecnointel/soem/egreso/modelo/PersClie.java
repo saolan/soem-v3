@@ -33,13 +33,15 @@ import jakarta.validation.constraints.Min;
 @Entity
 @Table(name = "pers_clie")
 @NamedEntityGraph(name = "persClie.Graph", attributeNodes = {
-@NamedAttributeNode(value = "clieGrup"), 		
-@NamedAttributeNode(value = "dimm") })
+@NamedAttributeNode(value = "clieGrup"),
+@NamedAttributeNode(value = "dimm"),
+@NamedAttributeNode(value = "persVend") })
 public class PersClie implements java.io.Serializable {
 
 	private Integer personaId;
 	private ClieGrup clieGrup;
 	private Dimm dimm;
+	private PersVend persVend;
 	private PersClie persClie;
 	private Persona persona;
 	private String razonSoci;
@@ -131,6 +133,16 @@ public class PersClie implements java.io.Serializable {
 
 	public void setDimm(Dimm dimm) {
 		this.dimm = dimm;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "PERS_VEND_ID", nullable = false)
+	public PersVend getPersVend() {
+		return this.persVend;
+	}
+
+	public void setPersVend(PersVend persVend) {
+		this.persVend = persVend;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
