@@ -3,6 +3,7 @@ package ec.com.tecnointel.soem.egreso.controlador;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +15,10 @@ import java.util.stream.Stream;
 
 import ec.com.tecnointel.soem.egreso.listaInt.ClieGrupListaInt;
 import ec.com.tecnointel.soem.egreso.listaInt.PersClieListaInt;
+import ec.com.tecnointel.soem.egreso.listaInt.PersVendListaInt;
 import ec.com.tecnointel.soem.egreso.modelo.ClieGrup;
 import ec.com.tecnointel.soem.egreso.modelo.PersClie;
+import ec.com.tecnointel.soem.egreso.modelo.PersVend;
 import ec.com.tecnointel.soem.egreso.registroInt.PersClieRegisInt;
 import ec.com.tecnointel.soem.general.controlador.PaginaControl;
 import ec.com.tecnointel.soem.parametro.controlador.PersonaException;
@@ -23,6 +26,7 @@ import ec.com.tecnointel.soem.parametro.listaInt.DimmListaInt;
 import ec.com.tecnointel.soem.parametro.modelo.Dimm;
 import ec.com.tecnointel.soem.parametro.modelo.Persona;
 import ec.com.tecnointel.soem.parametro.registroInt.PersonaRegisInt;
+import ec.com.tecnointel.soem.seguridad.modelo.PersUsua;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -41,8 +45,10 @@ public class PersClieControl extends PaginaControl implements Serializable {
 
 	List<PersClie> persClies;
 	List<ClieGrup> clieGrups;
+	List<PersVend> persVends;
 	List<Dimm> dimms;
 	List<Dimm> dimmTipoIdenClies;
+	private boolean vendedorRestringido;
 
 	@Inject
 	PersClieRegisInt persClieRegis;
@@ -52,6 +58,9 @@ public class PersClieControl extends PaginaControl implements Serializable {
 
 	@Inject
 	ClieGrupListaInt clieGrupLista;
+
+	@Inject
+	PersVendListaInt persVendLista;
 
 	@Inject
 	DimmListaInt dimmLista;
@@ -69,6 +78,8 @@ public class PersClieControl extends PaginaControl implements Serializable {
 		persClie.setEstado(true);
 
 		this.rolPermiso = variablesSesion.getRolPermiso();
+
+		this.buscarPersVends();
 
 	}
 
@@ -314,6 +325,53 @@ public class PersClieControl extends PaginaControl implements Serializable {
 		}
 	}
 
+	public void buscarPersVends() {
+
+		PersVend persVend = new PersVend();
+		persVend.setPersona(new Persona());
+		persVend.setEstado(true);
+
+		try {
+			persVends = persVendLista.buscar(persVend, null);
+		} catch (Exception e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, "Excepcion - Error al buscar vendedores"));
+			e.printStackTrace();
+		}
+
+		this.restringirPersVendsPorPermiso();
+	}
+
+	private void restringirPersVendsPorPermiso() {
+
+		this.vendedorRestringido = false;
+
+		if (this.rolPermiso.get(3210)) {
+			return;
+		}
+
+		PersUsua persUsuaSesion = (PersUsua) FacesContext.getCurrentInstance()
+				.getExternalContext().getSessionMap().get("persUsua");
+
+		if (persUsuaSesion == null || persUsuaSesion.getPersonaId() == null) {
+			return;
+		}
+
+		PersVend persVendPropio = null;
+		for (PersVend persVend : this.persVends) {
+			if (persUsuaSesion.getPersonaId().equals(persVend.getPersonaId())) {
+				persVendPropio = persVend;
+				break;
+			}
+		}
+
+		if (persVendPropio != null) {
+			this.persVends = Collections.singletonList(persVendPropio);
+			this.persClie.setPersVend(persVendPropio);
+			this.vendedorRestringido = true;
+		}
+	}
+
 	public void seleccionarDimm() {
 
 //		Dimm dimmCedula = new Dimm();
@@ -375,6 +433,18 @@ public class PersClieControl extends PaginaControl implements Serializable {
 
 	public void setClieGrups(List<ClieGrup> clieGrups) {
 		this.clieGrups = clieGrups;
+	}
+
+	public List<PersVend> getPersVends() {
+		return persVends;
+	}
+
+	public void setPersVends(List<PersVend> persVends) {
+		this.persVends = persVends;
+	}
+
+	public boolean isVendedorRestringido() {
+		return vendedorRestringido;
 	}
 
 	public Integer getPersonaId() {

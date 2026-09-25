@@ -408,6 +408,18 @@
 									<f:validateBean for="nombre" disabled="true" />
 								</p:inputText>
 							</div>
+
+							<div class="col-12 md:col-2">
+								<p:selectOneMenu id="persVendFiltro"
+									value="#{formPagoMoviEgreControl.persVendFiltro}"
+									converter="omnifaces.SelectItemsConverter">
+									<c:if test="#{not formPagoMoviEgreControl.vendedorRestringido}">
+										<f:selectItem itemLabel="Todos los vendedores" noSelectionOption="true" />
+									</c:if>
+									<f:selectItems value="#{formPagoMoviEgreControl.persVends}" var="perVend"
+										itemLabel="#{perVend.persona.apelli} #{perVend.persona.nombre}" itemValue="#{perVend}" />
+								</p:selectOneMenu>
+							</div>
 						</div>
 					</div>
 				</p:panel>

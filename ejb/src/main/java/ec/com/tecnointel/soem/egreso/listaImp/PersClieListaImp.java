@@ -87,7 +87,11 @@ public class PersClieListaImp extends GestorListaSoem<PersClie> implements PersC
 			predicates.add(builder.like(builder.lower(persClieRoot.<String>get("razonSoci")),
 					'%' + razonSoci.toLowerCase() + '%'));
 		}
-		
+
+		if (persClie.getPersVend() != null && persClie.getPersVend().getPersonaId() != null) {
+			predicates.add(builder.equal(persClieRoot.get("persVend"), persClie.getPersVend()));
+		}
+
 		boolean estado = persClie.isEstado();
 		predicates.add(builder.equal(persClieRoot.get("estado"), estado));
 

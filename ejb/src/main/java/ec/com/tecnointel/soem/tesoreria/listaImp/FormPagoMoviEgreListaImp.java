@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import ec.com.tecnointel.soem.egreso.modelo.PersVend;
 import ec.com.tecnointel.soem.general.util.GestorListaSoem;
 import ec.com.tecnointel.soem.tesoreria.listaInt.FormPagoMoviEgreListaInt;
 import ec.com.tecnointel.soem.tesoreria.modelo.FormPagoMoviEgre;
@@ -25,7 +26,12 @@ public class FormPagoMoviEgreListaImp extends GestorListaSoem<FormPagoMoviEgre>
 	// Busca con paginaci�n
 	@Override
 	public List<FormPagoMoviEgre> buscar(FormPagoMoviEgre formPagoMoviEgre, Integer pagina) {
-		
+		return buscar(formPagoMoviEgre, null, pagina);
+	}
+
+	@Override
+	public List<FormPagoMoviEgre> buscar(FormPagoMoviEgre formPagoMoviEgre, PersVend persVendFiltro, Integer pagina) {
+
 		EntityGraph<?> fpmeGrap = this.entityManager.getEntityGraph("fpme.Graph");
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
@@ -33,8 +39,8 @@ public class FormPagoMoviEgreListaImp extends GestorListaSoem<FormPagoMoviEgre>
 		Root<FormPagoMoviEgre> formPagoMoviEgreRoot = query.from(FormPagoMoviEgre.class);
 
 		query.orderBy(builder.asc(formPagoMoviEgreRoot.get("numero")));
-		TypedQuery<FormPagoMoviEgre> consulta = this.entityManager.createQuery(
-				query.select(formPagoMoviEgreRoot).where(getSearchPredicates(formPagoMoviEgreRoot, formPagoMoviEgre)));
+		TypedQuery<FormPagoMoviEgre> consulta = this.entityManager.createQuery(query.select(formPagoMoviEgreRoot)
+				.where(getSearchPredicates(formPagoMoviEgreRoot, formPagoMoviEgre, persVendFiltro)));
 		consulta.setHint("jakarta.persistence.loadgraph", fpmeGrap);
 
 		// Si se pasa null a pagina se listan todos los datos de acuerdo a
@@ -52,19 +58,24 @@ public class FormPagoMoviEgreListaImp extends GestorListaSoem<FormPagoMoviEgre>
 
 	@Override
 	public long contarRegistros(FormPagoMoviEgre formPagoMoviEgre) {
+		return contarRegistros(formPagoMoviEgre, null);
+	}
+
+	@Override
+	public long contarRegistros(FormPagoMoviEgre formPagoMoviEgre, PersVend persVendFiltro) {
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
 		Root<FormPagoMoviEgre> formPagoMoviEgreRoot = countQuery.from(FormPagoMoviEgre.class);
 
 		countQuery = countQuery.select(builder.count(formPagoMoviEgreRoot))
-				.where(getSearchPredicates(formPagoMoviEgreRoot, formPagoMoviEgre));
+				.where(getSearchPredicates(formPagoMoviEgreRoot, formPagoMoviEgre, persVendFiltro));
 		return this.entityManager.createQuery(countQuery).getSingleResult();
 
 	}
 
 	private Predicate[] getSearchPredicates(Root<FormPagoMoviEgre> formPagoMoviEgreRoot,
-			FormPagoMoviEgre formPagoMoviEgre) {
+			FormPagoMoviEgre formPagoMoviEgre, PersVend persVendFiltro) {
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicates = new ArrayList<Predicate>();
@@ -97,6 +108,11 @@ public class FormPagoMoviEgreListaImp extends GestorListaSoem<FormPagoMoviEgre>
 		Integer egresoId = formPagoMoviEgre.getEgresoId();
 		if (egresoId != null) {
 			predicates.add(builder.equal(formPagoMoviEgreRoot.get("egresoId"), egresoId));
+		}
+
+		if (persVendFiltro != null && persVendFiltro.getPersonaId() != null) {
+			predicates.add(builder.equal(
+					formPagoMoviEgreRoot.get("persona").get("persClie").get("persVend"), persVendFiltro));
 		}
 
 		return predicates.toArray(new Predicate[predicates.size()]);

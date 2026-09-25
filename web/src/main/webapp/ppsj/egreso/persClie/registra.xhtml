@@ -143,6 +143,16 @@
 						</div>
 
 						<div class="field col-12 md:col-2">
+							<p:outputLabel value="Vendedor" />
+							<p:selectOneMenu id="persVendList" required="true" requiredMessage="Ingrese vendedor"
+								value="#{persClieControl.persClie.persVend}"
+								converter="omnifaces.SelectItemsConverter">
+								<f:selectItems value="#{persClieControl.persVends}" var="perVend"
+									itemLabel="#{perVend.persona.apelli} #{perVend.persona.nombre}" itemValue="#{perVend}" />
+							</p:selectOneMenu>
+						</div>
+
+						<div class="field col-12 md:col-2">
 							<p:outputLabel for="estadoClie" value="Estado" />
 							<p:selectBooleanCheckbox id="estadoClie"
 								value="#{persClieControl.persClie.estado}" required="true"

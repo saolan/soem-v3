@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,9 +42,11 @@ import ec.com.tecnointel.soem.contabilidad.registroInt.TransaccionGestionInt;
 import ec.com.tecnointel.soem.contabilidad.registroInt.TransaccionRegisInt;
 import ec.com.tecnointel.soem.egreso.listaInt.PersClieListaInt;
 import ec.com.tecnointel.soem.egreso.listaInt.PersCobrListaInt;
+import ec.com.tecnointel.soem.egreso.listaInt.PersVendListaInt;
 import ec.com.tecnointel.soem.egreso.modelo.Egreso;
 import ec.com.tecnointel.soem.egreso.modelo.PersClie;
 import ec.com.tecnointel.soem.egreso.modelo.PersCobr;
+import ec.com.tecnointel.soem.egreso.modelo.PersVend;
 import ec.com.tecnointel.soem.general.controlador.PaginaControl;
 import ec.com.tecnointel.soem.ingreso.listaInt.RetencionListaInt;
 import ec.com.tecnointel.soem.ingreso.modelo.ReteDeta;
@@ -143,6 +146,10 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 	private List<FormPago> formPagos;
 	private List<FormPago> formPagoTmps;
 	private List<DocuMoviEgre> docuMoviEgres;
+	private List<PersVend> persVends;
+	private PersVend persVendFiltro;
+	private PersVend persVendPropio;
+	private boolean vendedorRestringido;
 
 	// Detalles
 	private List<CobrDeta> cobrDetas;
@@ -191,6 +198,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	@Inject
 	PersClieListaInt persClieLista;
+
+	@Inject
+	PersVendListaInt persVendLista;
 
 	@Inject
 	TranPlanListaInt tranPlanLista;
@@ -262,6 +272,8 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 		this.persUsuaSesion = (PersUsua) FacesContext.getCurrentInstance().getExternalContext().getSessionMap()
 				.get("persUsua");
+
+		this.buscarPersVends();
 
 		this.tranPlan = new TranPlan();
 
@@ -1246,9 +1258,9 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 			formPagoMoviEgreLista.filasPagina(variablesSesion.getFilasPagina());
 
-			this.formPagoMoviEgres = formPagoMoviEgreLista.buscar(formPagoMoviEgre, this.pagina);
+			this.formPagoMoviEgres = formPagoMoviEgreLista.buscar(formPagoMoviEgre, this.persVendFiltro, this.pagina);
 			this.numeroReg = formPagoMoviEgres.size();
-			this.contadorReg = formPagoMoviEgreLista.contarRegistros(formPagoMoviEgre);
+			this.contadorReg = formPagoMoviEgreLista.contarRegistros(formPagoMoviEgre, this.persVendFiltro);
 		} catch (Exception e) {
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_FATAL, null, "Excepcion - Error al buscar datos"));
@@ -1300,6 +1312,46 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 		return formPagoMoviEgres;
 	}
 
+	public void buscarPersVends() {
+
+		PersVend persVend = new PersVend();
+		persVend.setPersona(new Persona());
+		persVend.setEstado(true);
+
+		try {
+			this.persVends = persVendLista.buscar(persVend, null);
+		} catch (Exception e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, null, "Excepcion - Error al buscar vendedores"));
+			e.printStackTrace();
+		}
+
+		this.restringirPersVendsPorPermiso();
+	}
+
+	private void restringirPersVendsPorPermiso() {
+
+		this.vendedorRestringido = false;
+		this.persVendPropio = null;
+
+		if (!this.rolPermiso.get(3210) || this.persUsuaSesion == null || this.persUsuaSesion.getPersonaId() == null) {
+			return;
+		}
+
+		for (PersVend persVend : this.persVends) {
+			if (this.persUsuaSesion.getPersonaId().equals(persVend.getPersonaId())) {
+				this.persVendPropio = persVend;
+				break;
+			}
+		}
+
+		if (this.persVendPropio != null) {
+			this.persVends = Collections.singletonList(this.persVendPropio);
+			this.persVendFiltro = this.persVendPropio;
+			this.vendedorRestringido = true;
+		}
+	}
+
 	// Busca PersClies pero retorna Personas;
 	// Cuando se añada otros modulos cambiar a a buscar solo personas
 	public List<Persona> buscarPersonas(Integer paginador) {
@@ -1315,6 +1367,7 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 		PersClie persClie = new PersClie();
 		persClie.setPersona(this.personaBuscar);
+		persClie.setPersVend(this.persVendFiltro);
 
 		Collection<Persona> personasColeccion;
 		List<Persona> personas = null;
@@ -2181,6 +2234,26 @@ public class FormPagoMoviEgreControl extends PaginaControl implements Serializab
 
 	public void setPersonaBuscar(Persona personaBuscar) {
 		this.personaBuscar = personaBuscar;
+	}
+
+	public List<PersVend> getPersVends() {
+		return persVends;
+	}
+
+	public void setPersVends(List<PersVend> persVends) {
+		this.persVends = persVends;
+	}
+
+	public PersVend getPersVendFiltro() {
+		return persVendFiltro;
+	}
+
+	public void setPersVendFiltro(PersVend persVendFiltro) {
+		this.persVendFiltro = persVendFiltro;
+	}
+
+	public boolean isVendedorRestringido() {
+		return vendedorRestringido;
 	}
 
 	public Cxc getCxcSele() {

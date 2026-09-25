@@ -64,12 +64,30 @@
 							</p:inputText>
 						</div>
 
+						<div class="col-12 md:col-3 flex align-items-center gap-2">
+							<p:outputLabel for="persVendFiltro" value="Vendedor"
+								styleClass="white-space-nowrap" />
+							<p:selectOneMenu id="persVendFiltro"
+								value="#{persClieControl.persClie.persVend}"
+								converter="omnifaces.SelectItemsConverter">
+								<c:if test="#{not persClieControl.vendedorRestringido}">
+									<f:selectItem itemLabel="Todos"
+										noSelectionOption="true" />
+								</c:if>
+								<f:selectItems value="#{persClieControl.persVends}"
+									var="perVend"
+									itemLabel="#{perVend.persona.apelli} #{perVend.persona.nombre}"
+									itemValue="#{perVend}" />
+							</p:selectOneMenu>
+						</div>
+
 						<div class="col-12 md:col-2">
 							<p:selectBooleanCheckbox id="estado" itemLabel="Estado"
 								value="#{persClieControl.persClie.estado}" required="false">
 								<f:validateBean for="estado" disabled="true" />
 							</p:selectBooleanCheckbox>
 						</div>
+
 					</div>
 				</div>
 
@@ -93,6 +111,14 @@
 								<div class="product-name">#{_persClie.persona.apelli}
 									#{_persClie.persona.nombre}</div>
 							</div>
+
+							<div class="product-list-detail">
+
+								<p:outputLabel value="Vendedor: ">
+								#{_persClie.persVend.persona.apelli} #{_persClie.persVend.persona.nombre}
+								</p:outputLabel>
+							</div>
+
 
 							<div class="product-list-detail">
 

@@ -19,7 +19,7 @@
 	</f:metadata>
 
 	<ui:param name="pageTitle"
-		value="Soem #{ventaControl.variablesSesion.sucursal.descri} - Ventas Detalle" />
+		value="Soem #{ventaControl.variablesSesion.sucursal.descri} - Ventas Detalladas" />
 
 	<ui:define name="main">
 
@@ -363,7 +363,7 @@
 											<f:selectItems value="#{ventaControl.persVends}"
 												var="perVend"
 												itemLabel="#{perVend.persona.apelli} #{perVend.persona.nombre}"
-												itemValue="#{persVend}" />
+												itemValue="#{perVend}" />
 										</p:selectOneMenu>
 									</div>
 
@@ -1366,6 +1366,18 @@
 									<f:validateBean for="nombre" disabled="true" />
 								</p:inputText>
 							</div>
+
+							<div class="col-12 md:col-2">
+								<p:selectOneMenu id="persVendFiltro"
+									value="#{ventaControl.persClie.persVend}"
+									converter="omnifaces.SelectItemsConverter">
+									<c:if test="#{not ventaControl.vendedorRestringido}">
+										<f:selectItem itemLabel="Todos los vendedores" noSelectionOption="true" />
+									</c:if>
+									<f:selectItems value="#{ventaControl.persVends}" var="perVend"
+										itemLabel="#{perVend.persona.apelli} #{perVend.persona.nombre}" itemValue="#{perVend}" />
+								</p:selectOneMenu>
+							</div>
 						</div>
 					</div>
 				</p:panel>
@@ -1568,6 +1580,16 @@
 									<f:selectItems value="#{ventaControl.dimmTipoIdenClies}"
 										var="dimm" itemLabel="#{dimm.descri}"
 										itemValue="#{dimm.codigo}" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="field col-12 md:col-2">
+								<p:outputLabel value="Vendedor" />
+								<p:selectOneMenu id="persVendList" required="true" requiredMessage="Ingrese vendedor"
+									value="#{ventaControl.persClieRegis.persVend}"
+									converter="omnifaces.SelectItemsConverter">
+									<f:selectItems value="#{ventaControl.persVends}" var="perVend"
+										itemLabel="#{perVend.persona.apelli} #{perVend.persona.nombre}" itemValue="#{perVend}" />
 								</p:selectOneMenu>
 							</div>
 
