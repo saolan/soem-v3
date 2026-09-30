@@ -154,7 +154,7 @@
 
 						<p:commandLink id="buscarProductos" style="margin-left:37%"
 							action="#{ventaControl.buscarProdPrecsBalanza(0)}"
-							process="@this panelBuscar"
+							process="@this panelBuscar" partialSubmit="true"
 							update="prodPrecList,ventaForm:egresoDetaList,ventaForm:totalDocumento,panelBuscar,paginadorProductos">
 							<h:graphicImage library="img" name="lupa1.png" width="14px" />
 						</p:commandLink>
@@ -176,6 +176,7 @@
 
 										<p:commandLink id="agregarBtnImg" title="Agregar producto"
 											rendered="#{ventaControl.activarImagen}" process="@this"
+											partialSubmit="true"
 											oncomplete="moverCursor('agregarBtnImg','#{ventaControl.ventaDetaAlSeleProd}')"
 											action="#{ventaControl.agregarProducto}" ajax="true"
 											update="ventaForm:egresoDetaList,ventaForm:totalDocumento">
@@ -208,6 +209,7 @@
 										<div class="product-list-detail">
 											<p:commandLink id="agregarDescri" title="Agregar producto"
 												rendered="#{ventaControl.activarDescri}" process="@this"
+												partialSubmit="true"
 												value="#{_prodPrec.producto.descri}"
 												oncomplete="moverCursor('agregarDescri','#{ventaControl.ventaDetaAlSeleProd}')"
 												action="#{ventaControl.agregarProducto}" ajax="true"
@@ -227,6 +229,7 @@
 											<span><i class="pi pi-barcode  product-category-icon" />
 												<p:commandLink id="agregarProduc" title="Agregar producto"
 													value="#{_prodPrec.producto.codigoBarra}" process="@this"
+													partialSubmit="true"
 													oncomplete="moverCursor('agregarProduc','#{ventaControl.ventaDetaAlSeleProd}')"
 													action="#{ventaControl.agregarProducto}" ajax="true"
 													update="ventaForm:egresoDetaList,ventaForm:totalDocumento">
@@ -244,7 +247,7 @@
 
 											<p:commandLink id="abriDialogoPrecio2"
 												rendered="#{ventaControl.activarPrecio}"
-												title="Detalle Producto" process="@this"
+												title="Detalle Producto" process="@this" partialSubmit="true"
 												onclick="PF('productoDetalleDialogo').show();"
 												action="#{ventaControl.buscarProdPrecKardTotaView}"
 												update="ventaForm:karkTotaView,ventaForm:prodPrec,ventaForm:imagenProducto">
@@ -278,7 +281,7 @@
 							<h:panelGroup id="paginadorProductos">
 
 								<p:commandButton value="&lt; Anterior" ajax="true"
-									process="@this" style="width:30%;"
+									process="@this" partialSubmit="true" style="width:30%;"
 									update="ventaForm:prodPrecList,paginadorProductos"
 									rendered="#{ventaControl.pagina gt 0}"
 									action="#{ventaControl.buscarProdPrecsBalanza(1)}">
@@ -286,7 +289,7 @@
 								</p:commandButton>
 
 								<p:commandButton value="Siguiente &gt;" ajax="true"
-									process="@this" style="width:30%;"
+									process="@this" partialSubmit="true" style="width:30%;"
 									update="ventaForm:prodPrecList,paginadorProductos"
 									rendered="#{(ventaControl.pagina + 1) * ventaControl.filasProductos lt ventaControl.contadorReg}"
 									action="#{ventaControl.buscarProdPrecsBalanza(1)}">
@@ -315,7 +318,7 @@
 											converter="omnifaces.SelectItemsConverter"
 											disabled="#{ventaControl.egresoId != null}">
 											<p:ajax listener="#{ventaControl.alCambiarDocuEgre}"
-												event="change"
+												event="change" partialSubmit="true"
 												update="docuModifica,ventaForm:cxcSele,ventaForm:cxcList,panelGrabarimpr" />
 											<f:selectItems value="#{ventaControl.docuEgres}"
 												var="docuEgre" itemLabel="#{docuEgre.documento.descri}"
@@ -331,7 +334,8 @@
 										<p:calendar id="fechaEmision"
 											value="#{ventaControl.egreso.fechaEmis}" pattern="dd-MM-yyyy"
 											required="true" requiredMessage="Ingrese fecha">
-											<p:ajax event="dateSelect" update="fechaEmision" />
+											<p:ajax event="dateSelect" partialSubmit="true"
+												update="fechaEmision" />
 										</p:calendar>
 									</div>
 
@@ -379,7 +383,7 @@
 											requiredMessage="Ingrese Descuento"
 											disabled="#{ventaControl.egreso.descue.doubleValue() != 0 and ventaControl.rolPermiso.get(3180) }">
 											<p:ajax listener="#{ventaControl.calcularTotalEgres}"
-												event="blur" update="totalDocumento" />
+												event="blur" partialSubmit="true" update="totalDocumento" />
 										</p:inputText>
 									</div>
 
@@ -398,7 +402,7 @@
 
 									<div class="col-12 md:col-1">
 										<p:commandLink id="abrirBuscarCliente" value="Cliente"
-											process="@this"
+											process="@this" partialSubmit="true"
 											style="font-size: 110%; font-weight: bold; color: blue; text-decoration: underline;"
 											onclick="PF('seleccionarClienteDialogo').show();" />
 									</div>
@@ -412,6 +416,7 @@
 
 									<div class="field col-12 md:col-1">
 										<p:commandLink id="abrirEgreNota" value="Nota" process="@this"
+											partialSubmit="true"
 											action="#{ventaControl.buscarEgreNotas}"
 											update="egreNotaForm:egreNotaList"
 											style="font-size: 110%; font-weight: bold; color: blue; text-decoration: underline;"
@@ -507,6 +512,7 @@
 								</f:facet>
 
 								<p:ajax event="cellEdit" oncomplete="modificarCelda()"
+									partialSubmit="true"
 									listener="#{ventaControl.modificarCelda}" />
 
 								<p:column style="width:20%;text-align:center;" headerText="Op.">
@@ -569,6 +575,7 @@
 
 									<p:commandLink id="abrirDialogo"
 										value="#{_egreDeta.precio.descri}" process="@this"
+										partialSubmit="true"
 										onclick="PF('productoDetalleDialogo').show();"
 										action="#{ventaControl.buscarProdPrecKardTotaView}"
 										update="ventaForm:karkTotaView,ventaForm:prodPrec,ventaForm:imagenProducto">
@@ -638,7 +645,8 @@
 				width="99%" header="Producto Detalle" modal="true" resizable="false"
 				onHide="enfocarComponente('#{ventaControl.ventaDetaAlSeleProd}')">
 
-				<p:ajax event="close" update="ventaForm:panelBuscar" />
+				<p:ajax event="close" partialSubmit="true"
+					update="ventaForm:panelBuscar" />
 
 				<p:panel id="imagenProducto" style="border: none;">
 					<div class="text-center">
@@ -740,9 +748,11 @@
 
 						<h:outputText id="contador" />
 						<br />
-						<p:commandLink id="aceptarEgreDetaNotaDialogo" ajax="false"
+						<p:commandLink id="aceptarEgreDetaNotaDialogo" ajax="true"
 							styleClass="boton" value="Aceptar"
-							onclick="PF('egreDetaNotaDialogo').hide();" />
+							process="@this egreDetaDetalle" partialSubmit="true"
+							update="egreDetaDetalle"
+							oncomplete="PF('egreDetaNotaDialogo').hide();" />
 
 					</p:panelGrid>
 
@@ -800,7 +810,8 @@
 			<p:dialog id="descuentoNoAutorizado"
 				widgetVar="descuentoNoAutorizadoDialogo" width="99%"
 				closable="false" modal="true" resizable="false"
-				focus="aceptarDescuentoNoAutorizado">
+				focus="aceptarDescuentoNoAutorizado"
+				onHide="enfocarComponente(capturarFocus)">
 
 				<p:panel id="aceptarDescuentoNoAutorizadoInfo">
 
@@ -812,7 +823,7 @@
 				</p:panel>
 
 				<div align="center" style="margin-top: 15px;">
-					<p:commandButton id="aceptarDescuentoNoAutorizado" ajax="false"
+					<p:commandButton id="aceptarDescuentoNoAutorizado" type="button"
 						styleClass="boton" value="Aceptar"
 						onclick="PF('descuentoNoAutorizadoDialogo').hide();" />
 				</div>
@@ -821,7 +832,8 @@
 
 			<p:dialog id="prodNoExiste" widgetVar="prodNoExisteDialogo"
 				width="99%" closable="false" modal="true" resizable="false"
-				focus="aceptarProdNoExisteDialogo">
+				focus="aceptarProdNoExisteDialogo"
+				onHide="enfocarComponente(capturarFocus)">
 
 				<p:panel>
 					<div align="center">
@@ -830,7 +842,7 @@
 				</p:panel>
 
 				<div align="center" style="margin-top: 15px;">
-					<p:commandButton id="aceptarProdNoExisteDialogo" ajax="false"
+					<p:commandButton id="aceptarProdNoExisteDialogo" type="button"
 						styleClass="boton" value="Aceptar"
 						onclick="PF('prodNoExisteDialogo').hide();" />
 				</div>
@@ -890,7 +902,7 @@
 											value="#{ventaControl.formPagoMoviEgre.docuMoviEgre}"
 											converter="omnifaces.SelectItemsConverter" required="false"
 											requiredMessage="Seleccione documento">
-											<p:ajax event="change"
+											<p:ajax event="change" partialSubmit="true"
 												listener="#{ventaControl.filtrarFormPago}"
 												update="fpmeFormPagoList" />
 											<f:selectItems value="#{ventaControl.docuMoviEgres}"
@@ -1002,7 +1014,7 @@
 								converter="omnifaces.SelectItemsConverter" required="false"
 								requiredMessage="Seleccione forma de pago">
 								<p:ajax listener="#{ventaControl.alCambiarFormCobr}"
-									event="change"
+									event="change" partialSubmit="true"
 									update="fpmeFormPagofechaCobroInput,fpmeFormPagoDiasPlazInput" />
 
 								<f:selectItem itemLabel="Seleccione..." itemValue="" />
@@ -1015,7 +1027,7 @@
 							<p:calendar id="fpmeFormPagofechaCobroInput"
 								value="#{_fpmeFormPago.fecha}" pattern="dd-MM-yyyy"
 								disabled="#{_fpmeFormPago.formPago.tipo != 'CR'}">
-								<p:ajax event="dateSelect"
+								<p:ajax event="dateSelect" partialSubmit="true"
 									listener="#{ventaControl.calcularDiasPlaz}"
 									update="fpmeFormPagoDiasPlazInput" />
 
@@ -1025,7 +1037,7 @@
 						<p:column id="fpmeFormPagodiasPlaz" headerText="Días Plazo">
 							<p:inputText id="fpmeFormPagoDiasPlazInput"
 								value="#{_fpmeFormPago.diasPlaz}" rendered="true">
-								<p:ajax event="change"
+								<p:ajax event="change" partialSubmit="true"
 									listener="#{ventaControl.calcularFechaCobro}"
 									update="fpmeFormPagofechaCobroInput" />
 							</p:inputText>
@@ -1055,7 +1067,8 @@
 										style="text-align: right;" value="#{_fpmeFormPago.totalReci}"
 										onfocus="this.setSelectionRange(0, this.value.length)">
 										<p:ajax listener="#{ventaControl.calcularCambioView}"
-											event="keyup" update="ventaForm:cambio,ventaForm:totalReci" />
+											event="keyup" delay="400" partialSubmit="true"
+											update="ventaForm:cambio,ventaForm:totalReci" />
 										<f:convertNumber pattern="#0.000000" locale="en-US" />
 
 									</p:inputText>
@@ -1109,7 +1122,8 @@
 									converter="omnifaces.SelectItemsConverter" required="false"
 									requiredMessage="Seleccione Sucursal">
 									<p:ajax listener="#{ventaControl.buscarSesionVentasSucursal}"
-										event="change" update="cajaMoviConvertirList" />
+										event="change" partialSubmit="true"
+										update="cajaMoviConvertirList" />
 									<f:selectItem itemLabel="Seleccione sucursal destino..."
 										itemValue="" />
 									<f:selectItems value="#{ventaControl.rolSucuConvertirs}"

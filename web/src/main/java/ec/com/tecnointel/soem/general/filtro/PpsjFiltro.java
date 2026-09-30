@@ -25,6 +25,7 @@ public class PpsjFiltro implements Filter {
 		if (persUsua == null) {
 
 			((HttpServletResponse) response).sendRedirect("../accesoRestringido.xhtml");
+			return;
 		}
 
 		chain.doFilter(request, response);
