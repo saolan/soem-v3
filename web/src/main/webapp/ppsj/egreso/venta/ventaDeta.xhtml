@@ -155,7 +155,8 @@
 						<p:commandLink id="buscarProductos" style="margin-left:37%"
 							action="#{ventaControl.buscarProdPrecsBalanza(0)}"
 							process="@this panelBuscar" partialSubmit="true"
-							update="prodPrecList,ventaForm:egresoDetaList,ventaForm:totalDocumento,panelBuscar,paginadorProductos">
+							oncomplete="despuesBuscarProductos(args)"
+							update="prodPrecList,ventaForm:egresoDetaList,ventaForm:totalDocumento,buscarProdCodigo,buscarProdDescri,paginadorProductos">
 							<h:graphicImage library="img" name="lupa1.png" width="14px" />
 						</p:commandLink>
 
@@ -762,7 +763,7 @@
 			<p:dialog id="controlStock" widgetVar="controlStockDialogo"
 				fitViewport="true" width="99%" closable="false" modal="true"
 				resizable="false" focus="aceptarcontrolStockDialogo"
-				onHide="enfocarComponente('#{ventaControl.ventaDetaAlSeleProd}')">
+				onHide="enfocarComponente(capturarFocus)">
 
 				<p:panel id="controlStockInfo">
 
@@ -1729,9 +1730,20 @@
 	        function moverCursor(desde, hasta) {
 
 				if (desde != hasta){
-					document.getElementById(hasta).click();
-		        	document.getElementById(hasta).focus();
-				}		       
+					// Si el destino no existe (ej. egresoDetaList:0:cantidInput con el detalle
+					// vacio porque el producto no se agrego por falta de stock) no se debe lanzar
+					// error: deja la peticion ajax sin terminar y congela la pagina
+					var destino = document.getElementById(hasta);
+					if (destino) {
+						destino.click();
+						destino.focus();
+					} else {
+						var campo = document.getElementById(capturarFocus);
+						if (campo) {
+							campo.focus();
+						}
+					}
+				}
 	        }
 
 	    	function handleLoginRequestCobrar(xhr, status, args) {
@@ -1760,6 +1772,31 @@
 	        window.addEventListener("focus", function(event) {
 		         document.getElementById(capturarFocus).focus();
             });
+
+	        // No se actualiza panelBuscar al buscar: re-renderizarlo destruye el input de
+	        // codigo de barra y se pierden los caracteres que el lector envia mientras
+	        // la peticion esta en curso. El campo se limpia aqui solo quitando el codigo
+	        // ya procesado, conservando lo que se haya leido despues.
+	        function despuesBuscarProductos(args) {
+	            var input = document.getElementById('ventaForm:buscarProdCodigoBarra');
+	            if (input &amp;&amp; args &amp;&amp; args.codigoBarraLimpiar) {
+	                var procesado = args.codigoBarraProcesado || '';
+	                if (input.value.indexOf(procesado) === 0) {
+	                    input.value = input.value.substring(procesado.length);
+	                }
+	            }
+	            // Como panelBuscar ya no se re-renderiza, p:focus no vuelve a ejecutarse;
+	            // se regresa el cursor al campo de captura para leer el siguiente producto,
+	            // salvo que se haya abierto un dialogo (ej. producto no existe, stock).
+	            setTimeout(function() {
+	                if ($('.ui-dialog:visible').length === 0) {
+	                    var campo = document.getElementById(capturarFocus);
+	                    if (campo &amp;&amp; document.activeElement !== campo) {
+	                        campo.focus();
+	                    }
+	                }
+	            }, 0);
+	        }
 
 	        function enfocarComponente(id, tiempo = 100){
 	            setTimeout(function(){

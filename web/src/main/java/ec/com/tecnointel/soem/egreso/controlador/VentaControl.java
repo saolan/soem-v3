@@ -3999,6 +3999,7 @@ public class VentaControl extends PaginaControl implements Serializable {
 					this.prodPrecSele.setPrecioSinImpu(precio);
 					this.agregarProducto();
 					this.prodPrec.getProducto().setCodigoBarra(null);
+					notificarCodigoBarraProcesado(codigoBarra);
 					return;
 				}
 			}
@@ -4026,6 +4027,16 @@ public class VentaControl extends PaginaControl implements Serializable {
 
 			PrimeFaces.current().executeScript("PF('prodNoExisteDialogo').show();");
 		}
+
+		notificarCodigoBarraProcesado(codigoBarra);
+	}
+
+//	Indica a la vista que codigo de barra se proceso y si debe quitarse del campo,
+//	asi no se re-renderiza el input mientras el lector sigue escribiendo
+	private void notificarCodigoBarraProcesado(String codigoBarra) {
+		PrimeFaces.current().ajax().addCallbackParam("codigoBarraProcesado", codigoBarra == null ? "" : codigoBarra);
+		PrimeFaces.current().ajax().addCallbackParam("codigoBarraLimpiar",
+				this.prodPrec.getProducto().getCodigoBarra() == null);
 	}
 
 //	Busca el Iva que tiene el producto
