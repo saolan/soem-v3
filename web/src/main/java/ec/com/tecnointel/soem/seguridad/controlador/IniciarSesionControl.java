@@ -16,6 +16,7 @@ import ec.com.tecnointel.soem.egreso.modelo.PersCobr;
 import ec.com.tecnointel.soem.egreso.modelo.PersVend;
 import ec.com.tecnointel.soem.firmaElec.registroImp.validarM1;
 import ec.com.tecnointel.soem.firmaElec.registroImp.validarM2;
+import ec.com.tecnointel.soem.firmaElec.registroImp.validarM3;
 import ec.com.tecnointel.soem.firmaElec.registroInt.NotificacionValidezFirmaInt;
 import ec.com.tecnointel.soem.firmaElec.registroInt.ValidarRucFirmaInt;
 import ec.com.tecnointel.soem.general.controlador.VariablesSesion;
@@ -313,13 +314,15 @@ public class IniciarSesionControl implements Serializable {
 
 		ValidarRucFirmaInt validarRucFirmaM1 = new validarM1();
 		ValidarRucFirmaInt validarRucFirmaM2 = new validarM2();
+		ValidarRucFirmaInt validarRucFirmaM3 = new validarM3();
 
 		try {
 
 			boolean rucValidoM1 = validarRucFirmaM1.validarRucFirma(this.sucursal);
 			boolean rucValidoM2 = validarRucFirmaM2.validarRucFirma(this.sucursal);
+			boolean rucValidoM3 = validarRucFirmaM3.validarRucFirma(this.sucursal);
 
-			if (!rucValidoM1 && !rucValidoM2) {
+			if (!rucValidoM1 && !rucValidoM2 && !rucValidoM3) {
 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, null,
 						"Ruc de la aplicación no corresponde al Ruc del certificado electrónico"));
 			} else {
