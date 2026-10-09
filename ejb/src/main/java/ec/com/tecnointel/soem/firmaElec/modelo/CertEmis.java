@@ -29,6 +29,7 @@ public class CertEmis implements Serializable {
 	private String certO;
 	private String certC;
 	private String certOid;
+	private String certOrganiIden;
 	private Boolean estado;
 	
 	private Set<SucuCertEmis> sucuCertEmiss = new HashSet<SucuCertEmis>(0);
@@ -108,6 +109,16 @@ public class CertEmis implements Serializable {
 
 	public void setCertOid(String certOid) {
 		this.certOid = certOid;
+	}
+
+	@NotBlank(message = "Ingrese Identificacion de la Organizacion")
+	@Column(name = "CERT_ORGANI_IDEN", length = 100)
+	public String getCertOrganiIden() {
+		return certOrganiIden;
+	}
+
+	public void setCertOrganiIden(String certOrganiIden) {
+		this.certOrganiIden = certOrganiIden;
 	}
 
 	@NotNull

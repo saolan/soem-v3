@@ -60,6 +60,11 @@
 						styleClass="cajaTextoDescri" required="true"
 						requiredMessage="Ingrese Oid" />
 
+					<p:outputLabel for="certEmisOrganiIden" value="Organization Identifier" />
+					<p:inputText id="certEmisOrganiIden"
+						value="#{certEmisControl.certEmis.certOrganiIden}"
+						styleClass="cajaTextoDescri" />
+
 					<p:outputLabel for="estado" value="Estado" />
 					<p:selectBooleanCheckbox id="estado"
 						value="#{certEmisControl.certEmis.estado}" required="true"
